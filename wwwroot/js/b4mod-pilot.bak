@@ -1,0 +1,127 @@
+$(document).ready(function () {
+});
+function ModalSeries() {
+  var myModal = new bootstrap.Modal(document.getElementById("modalSeries"));
+  myModal.show();
+}
+function ModalMachine() {
+  var myModal = new bootstrap.Modal(document.getElementById("modalMachine"));
+  myModal.show();
+}
+function ModalCurrent() {
+  var myModal = new bootstrap.Modal(document.getElementById("modalCurrent"));
+  myModal.show();
+}
+//---ต้องทำ Dataset 2 ชุด 
+const dataBk = {
+  datasets: [{
+    label: 'Max thread cut current Dataset',
+    data: [{
+      "ddmmyy": "01/01/2025",
+      "x": -5,
+      "y": 5.5,
+      "perc": "0%"
+    },
+      {
+        "ddmmyy": "01/02/2025",
+        "x": -3,
+        "y": 8,
+        "perc": "0%"
+      }, {
+        "ddmmyy": "01/03/2025",
+        "x": -3.5,
+        "y": 4.5,
+        "perc": "0%"
+      }, {
+        "ddmmyy": "01/04/2025",
+        "x": -7,
+        "y": 3,
+        "perc": "0%"
+      }, {
+        "ddmmyy": "01/05/2025",
+        "x": -1,
+        "y": 5,
+        "perc": "0%"
+      }],
+    backgroundColor: 'rgb(255, 99, 132)'
+  }],
+};
+
+//--> For Chart
+const datas = [{
+        type: 'line',
+        label: 'Failed limit',
+        data: [-5, -3, -3.5, -7, -1],
+      borderColor: 'rgb(0, 128, 0)'
+          }, {
+        type: 'line',
+          label: 'Normal',
+            data: [1, 1, 1, 1, 1],
+              borderColor: 'rgb(140, 87, 255)'
+      }, {
+        type: 'line',
+          label: 'Failed Cut',
+            data: [5.5, 8, 4.5, 3, 8.5],
+              borderColor: 'rgb(245, 224, 0)'
+      }];
+
+const ctx = document.getElementById('myChart');
+const mixedChart = new Chart(ctx, {
+  label: 'Max thread cut current Dataset',
+  data: {
+    datasets: datas,
+    labels: ['01/01/2025', '01/02/2025', '01/03/2025', '01/04/2025', '01/05/2025']
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true,
+        min: -20,
+        max: 20
+      }
+    }
+  }
+});
+
+console.log(mixedChart);
+//--> For Data Table
+var dataSet = [
+  {
+  "ddmmyy": "01/01/2025",
+  "bfodata": -5,
+  "aftdata": 5.5,
+  "perc": "0%"
+  },
+  {
+    "ddmmyy": "01/02/2025",
+    "bfodata": -3,
+    "aftdata": 8,
+    "perc": "0%"
+  },{
+    "ddmmyy": "01/03/2025",
+    "bfodata": -3.5,
+    "aftdata": 4.5,
+    "perc": "0%"
+  },{
+    "ddmmyy": "01/04/2025",
+    "bfodata": -10,
+    "aftdata": 3,
+    "perc": "0%"
+  },{
+    "ddmmyy": "01/05/2025",
+    "bfodata": -1,
+    "aftdata": 5,
+    "perc": "0%"
+  }
+];
+
+$('#bindDataTable').DataTable({
+  searching: false,
+  data: dataSet,
+  columns: [
+    { data: 'ddmmyy' },
+    { data: 'bfodata' },
+    { data: 'aftdata' },
+    { data: 'perc' }
+  ]
+});

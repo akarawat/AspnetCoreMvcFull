@@ -1,0 +1,258 @@
+@{
+    ViewData["Title"] = "Parts Production Stock Tools (User configuration)";
+    List<HRUserModel> useHr = new List<HRUserModel>();
+    useHr = Model.VMHrUserModel;
+}
+
+@model ViewModelVM;
+
+@section PageScripts {
+<script src="~/js/userstocktools.js"></script>
+}
+@* ************** Content ************** *@
+<div class="row g-6 mb-6"></div>
+
+<!-- Start Basic Bootstrap Table -->
+<div class="card">
+
+    <!--//--->
+    <div class="row">
+        <div class="col-sm-6">
+            <h5 class="card-header">List Off all Users (รายชื่อพนักงานที่ใช้งานระบบ Stock controll).</h5>
+        </div>
+        <div class="col-sm-6 card-header">
+            <div class="nav-item d-flex align-items-center">
+                <i class="ri-search-line ri-22px me-2 lh-0"></i>
+                <input type="text" id="searchItems" class="form-control border-0 shadow-none bg-body" placeholder="Search...(Emp Code)" aria-label="Search...">
+                &nbsp;&nbsp;<a href="javascript:ModalAddNewUser();" class="btn btn-sm btn-success">+ADD</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive text-nowrap">
+        <table class="table table-hover">
+            <caption>List of Stock tools
+                @if (ViewData["COUNTROW"] != null){
+                    @ViewData["COUNTROW"]
+                }
+            </caption>
+            <thead>
+                <tr>
+                    <th>Emp Code รหัสพนักงาน</th>
+                    <th>Prefix Name (ชื่อในระบบ)</th>
+                    <th>Full name ชื่อเต็ม</th>
+                    <th>Stock control Status</th>
+                    <th>Stock Approval ผู้อนุมัติเบิก</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @{
+                    List<UserStockModel> userLst = new List<UserStockModel>();
+                    userLst = Model.VMCosrUses;
+                }
+                @if (userLst != null)
+                {
+                    foreach (var rowVal in userLst)
+                    {
+                        <tr>
+                            <td>
+                                <span>@rowVal.EMPCODE</span>
+                            </td>
+                            <td>@rowVal.USERLOGON</td>
+                            <td>@rowVal.USERFNAME</td>
+                            <td>@rowVal.USRFUNC</td>
+                            <td>@rowVal.apprv_stock</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ri-more-2-line"></i></button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:ModalEditUser('@rowVal.ID','@rowVal.EMPCODE');"><i class="ri-pencil-line me-1"></i> Edit</a>
+                                        <a class="dropdown-item" href="javascript:ModalDeleteUser('@rowVal.ID');"><i class="ri-delete-bin-6-line me-1"></i> Delete</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--/ Users Basic Bootstrap Table -->
+<hr class="my-12">
+<!-- Add new User -->
+<!-- Modal Addnew -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add new stock User (เพิ่มรายชื่อพนักงานในระบบ)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline">
+                            <input class="form-control" list="opt_emp_stock" id="id_emp_stock" name="lst_emp_stock" placeholder="รหัสพนักงาน...">
+                            <datalist name="opt_emp_stock" id="opt_emp_stock">
+                                @{
+                                    if (useHr != null)
+                                    {
+                                        foreach (var rowAcc in useHr)
+                                        {
+                                            <option value="@rowAcc.EMP_CODE">@rowAcc.DISPNAME</option>
+                                        }
+                                    }
+                                }
+                            </datalist>
+                            <label for="lst_emp_stock">ระบุรหัสพนักงาน</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline mb-6">
+                            <input class="form-control" type="text" name="lst_dispname_stock" placeholder="ระบุชื่อ-นามสกุล">
+                            <label for="lst_dispname_stock">ชื่อพนักงาน</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline">
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-primary">User Function</button>
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(3);">ผู้ใช้งานระบบ</a></li>
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(1);">รับเมล์แจ้งเตือน Min/Max</a></li>
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(2);">รับเมล์เบิก Stock</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(9);">ยกเลิการรับเมล์</a></li>
+                                </ul>
+                                <input type="text" id="lblSelectUserFunc" class="form-control" aria-label="Text input with segmented dropdown button">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline mb-6">
+                            <input class="form-control" list="opt_apprv_stock" id="id_apprv_stock" name="lst_apprv_stock" placeholder="ระบุชื่อผู้อนุมัติ...">
+                            <datalist name="opt_apprv_stock" id="opt_apprv_stock">
+                                @{
+                                    if (useHr != null)
+                                    {
+                                        foreach (var rowAcc in useHr)
+                                        {
+                                            <option value="@rowAcc.EMP_CODE">@rowAcc.DISPNAME</option>
+                                        }
+                                    }
+                                }
+                            </datalist>
+                            <label for="lst_apprv_stock">List of Approval name</label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:CancelAddEmp();" class="btn btn-sm btn-warning" data-bs-dismiss="modal">CANCEL</a>
+                <a href="javascript:AddNewEmp();" class="btn btn-sm btn-info">SAVE</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="exampleModalEdit" tabindex="-1" aria-labelledby="exampleModalLabelEdit" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabelEdit">Add new stock User (แก้ไขรายชื่อพนักงานในระบบ)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline">
+                            <input type="text" class="form-control" id="edit_emp_code" placeholder="S01234" aria-describedby="edit_emp_code" />
+                            <label for="edit_emp_code">Emp Code (รหัสพนักงาน)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline mb-6">
+                            <input class="form-control" list="edit_opt_emp_samacc" name="edit_lst_emp_samacc" placeholder="Fullname.L">
+                            <datalist name="edit_opt_emp_samacc">
+                                <option value="San Francisco"></option>
+                                <option value="New York"></option>
+                                <option value="Seattle"></option>
+                                <option value="Los Angeles"></option>
+                                <option value="Chicago"></option>
+                            </datalist>
+                            <label for="edit_lst_emp_samacc">List of employee</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline">
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-primary">User Function</button>
+                                <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(3);">ผู้ใช้งานระบบ</a></li>
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(1);">รับเมล์แจ้งเตือน Min/Max</a></li>
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(2);">รับเมล์เบิก Stock</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="javascript:SelectUserFunc(9);">ยกเลิการรับเมล์</a></li>
+                                </ul>
+                                <input type="text" id="edit_lblSelectUserFunc" class="form-control" aria-label="Text input with segmented dropdown button">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating form-floating-outline mb-6">
+                            <input class="form-control" list="edit_opt_apprv_stock" name="edit_lst_apprv_stock" placeholder="ระบุชื่อผู้อนุมัติ...">
+                            <datalist name="edit_opt_apprv_stock">
+                                <option value="San Francisco"></option>
+                                <option value="New York"></option>
+                                <option value="Seattle"></option>
+                                <option value="Los Angeles"></option>
+                                <option value="Chicago"></option>
+                            </datalist>
+                            <label for="edit_lst_apprv_stock">List of Approval name</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" id="lblTRID">
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning" data-bs-dismiss="modal">CANCEL</a>
+                <a href="javascript:SaveEditEmp();" class="btn btn-sm btn-info">SAVE</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+

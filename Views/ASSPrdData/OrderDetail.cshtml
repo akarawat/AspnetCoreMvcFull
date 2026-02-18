@@ -1,0 +1,208 @@
+@{
+    ViewData["Title"] = "Parts Production Stock order detail";
+}
+
+@section PageScripts {
+    <script src="~/js/orderdetail.js"></script>
+}
+@* ************** Content ************** *@
+<!-- Start Basic Bootstrap Table -->
+<div class="row gy-6">
+  
+    <!-- Congratulations card -->
+    <div class="col-md-12 col-lg-4">
+        <div class="card">
+            <div class="card-body text-nowrap">
+                <h5 class="card-title mb-0 flex-wrap text-nowrap">Stock tools ordering <i class="ri-edit-box-line text-success ri-22px me-2"></i>
+                    @{
+                        if (ViewData["ITEMDOC"] != null)
+                        {
+                            <h5 class="mb-0"> Item No: @ViewData["ITEMDOC"] </h5>
+                        }
+                    }
+                </h5>
+                @{
+                    if (ViewData["DOCNO"] != null) {
+                        <h4 class="text-primary mb-0"> Order No: @ViewData["DOCNO"] </h4>
+                    }
+                }
+                <p class="mb-2">พนักงาน
+                    @{
+                        if (ViewData["EMPCODE"] != null){
+                            <span id="spnEmpOrder">@ViewData["EMPCODE"].ToString().Trim()</span>
+                        }
+                    }
+                </p>
+                <p class="mb-2">
+                    ผู้อนุมัติ 
+                    @{
+                        if (ViewData["ORDSTAT"] == "1"){
+                            @Context.Session.GetString(SessionModel.MSGAPPROVE).ToString()
+                            <i class="ri-arrow-up-s-line ri-24px text-success"></i>
+                        }
+                        else if (ViewData["ORDSTAT"] == "0" || ViewData["ORDSTAT"] == "3")
+                        {
+                            @Context.Session.GetString(SessionModel.MSGPEND).ToString()
+                            <i class="ri-arrow-up-s-line ri-24px text-warning"></i>
+                        }
+                        else if (ViewData["ORDSTAT"] == "5")
+                        {
+                            @Context.Session.GetString(SessionModel.MSGCLOSE).ToString()
+                            <i class="ri-arrow-up-s-line ri-24px text-success"></i>
+                        }
+                        else if (ViewData["ORDSTAT"] == "9")
+                        {
+                            @Context.Session.GetString(SessionModel.MSGCLOSE).ToString()
+                            <i class="ri-arrow-up-s-line ri-24px text-danger"></i>
+                        }
+
+                        if (ViewData["EMPAPP"] != null)
+                        {
+                            @ViewData["EMPAPP"]
+                        }
+                    }
+                </p>
+                <p class="mb-2">
+                    สถานะ
+                    @{
+                        if (ViewData["ORDSTATTXT"] != null)
+                        {
+                            @ViewData["ORDSTATTXT"]
+                        }
+                    }
+                </p>
+
+                @{
+                    if (ViewData["EMPAPPSAMM"] != null && Context.Session.GetString(SessionModel.SAMNAME) != null)
+                    {
+                        @if (ViewData["EMPAPPSAMM"].ToString().ToUpper() == Context.Session.GetString(SessionModel.SAMNAME)){
+                            @if (ViewData["ORDSTAT"].ToString().Trim() == "0" || ViewData["ORDSTAT"].ToString().Trim() == "1")
+                            {
+                                <a href="javascript:ConfirmApproveOrReject('@ViewData["DOCNO"]', 3);" class="btn btn-sm btn-primary">Approve</a>
+                                <a href="javascript:ConfirmApproveOrReject('@ViewData["DOCNO"]', 9);" class="btn btn-sm btn-danger">Reject</a>
+                            }
+                            @if (ViewData["ORDSTAT"].ToString().Trim() == "3")
+                            {
+                                <a href="javascript:ConfirmApproveOrReject('@ViewData["DOCNO"]', 5);" class="btn btn-sm btn-info">Close Job</a>
+                            }
+                        }
+                    }
+                }
+            </div>
+            <img src="~/img/avatars/1.png" class="position-absolute bottom-0 end-0 me-5 mb-5" width="83">
+        </div>
+    </div>
+    <!--/ Congratulations card -->
+    <!-- Data Tables --> 
+    <div class="col-12">
+        <input type="hidden" id="email_controller" value="@ViewData["USRSTOCKCONTRL"]">
+        <input type="hidden" id="lblUrlPath" value="@ViewData["URLPATH"]">
+        <div class="card overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-truncate">Tools No</th>
+                            <th class="text-truncate">Tools Name</th>
+                            <th class="text-truncate">Status</th>
+                            <th class="text-truncate">Avaliable Phy.</th>
+                            <th class="text-truncate">Request</th>
+                            @{
+                                if (ViewData["EMPAPPSAMM"] != null && Context.Session.GetString(SessionModel.SAMNAME) != null)
+                                {
+                                    @if (ViewData["EMPAPPSAMM"].ToString().ToUpper() == Context.Session.GetString(SessionModel.SAMNAME))
+                                    {
+                                        @if (ViewData["ORDSTAT"].ToString().Trim() == "0"
+                                            || ViewData["ORDSTAT"].ToString().Trim() == "1"
+                                            || ViewData["ORDSTAT"].ToString().Trim() == "3")
+                                        {
+                                            <th class="text-truncate">Action</th>
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @{
+                            List<OrderDetailModel> userLst = new List<OrderDetailModel>();
+                            userLst = Model;
+                        }
+                        @if (userLst != null)
+                        {
+                            int item = 0;
+                            foreach (var rowVal in userLst)
+                            {
+                                item++;
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm me-4">
+                                                <img src="~/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 text-truncate">@rowVal.Itemno</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-truncate">@rowVal.Itemname</td>
+                                    <td>
+                                        @if (rowVal.Itemrem < rowVal.Itemqty)
+                                        {
+                                            <span class="badge bg-label-warning rounded-pill">Pending</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-label-success rounded-pill">Active</span>
+                                        }
+                                    </td>
+                                    <td class="text-truncate">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ri-edit-box-line text-warning ri-22px me-2"></i>
+                                            <span id="aval_@item.ToString()">@rowVal.Itemrem.ToString()</span>
+                                        </div>
+                                    </td>
+                                    <td width="75">
+                                        @rowVal.Itemqty
+                                    </td>
+
+                                    @{
+                                        if (ViewData["EMPAPPSAMM"] != null && Context.Session.GetString(SessionModel.SAMNAME) != null)
+                                        {
+                                            @if (ViewData["EMPAPPSAMM"].ToString().ToUpper() == Context.Session.GetString(SessionModel.SAMNAME))
+                                            {
+                                                @if (ViewData["ORDSTAT"].ToString().Trim() == "0"
+                                                || ViewData["ORDSTAT"].ToString().Trim() == "1"
+                                                || ViewData["ORDSTAT"].ToString().Trim() == "3")
+                                                {
+                                                    <td width="75">
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ri-more-2-line"></i></button>
+                                                            <div class="dropdown-menu">
+                                                                <input type="number" id="qty_@item.ToString()" class="form-control" value="@rowVal.Itemqty" size="50" />
+                                                                <a class="dropdown-item" href="javascript:SaveQtyRevise('@item.ToString()','@rowVal.ID');"><i class="ri-pencil-line me-1"></i> Save Qty.</a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                }
+                                            }
+                                        }
+                                    }
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr><td colspan=6></td></tr>
+                    </tfoot>
+                </table>
+                <br/><br/><br/>
+            </div>
+        </div>
+    </div>
+    <!--/ Data Tables -->
+</div>
+
+

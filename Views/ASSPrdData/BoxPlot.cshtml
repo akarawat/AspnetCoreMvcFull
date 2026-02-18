@@ -1,0 +1,72 @@
+@{
+  ViewData["Title"] = "Max Thread";
+}
+
+@{
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+
+}
+@section VendorScripts {
+    <script src="~/js/chart.umd.min.js"></script>
+    <script src="~/js/index.umd.min.js"></script>
+}
+
+@section PageStyles {
+    <link href="~/css/maxthread_chart.css" rel="stylesheet" />
+}
+
+@* ************** Content ************** *@
+<div class="row g-8 mb-8">
+  <!-- Criteria Header -->
+  <div class="card">
+    <h5 class="card-header" itemid="title_msg">BOX Plot Max thread cutting</h5>
+    <div class="card-body">
+
+      <!-- Box plot chart -->
+      <canvas id="myBoxPlotChart"></canvas>
+      <!-- /Box Plot chart -->
+
+    </div>
+  </div>
+</div>
+
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="BtnBoxPlot">
+        <i class="bx bx-fullscreen"></i> Go Back 
+    </button>
+</div>
+
+<!-- Modal Loading -->
+<div class="modal fade" id="loadingModal"
+  tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body tdVarAlign">
+                <img src="~/img/loading200w.gif" />
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageScripts {
+    <script src="~/js/boxplot.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+}
+

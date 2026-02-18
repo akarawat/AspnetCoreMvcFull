@@ -1,0 +1,116 @@
+@model List<AspnetCoreMvcFull.Models.TopviewCfgModel>
+@{
+    ViewData["Title"] = "Machine KPI Configuration";
+}
+@{
+    //Layout = "_BlankLayout";
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "false";
+    if (isFullscreen)
+    {
+      Layout = "_BlankLayout";
+    }
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+
+}
+
+@section VendorStyles {
+    <link href="~/css/site.css" rel="stylesheet" />
+}
+
+@section VendorScripts {
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+
+}
+
+@* ************** Content ************** *@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container mt-4">
+    <h3 class="mb-3">🔧 Edit KPI Parameters</h3>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Code</th>
+                <th>Func</th>
+                <th>Model</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>7</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-info">
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><input class="form-control form-control-sm" /></td>
+                <td><textarea class="form-control form-control-sm" cols="70"></textarea></td>
+                <td>
+                    <button class="btn btn-info btn-sm btnSave">💾 Add</button>
+                </td>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr data-id="@item.id">
+                    <td><input class="form-control form-control-sm" value="@item.param_code" disabled /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_func" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.mc_model" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_1" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_2" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_3" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_4" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_5" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_6" /></td>
+                    <td><input class="form-control form-control-sm" value="@item.param_7" /></td>
+                    <td><textarea class="form-control form-control-sm" cols="70">@item.remarks</textarea></td>
+                    <td>
+                        <i class="btnSave ri-file-add-line cursor-pointer text-success fs-6">Update</i>
+                        <i class="btnDelete ri-file-excel-line cursor-pointer text-danger fs-6">Del</i>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
+        <i class="bx bx-fullscreen"></i> @strCaption
+    </button>
+    <button class="" id="BtnBoxPlot" style="display:none">
+        <i class="bx bx-fullscreen"></i> Box plot 
+    </button>
+</div>
+
+</div>
+
+@section PageScripts {
+    <script src="~/js/MachineParam.js"></script>
+}

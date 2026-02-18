@@ -1,0 +1,137 @@
+@{
+
+    ViewData["Title"] = "Parts Production Stock order list";
+    string stst = Context.Session.GetString(SessionModel.MSGAPPROVE).ToString();
+}
+
+@section PageScripts {
+    <script src="~/js/orderlist.js"></script>
+}
+@* ************** Content ************** *@
+<!-- Start Basic Bootstrap Table -->
+<div class="card">
+    <div class="row">
+        <div class="col-sm-6">
+            <h5 class="card-header">List Off all parts no with items No.</h5>
+        </div>
+        <div class="col-sm-6 card-header">
+            <div class="nav-item d-flex align-items-center">
+                <i class="ri-search-line ri-22px me-2 lh-0"></i>
+                <input type="text" id="searchItems" class="form-control border-0 shadow-none bg-body" placeholder="Search...(Item No Or Tools Items)" aria-label="Search...">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="table-responsive text-nowrap">
+        <table class="table table-hover">
+            <caption>List of Stock tools
+                @if (ViewData["COUNTROW"] != null){
+                    @ViewData["COUNTROW"]
+                }
+            </caption>
+            <thead>
+                <tr>
+                    <th>Order No.</th>
+                    <th>Req. Date</th>
+                    <th>Emp Request.</th>
+                    <th>Emp Checkout.</th>
+                    <th>สถานะ</th>
+                    @* <th>Action</th> *@
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @{
+                    List<OrderListModel> userLst = new List<OrderListModel>();
+                    userLst = Model;
+                }
+                @if (userLst != null)
+                {
+                    foreach (var rowVal in userLst)
+                    {
+                        <tr>
+                            <td>
+
+                                @{
+                                    if (rowVal.ord_stat == 1)
+                                    {
+                                        <i class="ri-article-line ri-22px text-success me-4"></i>
+                                    }
+                                    else if (rowVal.ord_stat == 0 || rowVal.ord_stat == 3)
+                                    {
+                                        <i class="ri-article-line ri-22px text-warning me-4"></i>
+                                    }
+                                    else if (rowVal.ord_stat == 5)
+                                    {
+                                        <i class="ri-article-line ri-22px text-success me-4"></i>
+                                    }
+                                    else if (rowVal.ord_stat == 9)
+                                    {
+                                        <i class="ri-article-line ri-22px text-danger me-4"></i>
+                                    }
+                                }
+                                <span>@rowVal.ordNo</span>
+                            </td>
+                            <td>@rowVal.ordDate</td>
+                            <td>[ @rowVal.emp_code ] @rowVal.emp_code_fname</td>
+                            <td>[ @rowVal.emp_rec ] @rowVal.emp_rec_fname</td>
+                            <td>
+                                @{
+                                    if (rowVal.ord_stat == 1)
+                                    {
+                                        <span class="badge rounded-pill bg-label-primary me-1" onclick="javascript:OpenDetail('@rowVal.ordNo');" style="cursor:pointer">
+                                            @Context.Session.GetString(SessionModel.MSGAPPROVE).ToString()
+                                        </span>
+                                    }
+                                    else if (rowVal.ord_stat == 0 || rowVal.ord_stat == 3)
+                                    {
+                                        if (rowVal.ord_stat == 0)
+                                        {
+                                          <span class="badge rounded-pill bg-label-warning me-1" onclick="javascript:OpenDetail('@rowVal.ordNo');" style="cursor:pointer">
+                                              @Context.Session.GetString(SessionModel.MSGPEND).ToString()
+                                          </span>
+                                        }
+                                        else if (rowVal.ord_stat == 3)
+                                        {
+                                                            <span class="badge rounded-pill bg-label-primary me-1" onclick="javascript:OpenDetail('@rowVal.ordNo');" style="cursor:pointer">
+                                            @Context.Session.GetString(SessionModel.MSGAPPROVE).ToString()
+                                        </span>    
+                                        }
+                                        
+                                    }
+                                    else if (rowVal.ord_stat == 5)
+                                    {
+                                        <span class="badge rounded-pill bg-label-success me-1" onclick="javascript:OpenDetail('@rowVal.ordNo');" style="cursor:pointer">
+                                            @Context.Session.GetString(SessionModel.MSGCLOSE).ToString()
+                                        </span>
+                                    }
+                                    else if (rowVal.ord_stat == 9)
+                                    {
+                                        <span class="badge rounded-pill bg-label-danger me-1" onclick="javascript:OpenDetail('@rowVal.ordNo');" style="cursor:pointer">
+                                            @Context.Session.GetString(SessionModel.MSGCANCEL).ToString()
+                                        </span>
+                                    }
+                                }
+                              
+                            </td>
+                            @* <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ri-more-2-line"></i></button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:OpenDetail('@rowVal.ordNo');"><i class="ri-pencil-line me-1"></i> Approve</a>
+                                        <a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-6-line me-1"></i> Reject</a>
+                                    </div>
+                                </div>
+                            </td> *@
+                        </tr>
+                    }
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--/ Users Basic Bootstrap Table -->
+<hr class="my-12">
+

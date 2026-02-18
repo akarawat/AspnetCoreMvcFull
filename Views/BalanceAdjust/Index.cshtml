@@ -1,0 +1,359 @@
+@{
+    ViewData["Title"] = "Balance Adjustment";
+}
+
+@{
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "true";
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+
+}
+
+@section VendorScripts {
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    
+
+    @* <script src="~/js/moment.js"></script> *@
+
+    @* <script src="~/js/form-basic-inputs.js"></script> *@
+    @* <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script> *@
+
+    <!-- Chart.js v4 -->
+    <script src="~/js/chart.js@4.4.1.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script> *@
+
+    <!-- Date adapter (จำเป็นมาก ❗) -->
+    <script src="~/js/chartjs-adapter-date-fns@3.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script> *@
+
+}
+
+@section PageStyles {
+    <link href="~/css/balanceadjustment.css?v=1.0.100" rel="stylesheet" />
+}
+
+@* ************** Content ************** *@
+<div class="row g-8 mb-8">
+  <!-- Criteria Header -->
+  <div class="card">
+    
+    <div class="card-body">
+      <input type="hidden" id="txtSerial" class="form-control" style="display:none" />
+      <input type="hidden" id="ddlSeries" class="form-control" />
+      <button onclick="viewThreadDataTable()" class="" style="display:none">View Data</button>
+      <!-- Scatter chart -->
+      <div class="row mb-3">
+          <div class="col-md-6">
+            <a href="/">
+                        <i class="ri-arrow-left-circle-line"></i>Home
+                    </a>
+                    <button id="btnB3" class="btn btn-light h-20" type="button" onclick="callFuncButton('3');">B3</button>
+                    <button id="btnB4" class="btn btn-light h-20" type="button" onclick="callFuncButton('4');">B4</button>
+                    <button id="btnB5" class="btn btn-light h-20" type="button" onclick="callFuncButton('5');">B5</button>
+                    <button id="btnB7" class="btn btn-light h-20" type="button" onclick="callFuncButton('7');">B7</button>
+                    <button id="btnB9P" class="btn btn-light h-20" type="button" onclick="callFuncButton('9 PAM');">B9 PAM</button>
+                    <button id="btnB9S" class="btn btn-light h-20" type="button" onclick="callFuncButton('9 Socle');">B9 Socle</button>
+              @* <label>Serial</label> *@
+              <h5 class="card-header" id="title_msg">@ViewData["Title"] <span id="lblSeries" class="text-bold"></span></h5>
+
+              <small class="text-light fw-medium d-block">Data range</small>
+              <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="criteria" id="criteria2" value="option2" onclick="loadmeasureChartLower('W')" />
+                  <label class="form-check-label" for="criteria2">Week</label>
+              </div>
+              <div class="form-check form-check-inline mt-4">
+                  <input class="form-check-input" type="radio" name="criteria" id="criteria3" value="option1" onclick="loadmeasureChartLower('M')" />
+                  <label class="form-check-label" for="criteria3">Month</label>
+              </div>
+              <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="criteria" id="criteria4" value="option2" onclick="loadmeasureChartLower('HY')" />
+                  <label class="form-check-label" for="criteria4">Halfyear</label>
+              </div>
+
+          </div>
+
+          <div class="col-md-4">
+            <div class="row">
+              <div class="col-sm-6">
+                <label>From</label>
+                <input type="date" id="fromDate" class="form-control" />
+              </div>
+              <div class="col-sm-6">
+                <label>To</label>
+                <input type="date" id="toDate" class="form-control" />
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-2 align-items-center"> &nbsp; 
+              <button onclick="loadmeasureChartLower()" class="btn btn-primary w-100">Search</button> &nbsp; 
+              <button class="btn btn-success w-100" type="button" id="btnExport">EXPORT</button> &nbsp; 
+              <button class="btn btn-info w-100" type="button" id="btnRemark">Remark</button>
+              <div class="row">
+                <div class="col-md-12">
+                  <!-- Start Param Pass/Fail -->
+                    <div class="card shadow-lg-hover mt-4">
+                        <div class="card-header">
+                            Max/Min Parameter
+                        </div>
+                        <div class="card-body">
+                            <blockquote class="blockquote mb-0">
+                                Model:<label id="lblCfgSeries">-</label> <label id="lblCfgMnuFunc">-</label>
+                                <br />
+                                Max:<label id="lblMaxFail">0</label> Min:<label id="lblMinFail">0</label>
+                                <br />
+                                CountMax:<label id="lblCountMaxFail">0</label> CountMin:<label id="lblCountMinFail">0</label>
+                                <footer>
+                                    <button class="btn btn-sm btn-secondary" type="button" id="btnCfgMaxMin" style="display:block !important;">
+                                      <i class="arrow-right-up-box-line text-info"></i>Max/Min
+                                    </button>
+                                </footer>
+                            </blockquote>
+                        </div>
+                    </div>
+                    <!-- End Param Pass/Fail -->
+                </div>
+            </div>
+          </div>
+      </div>
+      
+      <!-- Row1.2 Lower Zone chart -->
+      <div class="row mb-3" id="infoCol1">
+          <div class="col-md-4">
+            <canvas id="measureChartLower" height="200"></canvas>
+          </div>
+          <div class="col-md-4">
+            <canvas id="stepChart" height="200"></canvas>
+          </div>
+          <div class="col-md-4">
+            <canvas id="offsetChart" height="200"></canvas>
+          </div>
+      </div>
+      <!--- Ramark Information -->
+      <div class="row mb-3" id="infoCol2">
+        <div class="col-md-12">
+            <div class="col-md-2 labelinfo_small">
+                #
+                <input type="hidden" id="McParam1" />
+                <input type="hidden" id="McParam2" />
+                <input type="hidden" id="McParam3" />
+                <input type="hidden" id="McParam4" />
+                <input type="hidden" id="McParam5" />
+                <input type="hidden" id="McParam6" />
+                <input type="hidden" id="McParam7" />
+                <input type="hidden" id="McParam8" />
+                <input type="hidden" id="McParam9" />
+                <input type="hidden" id="McParam10" />
+
+                <span id="lblSummaryTest"> Summary test result</span> 
+                <span id="lblPrdYeild"></span>
+                <span id="lblTotalNormalCut">Total normal cut [0]</span>
+                <span id="lblTotalMaxCut">Total max cut [0]</span>
+                <span id="lblTotalClosetoCut">Total close to max [0]</span>
+                <span id="lblMinTotal">Total [0]</span>
+
+                <span id="lblTotalTest">Total [0]</span>
+                <span id="lblAlarmB"></span>
+                <span id="lblAlarmB_info"></span>
+                <span id="lblAlarmA"></span>
+                <span id="lblAlarmA_info"></span>
+
+                <span id="lbl7DTotalTest"></span>
+                <span id="lbl7DAlarmB"></span>
+                <span id="lbl7DAlarmB_info"></span>
+                <span id="lbl7DAlarmA"></span>
+                <span id="lbl7DAlarmA_info"></span>
+
+            </div>
+        </div>
+      </div>
+      <!-- Row1.1 Bubble Zone chart -->
+      <div class="row mb-3" id="bubbleChart">
+        <div class="col-md-9">
+          <canvas id="balanceBubbleChart"></canvas>
+        </div>
+        <div class="col-md-3">
+          <h6 class="fw-bold">Balance Legend</h6>
+          <!-- Legend -->
+          <div id="balanceLegend" class="balance-legend">
+              <div class="legend-item"><span class="legend-color bg-b5"></span> Balance -5</div>
+              <div class="legend-item"><span class="legend-color bg-b4"></span> Balance -4</div>
+              <div class="legend-item"><span class="legend-color bg-b3"></span> Balance -3</div>
+              <div class="legend-item"><span class="legend-color bg-b2"></span> Balance -2</div>
+              <div class="legend-item"><span class="legend-color bg-b1"></span> Balance -1</div>
+              <div class="legend-item"><span class="legend-color bg-b0"></span> Balance 0</div>
+              <div class="legend-item"><span class="legend-color bg-b1p"></span> Balance +1</div>
+              <div class="legend-item"><span class="legend-color bg-b2p"></span> Balance +2</div>
+              <div class="legend-item"><span class="legend-color bg-b3p"></span> Balance +3</div>
+              <div class="legend-item"><span class="legend-color bg-b4p"></span> Balance +4</div>
+              <div class="legend-item"><span class="legend-color bg-b5p"></span> Balance +5</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+          <div class="col-md-12">
+            <div class="card-body">
+                <p class="text-end">
+                  <span style="font-size:0.9rem;color:#666" id="spanNormalCut"></span><span id="spanNormColor" class="text-danger"></span>
+                  <span style="font-size:0.9rem;color:#666" id="spanCutMaxWarn"></span><span id="spanWarnColor" class="text-warning"></span>
+                  <span style="font-size:0.9rem;color:#666" id="spanCutMaxAlarm"></span><span id="spanCutColor" class="text-danger"></span>
+                </p>
+                <p class="text-end">
+                  <span style="font-size:0.9rem;color:#666" id="spanPrdYeild"></span>
+                    <span id="spanYeildFormular"></span>
+                </p>
+                <table id="bindDataTable" class="table table-striped table-bordered dt-responsive" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Serial</th>
+                            <th>Model</th>
+                            <th>balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>	
+          </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
+        <i class="bx bx-fullscreen"></i> @strCaption
+    </button>
+    <button class="" id="BtnBoxPlot" style="display:none">
+        <i class="bx bx-fullscreen"></i> Box plot 
+    </button>
+</div>
+
+
+<!-- Modal Remark -->
+<div class="modal fade" id="remarkModal"
+     tabindex="-1" aria-labelledby="remarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body tdVarAlign">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <input type="hidden" id="trid"/>
+                        <label>Add Remark</label>
+                        <textarea id="txtRemark" class="form-control" rows="3"></textarea>
+                        <button type="button" id="btnAddRemark">Add Remark</button>
+                        <button type="button" id="btnUpdateRemark" style="display:none">Update Remark</button>
+                    </div>
+                </div>
+                <table id="bindDataTableRemark" class="table table-striped table-bordered dt-responsive" width="100%">
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Loading -->
+<div class="modal fade" id="loadingModal"
+  tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body tdVarAlign">
+                <img src="~/img/loading200w.gif" />
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Min/Max Fail -->
+<div class="modal fade" id="cfgMaxMinModal"
+     tabindex="-1" aria-labelledby="cfgMaxMinModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body tdVarAlign">
+                <label>Edit Max/Min Fail</label>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input class="form-control" type="number" placeholder="10" id="txtMaxFail" />
+                        <label for="txtMaxFail">Maximum fail</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input class="form-control" type="number" placeholder="-10" id="txtMinFail" />
+                        <label for="txtMinFail">Minimun fail</label>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <button class="btn btn-sm btn-success" type="button" id="btnUpdateCfgMaxMin">Update Max/Min</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageScripts {
+    
+    <script src="~/js/site.js?v=1.0.002"></script>
+    <script src="~/js/balanceadjustment.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+
+    <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+
+    @* <script src="~/js/boxplot.js"></script> *@
+}

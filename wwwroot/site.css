@@ -1,0 +1,11 @@
+/* Custom styles goes here */
+.imageLogo {
+  box-shadow: 8px 0px 8px 0px rgba(0.5, 0, 0.5, 0.3);
+}
+.success_label {
+  color: darkgreen;
+  text-underline-position:under;
+}
+.img-fluid {
+    height:300px;
+}

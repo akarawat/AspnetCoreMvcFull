@@ -1,0 +1,64 @@
+@{
+    ViewData["Title"] = "AttendanceUplfile";
+
+}
+
+@section PageScripts {
+    <script src="~/js/ppstock.js"></script>
+}
+@section VendorStyles {
+    <link href="~/css/site.css" rel="stylesheet" />
+}
+
+@* ************** Content ************** *@
+<div class="row">
+  <div class="col-md-12">
+    <div class="nav-align-top">
+      <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-2 gap-lg-0">
+                <li class="nav-item">
+                    <i class="ri-group-line me-1_5 success_label"></i>AttendanceUplfile. Excel Import
+                    <span class="success_label">
+              @if (ViewBag.Message != null){
+                @ViewBag.Message
+              }
+            </span>
+        </li>
+        @* <li class="nav-item"><a class="nav-link" href="AccountSettingsNotifications"><i class="ri-notification-4-line me-1_5"></i>Notifications</a></li>
+        <li class="nav-item"><a class="nav-link" href="AccountSettingsConnections"><i class="ri-link-m me-1_5"></i>Connections</a></li> *@
+      </ul>
+    </div>
+
+    <div class="card mb-6">
+      <!-- Upload file -->
+      <div class="card-body pt-0">
+        @using (Html.BeginForm("AttendanceUplfile", "PPStock", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+          <div class="card-body">
+            <div class="d-flex align-items-start align-items-sm-center gap-6">
+              <img src="~/img/avatars/excel_200x168.png" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" />
+              <div class="button-wrapper">
+
+                @Html.TextBox("file", "", new { type = "file", accept = "text/plain" })
+
+                <div>Allowed Text File only. Max size of 1Mb</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <button type="submit" onclick="if (!confirm('ยืนยันการ Upload Attendance file')) return false;" class="btn btn-primary me-3" >Submit file</button>
+            <button type="reset" class="btn btn-outline-secondary">Reset</button>
+          </div>
+        }
+      </div>
+      <!-- Upload file -->
+    </div>
+
+    <div class="card-body pt-0">
+      <div class="card-body pt-0">
+          <div class="card-body">
+                    
+          </div>
+      </div>
+    </div>
+</div>

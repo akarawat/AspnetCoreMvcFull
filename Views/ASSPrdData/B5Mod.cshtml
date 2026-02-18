@@ -1,0 +1,255 @@
+@{
+  ViewData["Title"] = "B4 Model Data";
+}
+
+@* ************** Content ************** *@
+<div class="row g-12 mb-12">
+  <!-- Criteria Header -->
+    <div class="card">
+      <h5 class="card-header">B4 Model</h5>
+      <div class="card-body">
+        <div class="row row-bordered g-0">
+          <div class="col-md-6">
+            <div class="row">
+              <hr />
+              <div class="form-floating form-floating-outline col-md-3">
+                <input class="form-control" type="date" id="dateStart" />
+                <label for="dateStart">Date Start</label>
+              </div>
+              <div class="form-floating form-floating-outline col-md-3">
+                <input class="form-control" type="date" id="dateEnd" />
+                <label for="dateEnd">Date End</label>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <a href="javascript:ModalSeries();" class="btn btn-outline-primary">Series <i class="ri-arrow-down-s-line"></i></a> 
+          </div>
+                <div class="col-md-2 text-center"><a href="javascript:ModalMachine();" class="btn btn-outline-primary">Machine <i class="ri-arrow-down-s-line"></i></a></div>
+                <div class="col-md-2 text-center"><a href="javascript:ModalCurrent();" class="btn btn-outline-primary">Current <i class="ri-arrow-down-s-line"></i></a></div>
+            </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="divider divider-dashed">
+              <div class="divider-text"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-8">
+            <!-- Main Scatter chart -->
+            <div>
+                <canvas id="myChart"></canvas>
+            </div>
+
+            
+
+          </div>
+          <div class="col-md-4">
+            <!-- Main Dataset -->
+            Dataset
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Modal Dropdown -->
+<div class="modal fade" id="modalSeries" tabindex="-1" aria-labelledby="modalSeriesLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalSeriesLabel">Series</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                All
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Series 3
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Series 4
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Series 5
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Series 7
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Series 9 PAM
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Series 9 Socle
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" class="btn btn-sm btn-info" data-bs-dismiss="modal">OK</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning" data-bs-dismiss="modal">CANCEL</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalMachine" tabindex="-1" aria-labelledby="modalMachineLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalMachineLabel">Machine</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                All
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Bernina 500
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Bernina 535
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Bernina 540
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Bernina 700
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Bernina 900
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" class="btn btn-sm btn-info" data-bs-dismiss="modal">OK</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning" data-bs-dismiss="modal">CANCEL</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCurrent" tabindex="-1" aria-labelledby="modalCurrentLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCurrentLabel">Current</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Cutter
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
+                            <label class="form-check-label" for="defaultCheck3">
+                                Normal
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" class="btn btn-sm btn-info" data-bs-dismiss="modal">OK</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning" data-bs-dismiss="modal">CANCEL</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageScripts {
+    <script src="~/js/form-basic-inputs.js"></script>
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+
+    <script src="~/js/chart.js"></script>
+    <script src="~/js/b5mod.js"></script>
+
+
+    <script>
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+              label: '# of Votes',
+              data: [12, 19, 3, 5, 2, 3],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+    </script>
+}

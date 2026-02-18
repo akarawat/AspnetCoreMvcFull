@@ -1,0 +1,36 @@
+@{
+  ViewData["Title"] = "B4 Model Data";
+
+}
+
+@* ************** Content ************** *@
+<div class="row g-12 mb-12">
+  <!-- Criteria Header -->
+    <div class="card">
+      
+      <h4 class="card-header mb-2 mx-2">Under Maintenance! 🚧</h4>
+      <div class="card-body">
+        
+        <div class="row">
+          <div class="col-md-12">
+
+            <p class="mb-10 mx-2" id="lblUndermaintenance"></p>
+            <div class="d-flex justify-content-center mt-5">
+                <div class="d-flex flex-column align-items-center">
+                    <img src="~/img/illustrations/misc-under-maintenance.png" alt="misc-error" height="350" class="img-fluid">
+                    <div>
+                        <a href="/" class="btn btn-primary text-center my-12">Back to home</a>
+                    </div>
+                </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+</div>
+
+@section PageScripts {
+    <script src="~/js/underpage.js"></script>
+}

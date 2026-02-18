@@ -1,0 +1,115 @@
+/* Custom styles goes here */
+.imageLogo {
+  box-shadow: 8px 0px 8px 0px rgba(0.5, 0, 0.5, 0.3);
+}
+.success_label {
+  color: darkgreen;
+  text-underline-position:under;
+}
+.img-fluid {
+    height:300px;
+}
+
+.TableTextSize {
+  font-size: 0.8rem;
+}
+
+#bindEffDataTable.dataTable table,
+#bindEffDataTable.dataTable td,
+#bindEffDataTable.dataTable th {
+  font-size: 7px !important;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+  background: none;
+}
+th {
+  white-space: nowrap;
+  outline: none;
+}
+.sort-btn {
+  padding: 0px;
+  float: right;
+  font-size: 10px;
+}
+.labelinfo_small {
+  font-size: 11px !important;
+}
+
+*/* CSS for Bubble */
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+canvas {
+  max-width: 100%;
+}
+.balance-legend {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 6px 20px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* Negative */
+.bg-b5 {
+  background: rgba(139, 0, 0, 0.75);
+}
+
+.bg-b4 {
+  background: rgba(178, 34, 34, 0.75);
+}
+
+.bg-b3 {
+  background: rgba(220, 20, 60, 0.75);
+}
+
+.bg-b2 {
+  background: rgba(255, 140, 0, 0.75);
+}
+
+.bg-b1 {
+  background: rgba(144, 238, 144, 0.75);
+}
+
+/* Neutral */
+.bg-b0 {
+  background: rgba(0, 100, 0, 0.75);
+}
+
+/* Positive */
+.bg-b1p {
+  background: rgba(144, 238, 144, 0.75);
+}
+
+.bg-b2p {
+  background: rgba(255, 140, 0, 0.75);
+}
+
+.bg-b3p {
+  background: rgba(220, 20, 60, 0.75);
+}
+
+.bg-b4p {
+  background: rgba(178, 34, 34, 0.75);
+}
+
+.bg-b5p {
+  background: rgba(139, 0, 0, 0.75);
+}

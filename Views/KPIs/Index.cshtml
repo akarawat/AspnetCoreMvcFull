@@ -1,0 +1,666 @@
+@{
+    //Layout = "_BlankLayout";
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "false";
+    if (isFullscreen)
+    {
+      Layout = "_BlankLayout";
+    }
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+
+}
+@{
+    var defModel = "";
+    if (Context.Session.GetString("SETMODEL") != null)
+    {
+        defModel = Context.Session.GetString("SETMODEL");
+    }
+    else
+    {
+        defModel = "5";
+    }
+}
+
+@section VendorStyles {
+    <link href="~/css/site.css" rel="stylesheet" />
+}
+
+@section VendorScripts {
+
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="~/js/chart.js"></script>
+
+    <!-- Luxon Date Library -->
+    <script src="~/js/luxon.min.js"></script>
+
+    <!-- Chart.js Luxon Adapter -->
+    <script src="~/js/chartjs-adapter-luxon@1.js"></script>
+
+}
+
+@section PageStyles {
+    <link href="~/css/kpi.css" rel="stylesheet" />
+}
+
+@* ************** Content ************** *@
+<div class="p-6">
+<div class="row">
+    
+    <div class="col-6">
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex flex-wrap align-items-center" id="icons-container">      
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <input id="curModel" type="hidden" value="@defModel" />
+              <button id="btnB3" class="btn btn-light h-50" type="button" onclick="callFuncButton('3');">B3</button>
+              <button id="btnB4" class="btn btn-light h-50" type="button" onclick="callFuncButton('4');">B4</button>
+              <button id="btnB5" class="btn btn-light h-50" type="button" onclick="callFuncButton('5');">B5</button>
+              <button id="btnB7" class="btn btn-light h-50" type="button" onclick="callFuncButton('7');">B7</button>
+              <button id="btnB9P" class="btn btn-light h-50" type="button" onclick="callFuncButton('9 PAM');">B9 PAM</button>
+              <button id="btnB9S" class="btn btn-light h-50" type="button" onclick="callFuncButton('9 Socle');">B9 Socle</button>
+            </div>
+          </div> 
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="vertical-scroll-container">
+              <div class="row">
+                  <div class="col-2 text-end">
+                      <button class="btn btn-info w-100" type="button" id="btnRemarkGlobal" onclick="PublicRemark('A')" >Remark</button> 
+                      <a class="menu-link cursor-pointer text-success me-2" id="btn_rmk_mnuadd" onclick="PublicRemark('A')" title="Public remark" style="display:none">
+                          <i class="ri-message-2-fill text-info fs-1"></i>
+                      </a>
+                  </div>
+                  <div class="col-10">
+                      <label id="lblMsgRemark" class="mx-2 text-info"> Individual Model Message </label>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>      
+      
+    </div>
+    <div class="col-5">
+        <h4 id="pduTitle">PDU. DASH BOARD</h4>
+        <div class="vertical-scroll-container_B">
+          <div class="row">
+              <div class="col-12">
+                <label id="lblMsgRemarkHeader" class="mx-2 text-secondary"> Global Message </label>
+              </div>
+          </div>
+        </div>
+    </div>
+</div>
+<div class="row g-8 mb-8">
+    <!-- Top 10 Failed -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-title"><strong id="lblTop10Failed">Top10 failing ratio</strong></div>
+
+                        <table id="bindDataTableTop10" class="table table-sm table-bordered" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Top 10 Failed -->
+    <!-- Daily production -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card-title">
+                <strong id="lblDailyProduction">Daily Production</strong>
+              </div>
+
+              <canvas id="dailyProdChart" height="150" class="cursor-pointer" onclick="showDailyData();"></canvas>
+@* 
+              <div class="text-end mt-2">
+                <button id="btnVisibleDaily" class="btn btn-light btn-sm" type="button" onclick="showDailyData();">
+                  SHOW
+                </button>
+              </div> *@
+
+              <span id="spanDailyData" style="display:none">
+                <table id="bindDataTableDailyPrd" class="table table-sm table-bordered w-100" width="100%">
+                  <tbody>
+                    <tr><td></td><td></td><td></td></tr>
+                  </tbody>
+                </table>
+              </span>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Daily production -->
+
+</div>
+
+<div class="row g-8 mb-8">
+  <!-- Auto threader -->
+  <div class="col-md-4" id="display_param1">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-title"><strong id="lblMnu1">1. Auto threader</strong></div>
+                    <div class="row" id="kpiAutoThreader">
+                        <!-- AJAX will load here -->
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="display:none">
+              <div class="col-md-12">
+                  <div class="kpi-footer">
+                      <div class="col-12 text-start">
+                          <p class="card-text">
+                              <small class="text-muted">
+                                  <a class="menu-link cursor-pointer" id="btn_rmk_mnu1" onclick="mnuRemark(1)" title="Open remark list" style="display:none"><i class="ri-edit-2-line"></i> Remark</a>
+                                  <span class="text-info" id="rmk_serial1"></span>
+                                  <span class="text-info" id="rmk_mnu1"></span>
+                              </small>
+                          </p>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- /Auto threader -->
+  <!-- Cutting -->
+  <div class="col-md-4" id="display_param2">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-title"><strong id="lblMnu2">2. Cutting Current</strong></div>
+                    <div class="row" id="kpiContainer">
+                        <!-- AJAX will load here -->
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="display:none">
+              <div class="col-md-12">
+                  <div class="kpi-footer">
+                      <div class="col-12 text-start">
+                          <p class="card-text" id="kpiRemark">
+                              <small class="text-muted">
+                                  <a class="menu-link cursor-pointer" id="btn_rmk_mnu2" onclick="mnuRemark(2)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark2</a>
+                                  <span class="text-info" id="rmk_serial2"></span>
+                                  <span class="text-info" id="rmk_mnu2"></span>
+                              </small>
+                          </p>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- /Cutting -->
+  <!-- Buttonhole foot 3A calibration -->
+  <div class="col-md-4" id="display_param3">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-title"><strong id="lblMnu3">3. Button Hole foot 3A calibration</strong></div>
+                    <div class="row" id="kpiButtonHold">
+                        <!-- AJAX will load here -->
+                        <div class="kpi-card">
+                          <div class="row">
+                            <div class="col-6 text-start">
+                              <div  id="kpiButtonHoldInfo">
+                                
+                              </div>
+                            </div>
+                            <div class="col-6 mb-0 text-start">
+                              <span id="lbl7DTotalTest">Total [0]</span>
+                              <span id="lbl7DAlarmB"></span>
+                              <span id="lbl7DAlarmB_info"></span>
+                              <span id="lbl7DAlarmA"></span>
+                              <span id="lbl7DAlarmA_info"></span>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="display:none">
+              <div class="col-md-12">
+                  <div class="kpi-footer">
+                      <div class="col-12 text-start">
+                          <p class="card-text">
+                              <small class="text-muted">
+                                  <a class="menu-link cursor-pointer" id="btn_rmk_mnu3" onclick="mnuRemark(3)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                  <span class="text-info" id="rmk_serial3"></span>
+                                  <span class="text-info" id="rmk_mnu3"></span>    
+                              </small>
+                          </p>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- /Auto threader -->
+
+  <!-- Bobbin Case [03553697.5.00] -->
+  <div class="col-md-4" id="display_param4">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu4">4. Bobbin Case [03553697.5.00]</strong></div>
+                      <div class="row" id="kpiBobbinCase">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu4" onclick="mnuRemark(4)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial4"></span>
+                                      <span class="text-info" id="rmk_mnu4"></span>
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /Bobbin Case -->
+  <!-- Sewing Foot Detection ABC sensor -->
+  <div class="col-md-4" id="display_param5">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu5">5. Sewing Foot Detection ABC sensor</strong></div>
+                      <div class="row" id="kpiSewingFoot">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu5" onclick="mnuRemark(5)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial5"></span>
+                                      <span class="text-info" id="rmk_mnu5"></span>
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /Sewing Foot Detection ABC sensor -->
+  <!-- Differrent weight -->
+  <div class="col-md-4" id="display_param6">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu6">6. Differrent weight</strong></div>
+                      <div class="row" id="kpiDifferanceWeight">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu6" onclick="mnuRemark(6)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial6"></span>
+                                      <span class="text-info" id="rmk_mnu6"></span>
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /Differrent weight -->
+
+  <!-- Thread Tension Calibration -->
+  <div class="col-md-4" id="display_param7">
+      <div class="card h-100">
+          <div class="card-body">
+
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu7">7. Thread Tension Calibration</strong></div>
+                      <div class="row">
+                          <!-- AJAX will load here -->
+                          <div class="kpi-card">
+                            <div class="row">
+                              <div class="col-6 text-start">
+                                <div id="kpiThreadTension">
+                                  
+                                </div>
+                              </div>
+                              <div class="col-6 mb-0 text-start">
+                                <span id="lblTTATotalTest">Total [0]</span>
+                                <span id="lblTTAAlarmB"></span>
+                                <span id="lblTTAAlarmB_info"></span>
+                                <span id="lblTTAAlarmA"></span>
+                                <span id="lblTTAAlarmA_info"></span>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu7" onclick="mnuRemark(7)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial7"></span>
+                                      <span class="text-info" id="rmk_mnu7"></span>                                
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /Thread Tension Calibration -->
+  <!-- TTA adjustment (fine adjustment) -->
+  <div class="col-md-4" id="display_param8">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu8">8. TTA adjustment (fine adjustment)</strong></div>
+                      <div class="row" id="kpiTTAAdjustment">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu8" onclick="mnuRemark(8)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial8"></span>
+                                      <span class="text-info" id="rmk_mnu8"></span> 
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /TTA adjustment (fine adjustment) -->
+  <!-- Balance Rough Adjustment -->
+  <div class="col-md-4" id="display_param9">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu9">9. Balance Rough Adjustment</strong></div>
+                      <div class="row">
+                          <!-- AJAX will load here -->
+                          <div class="kpi-card">
+                              <div class="row">
+                                  <div class="col-6 text-start">
+                                      <div id="kpiBalanceRough">
+                                      </div>
+                                  </div>
+                                  <div class="col-6 mb-0 text-start">
+                                      <span id="lblBalAdjTotalTest">Total [0]</span>
+                                      <span id="lblBalAdjAlarmB"></span>
+                                      <span id="lblBalAdjAlarmB_info"></span>
+                                      <span id="lblBalAdjAlarmA"></span>
+                                      <span id="lblBalAdjAlarmA_info"></span>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                   </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu9" onclick="mnuRemark(9)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial9"></span>
+                                      <span class="text-info" id="rmk_mnu9"></span> 
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /Balance Rough Adjustment -->
+
+  <!-- Balance Fine Adjustment -->
+  <div class="col-md-4" id="display_param10">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu91">9.1 Balance Fine Adjustment</strong></div>
+                      <div class="row" id="kpiBalanceFine">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu91" onclick="mnuRemark(91)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial91"></span>
+                                      <span class="text-info" id="rmk_mnu91"></span> 
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /Balance Fine Adjustment -->
+  <!-- BDF Balance Fine Adjustment -->
+  <div class="col-md-4" id="display_param11">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu92">9.2 BDF Balance Fine Adjustment</strong></div>
+                      <div class="row" id="kpiBDFBalance">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu92" onclick="mnuRemark(92)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                            <span class="text-info" id="rmk_serial92"></span>
+                                            <span class="text-info" id="rmk_mnu92"></span> 
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /BDF Balance Fine Adjustment -->
+  <!-- Base plate -->
+  <div class="col-md-4" id="display_param12">
+      <div class="card h-100">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu10">10. Base plate</strong></div>
+                      <div class="row" id="kpiBasePlate">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-12">
+                      <div class="kpi-footer">
+                          <div class="col-12 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu10" onclick="mnuRemark(10)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial10"></span> 
+                                      <span class="text-info" id="rmk_mnu10"></span> 
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /Base plate -->
+</div>
+<!-- /End of Top view -->
+
+<div class="layout-demo-info">
+    <button class="btn btn-outline-secondary" id="toggleFullscreenBtn">
+        <i class="bx bx-fullscreen"></i> @strCaption
+    </button>
+    <button class="" id="BtnBoxPlot" style="display:none">
+        <i class="bx bx-fullscreen"></i> Box plot 
+    </button>
+</div>
+
+</div>
+
+<!-- Modal Remark -->
+<div class="modal fade" id="remarkModal"
+     tabindex="-1" aria-labelledby="remarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body tdVarAlign">
+                <div id="divForGlobal" class="row mb-3">
+                    <div class="col-md-12">
+                        <small class="text-light fw-medium d-block">Select remark group</small>
+                        <div class="form-check form-check-inline mt-4">
+                            <input name="rdoRemark" class="form-check-input" type="radio" value="0" id="rdoRemark1" />
+                            <label class="form-check-label" for="rdoRemark1">
+                                Publish all models
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input name="rdoRemark" class="form-check-input" type="radio" value="" id="rdoRemark2" checked />
+                            <label id="lblRdoRemark2" class="form-check-label" for="rdoRemark2">
+                                
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <input type="hidden" id="lblmnu" />
+                        <input type="hidden" id="trid" />
+                        <label id="lblTitleRemark">Add Remark</label>
+                        <textarea id="txtRemark" class="form-control" rows="3"></textarea>
+                        <button type="button" id="btnAddRemark">Save</button>
+                        <button type="button" id="btnUpdateRemark" style="display:none">Update Remark</button>
+                    </div>
+                </div>
+                <table id="bindDataTableRemark" class="table table-striped table-bordered dt-responsive" width="100%">
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageScripts {
+    
+    <script src="~/js/chart.umd.min.js"></script>
+    <script src="~/js/chartjs-plugin-datalabels@2.js"></script>
+
+    <script src="~/js/kpis.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+
+}

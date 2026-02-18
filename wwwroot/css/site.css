@@ -1,0 +1,119 @@
+/* Custom styles goes here */
+.imageLogo {
+  box-shadow: 8px 0px 8px 0px rgba(0.5, 0, 0.5, 0.3);
+}
+.success_label {
+  color: darkgreen;
+  text-underline-position:under;
+}
+.img-fluid {
+    height:300px;
+}
+.icon-card:hover {
+  background-color: var(--bs-bg-success) !important; /* For Bootstrap 5+ */
+  /* Or, for Bootstrap 4 or direct color: */
+  /* background-color: #28a745 !important; */
+}
+.vertical-middle {
+  display: flex;
+  align-items: center;
+  /* Optional: justify-content: center; for horizontal centering within the column */
+}
+
+/* Start Style Sheet for date */
+input[type="date"]::-webkit-datetime-edit, input[type="date"]::-webkit-inner-spin-button, input[type="date"]::-webkit-clear-button {
+  color: #fff;
+  position: relative;
+}
+
+input[type="date"]::-webkit-datetime-edit-year-field {
+  position: absolute !important;
+  border-left: 1px solid #8c8c8c;
+  padding: 2px;
+  color: #000;
+  left: 56px;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field {
+  position: absolute !important;
+  border-left: 1px solid #8c8c8c;
+  padding: 2px;
+  color: #000;
+  left: 26px;
+}
+
+input[type="date"]::-webkit-datetime-edit-day-field {
+  position: absolute !important;
+  color: #000;
+  padding: 2px;
+  left: 4px;
+}
+/* End Style Sheet for date */
+
+.pright{
+    /*position: absolute !important;*/
+}
+/* Marquee */
+/* Rule to pause animation when hovering over the container */
+.vertical-scroll-container:hover .vertical-scroll-text {
+  animation-play-state: paused;
+}
+
+/* 
+ * The 'window' that defines the visible area for the scrolling text.
+ * Added 'border-radius'. 
+ */
+.vertical-scroll-container {
+  height: 70px; /* Define the visible height */
+  overflow: hidden; /* Hides content outside the height */
+  position: relative; /* Needed for positioning the absolute child element */
+  /* Added Border Radius */
+  border-radius: 0.5rem; /* Matches Bootstrap's default 'rounded' utility size */
+  /* Optional Bootstrap-style properties */
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px;
+}
+.vertical-scroll-container_B {
+  height: 70px; /* Define the visible height */
+  overflow: hidden; /* Hides content outside the height */
+  position: relative; /* Needed for positioning the absolute child element */
+  /* Added Border Radius */
+  border-radius: 0.5rem; /* Matches Bootstrap's default 'rounded' utility size */
+  /* Optional Bootstrap-style properties */
+  /*background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px;*/
+}
+.col-border {
+  border-radius: 0.5rem; /* Matches Bootstrap's default 'rounded' utility size */
+  /* Optional Bootstrap-style properties */
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px;
+}
+
+/* The actual element that moves vertically */
+.vertical-scroll-text {
+  /* Starts movement from the bottom edge 
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin: 0;
+  padding: inherit;
+  animation: verticalMarquee 10s linear infinite;
+  */
+}
+
+
+/* Keyframes for the vertical scroll animation */
+@keyframes verticalMarquee {
+  0% {
+    transform: translateY(100%);
+  }
+
+  100% {
+    transform: translateY(-100%);
+  }
+}
+/* Marquee */

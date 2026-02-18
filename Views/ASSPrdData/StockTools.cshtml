@@ -1,0 +1,83 @@
+@{
+  ViewData["Title"] = "Parts Production Stock Tools";
+}
+
+@section PageScripts {
+    <script src="~/js/ppstock.js"></script>
+}
+@* ************** Content ************** *@
+<!-- Start Basic Bootstrap Table -->
+<div class="card">
+    <div class="row">
+      <div class="col-sm-6">
+        <h5 class="card-header">List Off all parts no with items No.</h5>
+      </div>
+      <div class="col-sm-6 card-header">
+        <div class="nav-item d-flex align-items-center">
+          <i class="ri-search-line ri-22px me-2 lh-0"></i>
+          <input type="text" id="searchItems" class="form-control border-0 shadow-none bg-body" placeholder="Search...(Item No Or Tools Items)" aria-label="Search...">
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="table-responsive text-nowrap">
+        <table class="table table-hover">
+            <caption>List of Stock tools
+                @if (ViewData["COUNTROW"] != null){
+                    @ViewData["COUNTROW"]
+                }
+            </caption>
+            <thead>
+                <tr>
+                    <th>Tools item.</th>
+                    <th>Item No.</th>
+                    <th>Item name.</th>
+                    <th></th>
+                    <th>สถานะ</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                @{
+                    List<PartsListModel> userLst = new List<PartsListModel>();
+                    userLst = Model;
+                }
+                @if (userLst != null)
+                {
+                    foreach (var rowVal in userLst)
+                    {
+                        <tr>
+                            <td><i class="ri-suitcase-2-line ri-22px text-danger me-4"></i>
+                                <span>@rowVal.itemno [ @rowVal.itemname ]</span>
+                            </td>
+                            <td>@rowVal.itemdoc</td>
+                            <td>@rowVal.itemname</td>
+                            <td>
+                                <ul class="list-unstyled m-0 avatar-group d-flex align-items-center">
+                                    <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Lilian Fuller">
+                                        <img src="~/img/avatars/setting.jpg" alt="Avatar" class="rounded-circle">
+                                    </li>
+                                </ul>
+                            </td>
+                            <td><span class="badge rounded-pill bg-label-primary me-1">Active</span></td>
+                            @* <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ri-more-2-line"></i></button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:void(0);"><i class="ri-pencil-line me-1"></i> Edit</a>
+                                        <a class="dropdown-item" href="javascript:void(0);"><i class="ri-delete-bin-6-line me-1"></i> Delete</a>
+                                    </div>
+                                </div>
+                            </td> *@
+                        </tr>
+                    }
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--/ Users Basic Bootstrap Table -->
+<hr class="my-12">
+
