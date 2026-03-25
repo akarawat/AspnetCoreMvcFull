@@ -19,7 +19,7 @@ public class DashboardsController : Controller
   public IActionResult IndexBak() => View();
   public IActionResult Index()
   {
-    HttpContext.Session.SetString(SessionModel.SAMNAME, "Bernina Temporary User");
+    //HttpContext.Session.SetString(SessionModel.SAMNAME, "Bernina Temporary User");
     return View();
   }
   public IActionResult IndexBakAuth(string user) {

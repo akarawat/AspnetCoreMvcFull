@@ -20,7 +20,7 @@ public class KPIsController : Controller
   public IActionResult IndexBak() => View();
   public IActionResult Index(string fullscreen)
   {
-    HttpContext.Session.SetString(SessionModel.SAMNAME, "Bernina Temporary User");
+    //HttpContext.Session.SetString(SessionModel.SAMNAME, "Bernina Temporary User");
     string isFullscreen = Request.Query["fullscreen"]; // หรือ TempData
     if (isFullscreen ==  null)
     {

@@ -1,7 +1,7 @@
 var myModal = new bootstrap.Modal(document.getElementById("loadingModal"));
 var remarkModal = new bootstrap.Modal(document.getElementById("remarkModal"));
 let timeInterval = 3000;
-
+const adminList = ['SAKULCHAI.P', 'SUPONG.C'];
 async function loadmeasureChartLower(flagrange) {
   
   // อ่านค่าจาก input
@@ -263,6 +263,25 @@ $(document).ready(function () {
   $("#infoCol1").removeClass();
   //$("#infoCol2").prop("style", "display:none;");
   //$("#infoCol2").removeClass();
+
+  // Start Admin authen
+  $("#btnCfgMaxMin").removeClass("btn btn-sm btn-secondary");
+  $("#btnCfgMaxMin").prop("style", "display:none;");
+  $.ajax({
+    url: '/AdminCfg/GetSAMLogin',
+    method: 'GET',
+    data: null,
+    success: function (res) {
+      console.log(res.samlogin);
+      const index1 = adminList.indexOf(res.samlogin);
+      if (index1 > -1) {
+        $("#btnCfgMaxMin").addClass("btn btn-sm btn-secondary");
+        $("#btnCfgMaxMin").prop("style", "display:block;");
+      }
+    },
+    error: function () { }
+  });
+  // End Admin authen
 
   console.log("rang: ", flagrange);
   $('#lblSeries').html("Model B" + series);

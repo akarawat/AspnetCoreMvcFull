@@ -1,0 +1,41 @@
+/* ===== Machine Status Colors ===== */
+.card-status-green {
+  background-color: #c8fab4 !important; /* Bootstrap success #28a745 */
+  color: #808080;
+}
+
+.card-status-yellow {
+  background-color: #FFDB83 !important;
+  color: #808080;
+}
+
+.card-status-orange {
+  background-color: #FF91A9 !important;
+  color: #808080;
+}
+
+.machine-status-green {
+  background-color: #c8fab4 !important; /* Bootstrap success #28a745 */
+}
+
+.machine-status-yellow {
+  background-color: #FFDB83 !important;
+}
+
+.machine-status-orange {
+  background-color: #FF91A9 !important;
+}
+
+/* ทำให้ตัวหนังสืออ่านง่าย */
+.machine-status-green .card-title,
+.machine-status-green .card-text,
+.machine-status-green a {
+color: #000 !important;
+}
+
+/* ทำให้ตัวหนังสืออ่านง่าย */
+.machine-status-orange .card-title,
+.machine-status-orange .card-text,
+.machine-status-orange a {
+  color: #000 !important;
+}

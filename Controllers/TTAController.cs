@@ -19,7 +19,7 @@ public class TTAController : Controller
   }
   public IActionResult Index(string fullscreen)
   {
-    HttpContext.Session.SetString(SessionModel.SAMNAME, "Bernina Temporary User");
+    //HttpContext.Session.SetString(SessionModel.SAMNAME, "Bernina Temporary User");
     string isSetModel = Request.Query["series"].ToString(); // series
     HttpContext.Session.SetString("SETMODEL", isSetModel);
     string isFullscreen = Request.Query["fullscreen"]; // หรือ TempData

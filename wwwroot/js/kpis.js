@@ -1,90 +1,7 @@
+const SetMaxFail = 5;
+const SetMinFail = 2;
 
 $(document).ready(function () {
-  function setBgButton(serial) {
-    if (serial == "4") {
-      $("#btnB3").removeClass();
-      $("#btnB4").removeClass();
-      $("#btnB5").removeClass();
-      $("#btnB7").removeClass();
-      $("#btnB9P").removeClass();
-      $("#btnB9S").removeClass();
-
-      $("#btnB3").addClass("btn btn-light h-20");
-      $("#btnB4").addClass("btn btn-light-secondary h-20");
-      $("#btnB5").addClass("btn btn-light h-20");
-      $("#btnB7").addClass("btn btn-light h-20");
-      $("#btnB9P").addClass("btn btn-light h-20");
-      $("#btnB9S").addClass("btn btn-light h-20");
-    } else if (serial == "5") {
-      $("#btnB3").removeClass();
-      $("#btnB4").removeClass();
-      $("#btnB5").removeClass();
-      $("#btnB7").removeClass();
-      $("#btnB9P").removeClass();
-      $("#btnB9S").removeClass();
-      $("#btnB3").addClass("btn btn-light h-20");
-      $("#btnB4").addClass("btn btn-light h-20");
-      $("#btnB5").addClass("btn btn-light-secondary h-20");
-      $("#btnB7").addClass("btn btn-light h-20");
-      $("#btnB9P").addClass("btn btn-light h-20");
-      $("#btnB9S").addClass("btn btn-light h-20");
-    } else if (serial == "7") {
-      $("#btnB3").removeClass();
-      $("#btnB4").removeClass();
-      $("#btnB5").removeClass();
-      $("#btnB7").removeClass();
-      $("#btnB9P").removeClass();
-      $("#btnB9S").removeClass();
-      $("#btnB3").addClass("btn btn-light h-20");
-      $("#btnB4").addClass("btn btn-light h-20");
-      $("#btnB5").addClass("btn btn-light h-20");
-      $("#btnB7").addClass("btn btn-light-secondary h-20");
-      $("#btnB9P").addClass("btn btn-light h-20");
-      $("#btnB9S").addClass("btn btn-light h-20");
-    } else if (serial == "9 PAM") {
-      $("#btnB3").removeClass();
-      $("#btnB4").removeClass();
-      $("#btnB5").removeClass();
-      $("#btnB7").removeClass();
-      $("#btnB9P").removeClass();
-      $("#btnB9S").removeClass();
-      $("#btnB3").addClass("btn btn-light h-20");
-      $("#btnB4").addClass("btn btn-light h-20");
-      $("#btnB5").addClass("btn btn-light h-20");
-      $("#btnB7").addClass("btn btn-light h-20");
-      $("#btnB9P").addClass("btn btn-light-secondary h-20");
-      $("#btnB9S").addClass("btn btn-light h-20");
-
-
-    } else if (serial == "9 Socle") {
-      $("#btnB3").removeClass();
-      $("#btnB4").removeClass();
-      $("#btnB5").removeClass();
-      $("#btnB7").removeClass();
-      $("#btnB9P").removeClass();
-      $("#btnB9S").removeClass();
-      $("#btnB3").addClass("btn btn-light h-20");
-      $("#btnB4").addClass("btn btn-light h-20");
-      $("#btnB5").addClass("btn btn-light h-20");
-      $("#btnB7").addClass("btn btn-light h-20");
-      $("#btnB9P").addClass("btn btn-light h-20");
-      $("#btnB9S").addClass("btn btn-light-secondary h-20");
-    } else if (serial == "3") {
-      $("#btnB3").removeClass();
-      $("#btnB4").removeClass();
-      $("#btnB5").removeClass();
-      $("#btnB7").removeClass();
-      $("#btnB9P").removeClass();
-      $("#btnB9S").removeClass();
-
-      $("#btnB3").addClass("btn btn-light-secondary h-20");
-      $("#btnB4").addClass("btn btn-light h-20");
-      $("#btnB5").addClass("btn btn-light h-20");
-      $("#btnB7").addClass("btn btn-light h-20");
-      $("#btnB9P").addClass("btn btn-light h-20");
-      $("#btnB9S").addClass("btn btn-light h-20");
-    }
-  }
 
   const kpiFunctions = [
     function () {
@@ -192,6 +109,7 @@ $(document).ready(function () {
       loadBasePlate("3");
       SetRemarkSerial("3");
     }
+
   ];
 
   let currentIndex = 0;
@@ -199,16 +117,22 @@ $(document).ready(function () {
   console.log(curModel);
   if (curModel == '9 Socle') {
     currentIndex = 5;
+    GetPassFailScore("9");
   } else if (curModel == '9 PAM') {
     currentIndex = 4;
+    GetPassFailScore("9");
   } else if (curModel == '7') {
     currentIndex = 3;
+    GetPassFailScore("7");
   } else if (curModel == '5') {
     currentIndex = 2;
+    GetPassFailScore("5");
   } else if (curModel == '4') {
     currentIndex = 1;
+    GetPassFailScore("4");
   } else if (curModel == '3') {
     currentIndex = 0;
+    GetPassFailScore("3");
   }
 
   kpiFunctions[currentIndex]();
@@ -220,6 +144,13 @@ $(document).ready(function () {
   BindDataTableDailyProd(curModel);
   //drawDailyProductionSimple(curModel);
 
+  // Daniel Req.
+  $("#pduTitle").html(`Production Data Utilization Dashboard - B${curModel}`);
+  $("#btnB9P").text("B9");
+  $("#btnB9S").removeClass();
+  document.getElementById("btnB9S").style.display = "none";
+
+  GetPassFailScore(curModel);
 });
 function disableRemarkBtn() {
   document.getElementById("btn_rmk_mnu1").style.display = "none";
@@ -266,7 +197,145 @@ function callFuncButton(serial) {
 
   BindDataTableTop10Failed(ifB9Only);
   BindDataTableDailyProd(ifB9Only);
+
   //drawDailyProductionSimple(ifB9Only);
+  $("#btnB9S").removeClass();
+  document.getElementById("btnB9S").style.display = "none";
+  $("#pduTitle").html(`Production Data Utilization Dashboard - B${ifB9Only}`);
+
+  GetPassFailScore(ifB9Only);
+}
+// Release Bachground color for all button
+function GetPassFailScore(serial) {
+  $("#btnGreenStatus").html('Minimum fail ratio [ < ' + SetMinFail + '%]');
+  $("#btnYellowStatus").html('Between Max [' + SetMaxFail + '%] & Min ['+ SetMinFail +'%] ');
+  $("#btnRedStatus").html('Maximum fail ratio [ > ' + SetMaxFail + '%]');
+
+  $.ajax({
+    url: '/AdminCfg/GetPassFailScore',
+    method: 'GET',
+    data: {
+      lineid: serial
+    },
+    success: function (data) {
+      console.log(data[0]);
+      if (data.length != 0) {
+        //--> Menu 1
+        //--> Menu 2 Start (*This function For Max Only)
+        const maxValue_f2 = parseFloat(data[0]["maxf2"]);
+        const minValue_f2 = parseFloat(data[0]["minf2"]);
+        const maxLimit_f2 = parseFloat(SetMaxFail);
+        const minLimit_f2 = parseFloat(SetMinFail);
+        //if (maxValue_f2 > maxLimit_f2 || minValue_f2 > minLimit_f2) {
+        const container_f2 = $('#accum_mnu2');
+        container_f2.empty();
+        container_f2.append(`Total [${data[0]["totalf2"]}] </br> 
+          Max: ${data[0]["param_maxf2"]}, [${formatNumber(maxValue_f2, 2)} %] </br>
+        `);
+
+        if (maxValue_f2 > maxLimit_f2) {
+          $('#bg_param2').removeClass()
+            .addClass('card h-100 machine-status-orange');
+        } else {
+          $('#bg_param2').removeClass()
+            .addClass('card h-100 machine-status-green');
+        }
+
+        //--> Menu 3 Start
+        const maxValue_f3 = parseFloat(data[0]["maxf3"]);
+        const minValue_f3 = parseFloat(data[0]["minf3"]);
+        const maxLimit_f3 = parseFloat(SetMaxFail);
+        const minLimit_f3 = parseFloat(SetMinFail);
+        //console.log(maxValue_f3 + ':' + maxLimit_f3 + ':' + minValue_f3 + ':' + minLimit_f3);
+        const container_f3 = $('#accum_mnu3');
+        container_f3.empty();
+        container_f3.append(`Total [${data[0]["totalf3"]}] </br> 
+          Max: ${data[0]["param_maxf3"]}, [${formatNumber(maxValue_f3, 2)}%] </br>
+          Min: ${data[0]["param_minf3"]}, [${formatNumber(minValue_f3, 2)}%] 
+        `);
+        if (maxValue_f3 > maxLimit_f3 || minValue_f3 > minLimit_f3) {
+          $('#bg_param3').removeClass()
+            .addClass('card h-100 machine-status-orange');
+        } else if ((maxValue_f3 <= maxLimit_f3 && maxValue_f3 >= minLimit_f3)
+          || (minValue_f3 <= maxLimit_f3 && minValue_f3 >= minLimit_f3)) {
+          $('#bg_param3').removeClass()
+            .addClass('card h-100 machine-status-yellow');
+        } else {
+          $('#bg_param3').removeClass()
+            .addClass('card h-100 machine-status-green');
+        }
+
+
+        //--> Menu 5 Start
+        const maxValue_f5 = parseFloat(data[0]["maxf5"]);
+        const minValue_f5 = parseFloat(data[0]["minf5"]);
+        const maxLimit_f5 = parseFloat(SetMaxFail);
+        const minLimit_f5 = parseFloat(SetMinFail);
+
+        if (maxValue_f5 > maxLimit_f5 || minValue_f5 > minLimit_f5) {
+          $('#bg_param5').removeClass()
+            .addClass('card h-100 machine-status-orange');
+        } else if ((maxValue_f5 <= maxLimit_f5 && maxValue_f5 >= minLimit_f5)
+          || (minValue_f5 <= maxLimit_f5 && minValue_f5 >= minLimit_f5)) {
+          $('#bg_param5').removeClass()
+            .addClass('card h-100 machine-status-yellow');
+        } else {
+          $('#bg_param5').removeClass();
+          $('#bg_param5').addClass('card h-100 machine-status-green');
+        }
+
+        //--> Menu 7 Start
+        const maxValue_f7 = parseFloat(data[0]["maxf7"]);
+        const minValue_f7 = parseFloat(data[0]["minf7"]);
+        const maxLimit_f7 = parseFloat(SetMaxFail);
+        const minLimit_f7 = parseFloat(SetMinFail);
+        const container_f7 = $('#accum_mnu7');
+        container_f7.empty();
+        container_f7.append(`Total [${data[0]["totalf7"]}] </br> 
+          Max: ${data[0]["param_maxf7"]}, [${formatNumber(maxValue_f7, 2)}%] </br>
+          Min: ${data[0]["param_minf7"]}, [${formatNumber(minValue_f7, 2)}%] 
+        `);
+        if (maxValue_f7 > maxLimit_f7 || minValue_f7 > minLimit_f7) {
+          $('#bg_param7').removeClass()
+            .addClass('card h-100 machine-status-orange');
+        } else if ((maxValue_f7 <= maxLimit_f7 && maxValue_f7 >= minLimit_f7)
+          || (minValue_f7 <= maxLimit_f7 && minValue_f7 >= minLimit_f7)) {
+          $('#bg_param7').removeClass()
+            .addClass('card h-100 machine-status-yellow');
+        } else {
+          $('#bg_param7').removeClass();
+          $('#bg_param7').addClass('card h-100 machine-status-green');
+        }
+
+        //--> Menu 9 Start
+        const maxValue_f9 = parseFloat(data[0]["maxf9"]);
+        const minValue_f9 = parseFloat(data[0]["minf9"]);
+        const maxLimit_f9 = parseFloat(SetMaxFail);
+        const minLimit_f9 = parseFloat(SetMinFail);
+        const container_f9 = $('#accum_mnu9');
+        container_f9.empty();
+        container_f9.append(`Total [${data[0]["totalf9"]}] </br> 
+          Max: ${data[0]["param_maxf9"]}, [${formatNumber(maxValue_f9, 2)}%] </br>
+          Min: ${data[0]["param_minf9"]}, [${formatNumber(minValue_f9, 2)}%] 
+        `);
+        if (maxValue_f9 > maxLimit_f9 || minValue_f9 > minLimit_f9) {
+          $('#bg_param9').removeClass()
+            .addClass('card h-100 machine-status-orange');
+        } else if ((maxValue_f9 <= maxLimit_f9 && maxValue_f9 >= minLimit_f9)
+          || (minValue_f9 <= maxLimit_f9 && minValue_f9 >= minLimit_f9)) {
+          $('#bg_param9').removeClass()
+            .addClass('card h-100 machine-status-yellow');
+        } else {
+          $('#bg_param9').removeClass();
+          $('#bg_param9').addClass('card h-100 machine-status-green');
+        }
+
+        
+      }
+    },
+    error: function () {
+    }
+  });
 }
 function SetRemarkSerial(curModel) {
   console.log(curModel);
@@ -387,7 +456,9 @@ function loadKPIB4B5(serial) {
                     <p class="text-center"><button class="btn" onclick="GotoCuttingDetail('${serial}');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
-                    <div class="value">Total ${data[2]}</div>
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu2"></label>
+                    </div>
                   </div>
                 </div>
               </div>`;
@@ -428,7 +499,9 @@ function loadAutoThreader(serial) {
                     <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
-                    <div class="value">Total ${0}</div>
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu1"></label>
+                    </div>
                   </div>
                 </div>
               </div>`;
@@ -460,12 +533,23 @@ function loadButtonHold(serial) {
       console.log(iTotal);
       var html = '';
 
-      html = `<div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
-              <div class="text-bold">${dtFrom} - ${dtTo}</div>
-              <p class="text-center"><button class="btn" onclick="GotoFoot3A('${serial}');">
-              <img src="${imgPath}" alt="Click for detail" /></button></p>`;
+      html = `
+              <div class="kpi-card">
+                <div class="row">
+                  <div class="col-6 text-start">
+                    <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
+                    <div class="text-bold">${dtFrom} - ${dtTo}</div>
+                    <p class="text-center"><button class="btn" onclick="GotoFoot3A('${serial}');"><img src="${imgPath}" alt="Click for detail" /></button></p>
+                  </div>
+                  <div class="col-6 mb-0 text-start">
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu3"></label>
+                    </div>
+                  </div>
+                </div>
+              </div>`;
       container.append(html);
-      setAlarmBgColorFoot3A(serial);
+      //setAlarmBgColorFoot3A(serial);
     },
     error: function () {
       $('#kpiButtonHold').html('<div class="text-danger">Failed to load data.</div>');
@@ -489,7 +573,9 @@ function loadBobbinCase(serial) {
                     <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
-                    <div class="value">Total ${0}</div>
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu4"></label>
+                    </div>
                   </div>
                 </div>
               </div>`;
@@ -511,7 +597,9 @@ function loadSewingFoot(serial) {
                     <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
-                    <div class="value">Total ${0}</div>
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu5"></label>
+                    </div>
                   </div>
                 </div>
               </div>`;
@@ -533,7 +621,9 @@ function loadDifferanceWeight(serial) {
                     <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
-                    <div class="value">Total ${0}</div>
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu6"></label>
+                    </div>
                   </div>
                 </div>
               </div>`;
@@ -571,7 +661,9 @@ function loadThreadTension(serial) {
               <img src="${imgPath}" alt="Click for detail" /></button></p>`;
       container.append(html);
 
-      $("#lblTTATotalTest").html(`Total [${iTotal}]`);
+      $("#lblTTATotalTest").html(`<div class="value">Summary Data <br/>
+                      <label id="accum_mnu7"></label>
+                    </div>`);
       //setAlarmBgColorFoot3A(serial);
     },
     error: function () {
@@ -596,7 +688,9 @@ function loadTTAAdjustment(serial) {
                     <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
-                    <div class="value">Total ${0}</div>
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu8"></label>
+                    </div>
                   </div>
                 </div>
               </div>`;
@@ -634,7 +728,9 @@ function loadBalanceRough(serial) {
               <p class="text-center"><button class="btn" onclick="GotoBalanceAdj('${serial}');">
               <img src="${imgPath}" alt="Click for detail" /></button></p>`;
       container.append(html);
-      $("#lblBalAdjTotalTest").html(`Total [${iTotal}]`);
+      $("#lblBalAdjTotalTest").html(`<div class="value">Summary Data <br/>
+                      <label id="accum_mnu9"></label>
+                    </div>`);
       //setAlarmBgColorFoot3A(serial);
     },
     error: function () {
@@ -807,7 +903,7 @@ function setAlarmBgColorFoot3A(series) {
             console.log(`valueB >= 80: ${countValueBHigh} Ã Â¸Â£Ã Â¸Â²Ã Â¸Â¢Ã Â¸ÂÃ Â¸Â²Ã Â¸Â£ (${percentValueBHigh}%)`);
 
             //--- 7 Day Zone ---------------
-            $("#lbl7DTotalTest").html("<font>7 Days Alarm.<br/> Total [" + validSerialDates.length + "]</font>");
+            /*$("#lbl7DTotalTest").html("<font>7 Days Alarm.<br/></font>");*/
 
             if ((percentValueBHigh >= McParam7) || (percentValueALow >= McParam8)) {
               //--> $('#kpiButtonHold').addClass('bg-warning');

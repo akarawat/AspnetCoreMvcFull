@@ -23,12 +23,53 @@ public class AdminCfgController : Controller
     _logger = logger;
     _configuration = configuration;
   }
-  public IActionResult TopviewCfg()
+  public IActionResult TopviewCfg(string? user)
   {
-    if(HttpContext.Session.GetString("SETMODEL") == null)
+    string AuthenUrl = _configuration[key: "TBCorApiServices:AuthenUrl"];
+    string sSAMNAME = "";
+    sSAMNAME = HttpContext.Session.GetString(SessionModel.SAMNAME) ?? "";
+    //--->  Criteria for Authen
+    /* Authen */
+    if (user != null)
+    {
+      if (user == null && (HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+        HttpContext.Session.GetString(SessionModel.SAMNAME) == ""
+        ))
+      {
+        Response.Redirect(AuthenUrl);
+      }
+      else if ((HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+        HttpContext.Session.GetString(SessionModel.SAMNAME) == "") && user != null)
+      {
+        string[] arrSamName = user.Split(new char[] { '\\' });
+        if (arrSamName.Length == 2)
+        {
+          HttpContext.Session.SetString(SessionModel.SAMNAME, arrSamName[1]);
+        }
+      }
+    }
+
+    if (user == null && (HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+        HttpContext.Session.GetString(SessionModel.SAMNAME) == ""
+        ))
+    {
+      Response.Redirect(AuthenUrl);
+    }
+    else if ((HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+      HttpContext.Session.GetString(SessionModel.SAMNAME) == "") && user != null)
+    {
+      string[] arrSamName = user.Split(new char[] { '\\' });
+      if (arrSamName.Length == 2)
+      {
+        HttpContext.Session.SetString(SessionModel.SAMNAME, arrSamName[1]);
+      }
+    }
+    /* Authen */
+    if (HttpContext.Session.GetString("SETMODEL") == null)
     {
       HttpContext.Session.SetString("SETMODEL", "5");
     }
+
     return View();
   }
   [HttpGet]
@@ -68,6 +109,85 @@ public class AdminCfgController : Controller
     }
     return Json(result);
   }
+  [HttpGet]
+  public JsonResult GetPassFailScore(string? lineid)
+  {
+    string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
+    List<LineFailScoreModel> result = new List<LineFailScoreModel>();
+    using (SqlConnection conn = new SqlConnection(connStr))
+    {
+      conn.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetPassFailByLineId", conn);
+      cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.AddWithValue("@lineid", SqlDbType.VarChar).Value = lineid;
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+      while (rdr.Read())
+      {
+        result.Add(new LineFailScoreModel
+        {
+          maxf1 = Convert.ToDouble(rdr["maxf1"]),
+          maxf2 = Convert.ToDouble(rdr["maxf2"]),
+          maxf3 = Convert.ToDouble(rdr["maxf3"]),
+          maxf4 = Convert.ToDouble(rdr["maxf4"]),
+          maxf5 = Convert.ToDouble(rdr["maxf5"]),
+          maxf6 = Convert.ToDouble(rdr["maxf6"]),
+          maxf7 = Convert.ToDouble(rdr["maxf7"]),
+          maxf8 = Convert.ToDouble(rdr["maxf8"]),
+          maxf9 = Convert.ToDouble(rdr["maxf9"]),
+          maxf91 = Convert.ToDouble(rdr["maxf91"]),
+          maxf92 = Convert.ToDouble(rdr["maxf92"]),
+          maxf10 = Convert.ToDouble(rdr["maxf10"]),
+
+          minf1 = Convert.ToDouble(rdr["minf1"]),
+          minf2 = Convert.ToDouble(rdr["minf2"]),
+          minf3 = Convert.ToDouble(rdr["minf3"]),
+          minf4 = Convert.ToDouble(rdr["minf4"]),
+          minf5 = Convert.ToDouble(rdr["minf5"]),
+          minf6 = Convert.ToDouble(rdr["minf6"]),
+          minf7 = Convert.ToDouble(rdr["minf7"]),
+          minf8 = Convert.ToDouble(rdr["minf8"]),
+          minf9 = Convert.ToDouble(rdr["minf9"]),
+          minf91 = Convert.ToDouble(rdr["minf91"]),
+          minf92 = Convert.ToDouble(rdr["minf92"]),
+          minf10 = Convert.ToDouble(rdr["minf10"]),
+
+          totalf1 = Convert.ToInt32(rdr["totalf1"]),
+          totalf2 = Convert.ToInt32(rdr["totalf2"]),
+          totalf3 = Convert.ToInt32(rdr["totalf3"]),
+          totalf4 = Convert.ToInt32(rdr["totalf4"]),
+          totalf5 = Convert.ToInt32(rdr["totalf5"]),
+          totalf6 = Convert.ToInt32(rdr["totalf6"]),
+          totalf7 = Convert.ToInt32(rdr["totalf7"]),
+          totalf8 = Convert.ToInt32(rdr["totalf8"]),
+          totalf9 = Convert.ToInt32(rdr["totalf9"]),
+
+          param_maxf1 = Convert.ToDouble(rdr["param_maxf1"]),
+          param_minf1 = Convert.ToDouble(rdr["param_minf1"]),
+          param_maxf2 = Convert.ToDouble(rdr["param_maxf2"]),
+          param_minf2 = Convert.ToDouble(rdr["param_minf2"]),
+          param_maxf3 = Convert.ToDouble(rdr["param_maxf3"]),
+          param_minf3 = Convert.ToDouble(rdr["param_minf3"]),
+          param_maxf4 = Convert.ToDouble(rdr["param_maxf4"]),
+          param_minf4 = Convert.ToDouble(rdr["param_minf4"]),
+          param_maxf5 = Convert.ToDouble(rdr["param_maxf5"]),
+          param_minf5 = Convert.ToDouble(rdr["param_minf5"]),
+          param_maxf6 = Convert.ToDouble(rdr["param_maxf6"]),
+          param_minf6 = Convert.ToDouble(rdr["param_minf6"]),
+          param_maxf7 = Convert.ToDouble(rdr["param_maxf7"]),
+          param_minf7 = Convert.ToDouble(rdr["param_minf7"]),
+          param_maxf8 = Convert.ToDouble(rdr["param_maxf8"]),
+          param_minf8 = Convert.ToDouble(rdr["param_minf8"]),
+          param_maxf9 = Convert.ToDouble(rdr["param_maxf9"]),
+          param_minf9 = Convert.ToDouble(rdr["param_minf9"])
+
+
+        });
+      }
+      conn.Close();
+    }
+    return Json(result);
+  }
   [HttpPut]
   public JsonResult UpdateTopviewCfg(TopViewModel obj)
   {
@@ -101,7 +221,6 @@ public class AdminCfgController : Controller
   {
     List<TopviewCfgModel> list = new List<TopviewCfgModel>();
     string conStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
-
 
     using (SqlConnection con = new SqlConnection(conStr))
     using (SqlCommand cmd = new SqlCommand("SELECT * FROM kpi_params ORDER BY id DESC", con))
@@ -378,8 +497,47 @@ public class AdminCfgController : Controller
 
     return Json(new { success = true, message = "Saved successfully" });
   }
-  public IActionResult PassFailConfig()
+  public IActionResult PassFailConfig(string? user)
   {
+    string AuthenUrl = _configuration[key: "TBCorApiServices:AuthenUrl"];
+    string sSAMNAME = "";
+    sSAMNAME = HttpContext.Session.GetString(SessionModel.SAMNAME) ?? "";
+    //--->  Criteria for Authen
+    /* Debug */
+    if (user != null)
+    {
+      if (user == null && (HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+        HttpContext.Session.GetString(SessionModel.SAMNAME) == ""
+        ))
+      {
+        Response.Redirect(AuthenUrl);
+      }
+      else if ((HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+        HttpContext.Session.GetString(SessionModel.SAMNAME) == "") && user != null)
+      {
+        string[] arrSamName = user.Split(new char[] { '\\' });
+        if (arrSamName.Length == 2)
+        {
+          HttpContext.Session.SetString(SessionModel.SAMNAME, arrSamName[1]);
+        }
+      }
+    }
+    if (user == null && (HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+        HttpContext.Session.GetString(SessionModel.SAMNAME) == ""
+        ))
+    {
+      Response.Redirect(AuthenUrl);
+    }
+    else if ((HttpContext.Session.GetString(SessionModel.SAMNAME) == null ||
+      HttpContext.Session.GetString(SessionModel.SAMNAME) == "") && user != null)
+    {
+      string[] arrSamName = user.Split(new char[] { '\\' });
+      if (arrSamName.Length == 2)
+      {
+        HttpContext.Session.SetString(SessionModel.SAMNAME, arrSamName[1]);
+      }
+    }
+    /* Authen */
     string conStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
     if (HttpContext.Session.GetString("SETMODEL") == null)
     {
@@ -453,5 +611,16 @@ public class AdminCfgController : Controller
       conn.Close();
     }
     return Json(result);
+  }
+
+  [HttpGet]
+  public JsonResult GetSAMLogin()
+  {
+    string samUser = "";
+    if (HttpContext.Session.GetString(SessionModel.SAMNAME) != null)
+    {
+      samUser = HttpContext.Session.GetString(SessionModel.SAMNAME);
+    }
+    return Json(new { samlogin = samUser});
   }
 }

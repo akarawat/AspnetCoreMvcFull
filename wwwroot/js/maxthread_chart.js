@@ -1,5 +1,6 @@
 var myModal = new bootstrap.Modal(document.getElementById("loadingModal"));
 let timeInterval = 3000;
+const adminList = ['SAKULCHAI.P', 'SUPONG.C'];
 $(document).ready(function () {
   //$('#loadingModal').modal('show');
   const params = new URLSearchParams(window.location.search);
@@ -10,8 +11,7 @@ $(document).ready(function () {
   $("#BtnBoxPlot").prop("style", "display:none;");
   loadThreadCutChart();
   setBgButton(series);
-  $("#spanYeildFormular").html(`<span class="text-success ">[Y] >= 90</span> <span class="text-warning ">[Y] >= 80 and <= 90 </span>
-                                <span class="text-danger ">[Y] < 80 </span>`);
+  $("#spanYeildFormular").html(``);
   // Load Bar Chart
   /* ปิดชั่วคราว
   $.ajax({
@@ -105,6 +105,32 @@ $(document).ready(function () {
     }
   });
   */
+
+  $("#lblPrdYeild").prop("style", "display:none;");
+  $("#lblTotalNormalCut").prop("style", "display:none;");
+  $("#lblTotalMaxCut").prop("style", "display:none;");
+  $("#lblTotalClosetoCut").prop("style", "display:none;");
+  $("#lblMinTotal").prop("style", "display:none;");
+
+  // Start Admin authen
+  $("#btnCfgMaxMin").removeClass("btn btn-sm btn-secondary");
+  $("#btnCfgMaxMin").prop("style", "display:none;");
+  $.ajax({
+    url: '/AdminCfg/GetSAMLogin',
+    method: 'GET',
+    data: null,
+    success: function (res) {
+      console.log(res.samlogin);
+      const index1 = adminList.indexOf(res.samlogin);
+      if (index1 > -1) {
+        $("#btnCfgMaxMin").addClass("btn btn-sm btn-secondary");
+        $("#btnCfgMaxMin").prop("style", "display:block;");
+      }
+    },
+    error: function () { }
+  });
+  // End Admin authen
+
   GetaxMinFailParam();
 });
 
@@ -144,7 +170,25 @@ function loadThreadCutChart(flagrange) {
     success: function (response) {
       // Draw Chart
       console.log(response);
-      $("#lblTotalTest").html("<br/ >Total: <b>" + response.length + "</b>");
+      $("#lblTotalTest").html("<br/ >Total: <b>[" + response.length + "]</b>");
+      let CountCutter = 0;
+      let CountNormal = 0;
+
+      response.forEach(item => {
+        const cutter = parseFloat(item.maxCurrentCutter);
+        const normal = parseFloat(item.maxCurrentNormal);
+        const tolCutter = parseFloat(item.ToleranceCutter);
+        const tolNormal = parseFloat(item.ToleranceNormal);
+        if (cutter > tolCutter) {
+          CountCutter++;
+        }
+        if (normal > tolNormal) {
+          CountNormal++;
+        }
+      });
+      $("#lblCountMaxFail").html("<br/ ><b>[" + CountCutter + "]</b>");
+      $("#lblCountMinFail").html("<b>[" + CountNormal + "]</b>");
+
       //console.log(response.length);
       if (response[0] != null) {
         if (response[0].productionDate != null) {

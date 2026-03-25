@@ -54,6 +54,7 @@
 }
 
 @section PageStyles {
+    <link href="~/css/bgpassfail.css?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")" rel="stylesheet" />
     <link href="~/css/kpi.css" rel="stylesheet" />
 }
 
@@ -97,7 +98,7 @@
       
     </div>
     <div class="col-5">
-        <h4 id="pduTitle">PDU. DASH BOARD</h4>
+        <h4 id="pduTitle">PDU. DASHBOARD</h4>
         <div class="vertical-scroll-container_B">
           <div class="row">
               <div class="col-12">
@@ -167,9 +168,18 @@
 </div>
 
 <div class="row g-8 mb-8">
+    <!-- Background information -->
+    <div class="col-md-12 text-end">
+        <span id="btnGreenStatus" class="badge card-status-green"></span>
+        <span id="btnYellowStatus" class="badge card-status-yellow"></span>
+        <span id="btnRedStatus" class="badge card-status-orange"></span>
+    </div>
+</div>
+
+<div class="row g-8 mb-8">
   <!-- Auto threader -->
   <div class="col-md-4" id="display_param1">
-    <div class="card h-100">
+    <div class="card h-100" id="bg_param1">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
@@ -200,7 +210,7 @@
   <!-- /Auto threader -->
   <!-- Cutting -->
   <div class="col-md-4" id="display_param2">
-    <div class="card h-100">
+    <div class="card h-100" id="bg_param2">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
@@ -229,57 +239,43 @@
     </div>
   </div>
   <!-- /Cutting -->
+
+
   <!-- Buttonhole foot 3A calibration -->
   <div class="col-md-4" id="display_param3">
-    <div class="card h-100">
+    <div class="card h-100" id="bg_param3">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12">
                     <div class="card-title"><strong id="lblMnu3">3. Button Hole foot 3A calibration</strong></div>
-                    <div class="row" id="kpiButtonHold">
+                    <div class="row" id="kpiButtonHoldInfo">
                         <!-- AJAX will load here -->
-                        <div class="kpi-card">
-                          <div class="row">
-                            <div class="col-6 text-start">
-                              <div  id="kpiButtonHoldInfo">
-                                
-                              </div>
-                            </div>
-                            <div class="col-6 mb-0 text-start">
-                              <span id="lbl7DTotalTest">Total [0]</span>
-                              <span id="lbl7DAlarmB"></span>
-                              <span id="lbl7DAlarmB_info"></span>
-                              <span id="lbl7DAlarmA"></span>
-                              <span id="lbl7DAlarmA_info"></span>
-                            </div>
-                          </div>
-                        </div>
                     </div>
                 </div>
             </div>
             <div class="row" style="display:none">
-              <div class="col-md-12">
-                  <div class="kpi-footer">
-                      <div class="col-12 text-start">
-                          <p class="card-text">
-                              <small class="text-muted">
-                                  <a class="menu-link cursor-pointer" id="btn_rmk_mnu3" onclick="mnuRemark(3)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
-                                  <span class="text-info" id="rmk_serial3"></span>
-                                  <span class="text-info" id="rmk_mnu3"></span>    
-                              </small>
-                          </p>
-                      </div>
-                  </div>
-              </div>
+                <div class="col-md-12">
+                    <div class="kpi-footer">
+                        <div class="col-12 text-start">
+                            <p class="card-text" id="kpiButtonHoldInfo">
+                                <small class="text-muted">
+                                    <a class="menu-link cursor-pointer" id="btn_rmk_mnu3" onclick="mnuRemark(3)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark3</a>
+                                    <span class="text-info" id="rmk_serial3"></span>
+                                    <span class="text-info" id="rmk_mnu3"></span>
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
   </div>
-  <!-- /Auto threader -->
+  <!-- / Button Hole -->
 
   <!-- Bobbin Case [03553697.5.00] -->
   <div class="col-md-4" id="display_param4">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param4">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -310,7 +306,7 @@
   <!-- /Bobbin Case -->
   <!-- Sewing Foot Detection ABC sensor -->
   <div class="col-md-4" id="display_param5">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param5">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -341,7 +337,7 @@
   <!-- /Sewing Foot Detection ABC sensor -->
   <!-- Differrent weight -->
   <div class="col-md-4" id="display_param6">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param6">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -373,7 +369,7 @@
 
   <!-- Thread Tension Calibration -->
   <div class="col-md-4" id="display_param7">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param7">
           <div class="card-body">
 
               <div class="row">
@@ -422,7 +418,7 @@
   <!-- /Thread Tension Calibration -->
   <!-- TTA adjustment (fine adjustment) -->
   <div class="col-md-4" id="display_param8">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param8">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -453,7 +449,7 @@
   <!-- /TTA adjustment (fine adjustment) -->
   <!-- Balance Rough Adjustment -->
   <div class="col-md-4" id="display_param9">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param9">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -500,7 +496,7 @@
 
   <!-- Balance Fine Adjustment -->
   <div class="col-md-4" id="display_param10">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param10">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -531,7 +527,7 @@
   <!-- /Balance Fine Adjustment -->
   <!-- BDF Balance Fine Adjustment -->
   <div class="col-md-4" id="display_param11">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param11">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -562,7 +558,7 @@
   <!-- /BDF Balance Fine Adjustment -->
   <!-- Base plate -->
   <div class="col-md-4" id="display_param12">
-      <div class="card h-100">
+      <div class="card h-100" id="bg_param12">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -655,6 +651,7 @@
         </div>
     </div>
 </div>
+
 
 @section PageScripts {
     

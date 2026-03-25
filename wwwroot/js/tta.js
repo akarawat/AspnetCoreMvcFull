@@ -1,7 +1,7 @@
 var myModal = new bootstrap.Modal(document.getElementById("loadingModal"));
 var remarkModal = new bootstrap.Modal(document.getElementById("remarkModal"));
 let timeInterval = 3000;
-
+const adminList = ['SAKULCHAI.P', 'SUPONG.C'];
 async function loadmeasureChartLower(flagrange) {
   // อ่านค่าจาก input
   if (flagrange == '') {
@@ -163,6 +163,44 @@ $(document).ready(function () {
   $("#spanCutMaxWarn").html("");
   $("#spanCutMaxAlarm").html("");
   $("#spanPrdYeild").html("");
+
+  // Start Admin authen
+  $("#btnCfgMaxMin").removeClass("btn btn-sm btn-secondary");
+  $("#btnCfgMaxMin").prop("style", "display:none;");
+
+  $("#btnCfgMaxMinLower").removeClass("btn btn-sm btn-secondary");
+  $("#btnCfgMaxMinLower").prop("style", "display:none;");
+
+  $("#btnCfgMaxMinHigher").removeClass("btn btn-sm btn-secondary");
+  $("#btnCfgMaxMinHigher").prop("style", "display:none;");
+
+  $("#btnCfgMaxMinHighest").removeClass("btn btn-sm btn-secondary");
+  $("#btnCfgMaxMinHighest").prop("style", "display:none;");
+
+  $.ajax({
+    url: '/AdminCfg/GetSAMLogin',
+    method: 'GET',
+    data: null,
+    success: function (res) {
+      console.log(res.samlogin);
+      const index1 = adminList.indexOf(res.samlogin);
+      if (index1 > -1) {
+        $("#btnCfgMaxMin").addClass("btn btn-sm btn-secondary");
+        $("#btnCfgMaxMin").prop("style", "display:block;");
+
+        $("#btnCfgMaxMinLower").addClass("btn btn-sm btn-secondary");
+        $("#btnCfgMaxMinLower").prop("style", "display:block;");
+
+        $("#btnCfgMaxMinHigher").addClass("btn btn-sm btn-secondary");
+        $("#btnCfgMaxMinHigher").prop("style", "display:block;");
+
+        $("#btnCfgMaxMinHighest").addClass("btn btn-sm btn-secondary");
+        $("#btnCfgMaxMinHighest").prop("style", "display:block;");
+      }
+    },
+    error: function () { }
+  });
+  // End Admin authen
 
   setBgButton(series);
   //---> Man. ปิดก่อน setAlarmBgColor(series);

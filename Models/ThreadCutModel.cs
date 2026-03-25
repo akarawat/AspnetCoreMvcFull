@@ -140,6 +140,63 @@ namespace AspnetCoreMvcFull.Models
     public double Last6MonthsMean { get; set; }
     public string Status { get; set; }
   }
+  public class LineFailScoreModel
+  {
+    public double maxf1 { get; set; }
+    public double minf1 { get; set; }
+    public double maxf2 { get; set; }
+    public double minf2 { get; set; }
+    public double maxf3 { get; set; }
+    public double minf3 { get; set; }
+    public double maxf4 { get; set; }
+    public double minf4 { get; set; }
+    public double maxf5 { get; set; }
+    public double minf5 { get; set; }
+    public double maxf6 { get; set; }
+    public double minf6 { get; set; }
+    public double maxf7 { get; set; }
+    public double minf7 { get; set; }
+    public double maxf8 { get; set; }
+    public double minf8 { get; set; }
+    public double maxf9 { get; set; }
+    public double minf9 { get; set; }
+    public double maxf91 { get; set; }
+    public double minf91 { get; set; }
+    public double maxf92 { get; set; }
+    public double minf92 { get; set; }
+    public double maxf10 { get; set; }
+    public double minf10 { get; set; }
+
+    public int totalf1 { get; set; }
+    public int totalf2 { get; set; }
+    public int totalf3 { get; set; }
+    public int totalf4 { get; set; }
+    public int totalf5 { get; set; }
+    public int totalf6 { get; set; }
+    public int totalf7 { get; set; }
+    public int totalf8 { get; set; }
+    public int totalf9 { get; set; }
+
+    public double param_maxf1 { get; set; }
+    public double param_minf1 { get; set; }
+    public double param_maxf2 { get; set; }
+    public double param_minf2 { get; set; }
+    public double param_maxf3 { get; set; }
+    public double param_minf3 { get; set; }
+    public double param_maxf4 { get; set; }
+    public double param_minf4 { get; set; }
+    public double param_maxf5 { get; set; }
+    public double param_minf5 { get; set; }
+    public double param_maxf6 { get; set; }
+    public double param_minf6 { get; set; }
+    public double param_maxf7 { get; set; }
+    public double param_minf7 { get; set; }
+    public double param_maxf8 { get; set; }
+    public double param_minf8 { get; set; }
+    public double param_maxf9 { get; set; }
+    public double param_minf9 { get; set; }
+
+  }
   public class TopviewCfgModel
   {
     public int id { get; set; }

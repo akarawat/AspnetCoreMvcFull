@@ -121,6 +121,10 @@ function setBgButton(serial) {
     $("#btnB9P").addClass("btn btn-light h-20");
     $("#btnB9S").addClass("btn btn-light h-20");
   }
+
+  $("#btnB9P").text("B9");
+  $("#btnB9S").removeClass();
+  document.getElementById("btnB9S").style.display = "none";
 }
 
 

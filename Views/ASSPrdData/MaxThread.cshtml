@@ -135,9 +135,9 @@
                         Model:<label id="lblCfgSeries">-</label> <label id="lblCfgMnuFunc">-</label>
                         <br />
                         Max:<label id="lblMaxFail">0</label> Min:<label id="lblMinFail">0</label>
-                        <br />CountMax:<label id="lblCountMaxFail">0</label> CountMin:<label id="lblCountMinFail">0</label>
+                        <br />Cutter:<label id="lblCountMaxFail">0</label> Normal:<label id="lblCountMinFail">0</label>
                         <footer>
-                            <button class="btn btn-sm btn-secondary" type="button" id="btnCfgMaxMin" style="display:block !important;">
+                            <button class="btn btn-sm btn-secondary" type="button" id="btnCfgMaxMin">
                               <i class="arrow-right-up-box-line text-info"></i>Max/Min
                             </button>
                         </footer>
@@ -154,12 +154,12 @@
           <div class="col-md-12">
             <div class="card-body">
                 <p class="text-end">
-                  <span style="font-size:0.9rem;color:#666" id="spanNormalCut">* Normal Cut Over 2.75 </span><span id="spanNormColor" class="text-danger">(Alarm)</span>
-                  <span style="font-size:0.9rem;color:#666" id="spanCutMaxWarn">* Max Between 5.0 and 5.5 (Warning)</span><span id="spanWarnColor" class="text-warning">(Warning)</span>
-                  <span style="font-size:0.9rem;color:#666" id="spanCutMaxAlarm">* Max Cut Over 5.5 (Alarm)</span><span id="spanCutColor" class="text-danger">(Alarm)</span>
+                  <span style="font-size:0.9rem;color:#666" id="spanNormalCut"> </span><span id="spanNormColor" class="text-danger"></span>
+                  <span style="font-size:0.9rem;color:#666" id="spanCutMaxWarn"></span><span id="spanWarnColor" class="text-warning"></span>
+                  <span style="font-size:0.9rem;color:#666" id="spanCutMaxAlarm"></span><span id="spanCutColor" class="text-danger"></span>
                 </p>
                 <p class="text-end">
-                  <span style="font-size:0.9rem;color:#666" id="spanPrdYeild">* PRD. Yield formular is = total-((Max/total)*100)</span>
+                  <span style="font-size:0.9rem;color:#666" id="spanPrdYeild"></span>
                     <span id="spanYeildFormular"></span>
                 </p>
                 <table id="bindDataTable" class="table table-striped table-bordered dt-responsive" width="100%">

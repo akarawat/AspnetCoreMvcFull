@@ -1,6 +1,6 @@
 var myModal = new bootstrap.Modal(document.getElementById("loadingModal"));
 let timeInterval = 3000;
-
+const adminList = ['SAKULCHAI.P', 'SUPONG.C'];
 $(document).ready(function () {
   //$('#loadingModal').modal('show');
   const params = new URLSearchParams(window.location.search);
@@ -11,7 +11,26 @@ $(document).ready(function () {
   if (flagrange == null) {
     flagrange = 'W';
   }
-  
+
+  // Start Admin authen
+  $("#btnCfgMaxMin").removeClass("btn btn-sm btn-secondary");
+  $("#btnCfgMaxMin").prop("style", "display:none;");
+  $.ajax({
+    url: '/AdminCfg/GetSAMLogin',
+    method: 'GET',
+    data: null,
+    success: function (res) {
+      console.log(res.samlogin);
+      const index1 = adminList.indexOf(res.samlogin);
+      if (index1 > -1) {
+        $("#btnCfgMaxMin").addClass("btn btn-sm btn-secondary");
+        $("#btnCfgMaxMin").prop("style", "display:block;");
+      }
+    },
+    error: function () { }
+  });
+  // End Admin authen
+
   console.log(flagrange);
   $('#lblSeries').html("Model B" + series);
   $('#ddlSeries').val(series);
@@ -156,30 +175,39 @@ async function loadCalibrationChart(flagrange) {
   //const minToleranceB = sortedDates.map(date => ({ x: date, y: 61 }));
   //const maxToleranceB = sortedDates.map(date => ({ x: date, y: 80 }));
 
-  const minToleranceA = sortedDates.map(date => ({ x: date, y: minA }));
-  const maxToleranceA = sortedDates.map(date => ({ x: date, y: minB }));
-  const minToleranceB = sortedDates.map(date => ({ x: date, y: maxA }));
-  const maxToleranceB = sortedDates.map(date => ({ x: date, y: maxB }));
+  const minToleranceA = null; //sortedDates.map(date => ({ x: date, y: minA }));
+  const maxToleranceA = null; //sortedDates.map(date => ({ x: date, y: minB }));
+  const minToleranceB = null; //sortedDates.map(date => ({ x: date, y: maxA }));
+  const maxToleranceB = null; //sortedDates.map(date => ({ x: date, y: maxB }));
 
   // เตรียมเส้นแนวนอนสำหรับ fail
   const maxFailLine = sortedDates.map(date => ({ x: date, y: maxFail }));
   const minFailLine = sortedDates.map(date => ({ x: date, y: minFail }));
-
+  $("#span_info").prop("style", "display:block;");
+  
   // เขียน Proposal อธิบาย Modify Label Form MC. Configuration
-  $("#lblSummaryTest").html("Proposal");
-  $("#lblTotalTest").html("<br/><font>Date range accumulation.<br/> Total [" + validSerialDates.length + "]</font>");
+  //$("#lblSummaryTest").prop("style", "display:none;");
+  //$("#lblSummaryTest").html("Proposal");
+  
+  $("#lblPrdYeild").prop("style", "display:none;");
+  $("#lblTotalNormalCut").prop("style", "display:none;");
+  $("#lblTotalMaxCut").prop("style", "display:none;");
+  $("#lblTotalClosetoCut").prop("style", "display:none;");
+  $("#lblMinTotal").prop("style", "display:none;");
 
+  $("#lblTotalTest").html("Total [" + validSerialDates.length + "]");
+  /*
   $("#lblTotalClosetoCut").html("<font color=orange>" + ((minA * 1) + 1) + "-" + minB + "</font>");
   $("#lblTotalMaxCut").html("<font color=lightgreen>" + ((minB * 1) + 1) + "-" + maxA + "</font>");
   $("#lblTotalNormalCut").html("<font color=orange>" + ((maxA * 1) + 1) + "-" + maxB + "</font>");
   $("#lblPrdYeild").html("<font color=red> >= " + ((maxB * 1) + 1) + " </font>");
   $("#lblMinTotal").html("<font color=red> <= " + minA + "</font>");
-
+  
   $("#lblAlarmB").html("<br/><font color=black>Zone Upper " + $("#McParam7").val() + " </font>");
   $("#lblAlarmB_info").html("<br/><font color=orange> ValueB > " + maxB + ": " + countValueBHigh + " items, (" + percentValueBHigh + "%)</font>");
   $("#lblAlarmA").html("<br/><font color=black> Zone Lower " + $("#McParam8").val() + "  </font>");
   $("#lblAlarmA_info").html("<br/><font color=green> ValueA <= " + minA + ": " + countValueALow + " items, (" + percentValueALow + "%)</font><hr/>");
-
+  */
   // ล้าง chart เดิม
   if (window.calibrationChartInstance) {
     window.calibrationChartInstance.destroy();
@@ -202,51 +230,51 @@ async function loadCalibrationChart(flagrange) {
           backgroundColor: 'orange',
           pointRadius: 4
         },
-        {
-          label: 'Range (26)',
-          data: minToleranceA,
-          type: 'line',
-          borderColor: '#42EE2F',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0
-        },
-        {
-          label: 'Range (35)',
-          data: maxToleranceA,
-          type: 'line',
-          borderColor: '#A2EE2F',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0
-        },
-        {
-          label: 'Range (61)',
-          data: minToleranceB,
-          type: 'line',
-          borderColor: '#CA9253',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0
-        },
-        {
-          label: 'Range (80)',
-          data: maxToleranceB,
-          type: 'line',
-          borderColor: '#E75C36',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0
-        },
+        //{
+        //  label: 'Range (26)',
+        //  data: minToleranceA,
+        //  type: 'line',
+        //  borderColor: '#42EE2F',
+        //  borderWidth: 2,
+        //  pointRadius: 0,
+        //  tension: 0
+        //},
+        //{
+        //  label: 'Range (35)',
+        //  data: maxToleranceA,
+        //  type: 'line',
+        //  borderColor: '#A2EE2F',
+        //  borderWidth: 2,
+        //  pointRadius: 0,
+        //  tension: 0
+        //},
+        //{
+        //  label: 'Range (61)',
+        //  data: minToleranceB,
+        //  type: 'line',
+        //  borderColor: '#CA9253',
+        //  borderWidth: 2,
+        //  pointRadius: 0,
+        //  tension: 0
+        //},
+        //{
+        //  label: 'Range (80)',
+        //  data: maxToleranceB,
+        //  type: 'line',
+        //  borderColor: '#E75C36',
+        //  borderWidth: 2,
+        //  pointRadius: 0,
+        //  tension: 0
+        //},
 
         // ⛔ New Added Fail Lines
         {
           label: `MaxFail (${maxFail})`,
           data: maxFailLine,
           type: 'line',
-          borderColor: '#b82e2e',
+          borderColor: 'orange',
           borderWidth: 2,
-          borderDash: [5, 5],   // optional ทำให้เป็นเส้นปะ
+          //borderDash: [5, 5],   // optional ทำให้เป็นเส้นปะ
           pointRadius: 0,
           tension: 0
         },
@@ -254,9 +282,9 @@ async function loadCalibrationChart(flagrange) {
           label: `MinFail (${minFail})`,
           data: minFailLine,
           type: 'line',
-          borderColor: '#b82e2e',
+          borderColor: '#42EE2F',
           borderWidth: 2,
-          borderDash: [5, 5],
+          //borderDash: [5, 5],
           pointRadius: 0,
           tension: 0
         }
@@ -428,12 +456,18 @@ function setAlarmBgColor(series) {
       console.log(`valueB >= 80: ${countValueBHigh} รายการ (${percentValueBHigh}%)`);
 
       //--- 7 Day Zone ---------------
-      $("#lbl7DTotalTest").html("<font>7 Days Alarm.<br/> Total [" + validSerialDates.length + "]</font>");
+      $("#lbl7DTotalTest").prop("style", "display:none;");
+      $("#lbl7DTotalTest").html("Total [" + validSerialDates.length + "]");
 
-      $("#lbl7DAlarmB").html("<br/><font color=black>Zone Upper " + $("#McParam7").val() + " </font>");
-      $("#lbl7DAlarmB_info").html("<br/><font color=orange> ValueB > " + maxB + ": " + countValueBHigh + " items, (" + percentValueBHigh + "%)</font>");
-      $("#lbl7DAlarmA").html("<br/><font color=black> Zone Lower " + $("#McParam8").val() + "  </font>");
-      $("#lbl7DAlarmA_info").html("<br/><font color=green> ValueA <= " + minA + ": " + countValueALow + " items, (" + percentValueALow + "%)</font><hr/>");
+      $("#lbl7DAlarmB").prop("style", "display:none;");
+      $("#lbl7DAlarmB_info").prop("style", "display:none;");
+      $("#lbl7DAlarmA").prop("style", "display:none;");
+      $("#lbl7DAlarmA_info").prop("style", "display:none;");
+
+      //$("#lbl7DAlarmB").html("<br/><font color=black>Zone Upper " + $("#McParam7").val() + " </font>");
+      //$("#lbl7DAlarmB_info").html("<br/><font color=orange> ValueB > " + maxB + ": " + countValueBHigh + " items, (" + percentValueBHigh + "%)</font>");
+      //$("#lbl7DAlarmA").html("<br/><font color=black> Zone Lower " + $("#McParam8").val() + "  </font>");
+      //$("#lbl7DAlarmA_info").html("<br/><font color=green> ValueA <= " + minA + ": " + countValueALow + " items, (" + percentValueALow + "%)</font><hr/>");
 
 
     },
