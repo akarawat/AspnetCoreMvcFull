@@ -7,7 +7,46 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Auth\**" />
+    <Compile Remove="Views\Cards\**" />
+    <Compile Remove="Views\ExtendedUi\**" />
+    <Compile Remove="Views\FormLayouts\**" />
+    <Compile Remove="Views\Forms\**" />
+    <Compile Remove="Views\Home\**" />
+    <Compile Remove="Views\LayoutExamples\**" />
+    <Compile Remove="Views\Ui\**" />
+    <Content Remove="Views\Auth\**" />
+    <Content Remove="Views\Cards\**" />
+    <Content Remove="Views\ExtendedUi\**" />
+    <Content Remove="Views\FormLayouts\**" />
+    <Content Remove="Views\Forms\**" />
+    <Content Remove="Views\Home\**" />
+    <Content Remove="Views\LayoutExamples\**" />
+    <Content Remove="Views\Ui\**" />
+    <EmbeddedResource Remove="Views\Auth\**" />
+    <EmbeddedResource Remove="Views\Cards\**" />
+    <EmbeddedResource Remove="Views\ExtendedUi\**" />
+    <EmbeddedResource Remove="Views\FormLayouts\**" />
+    <EmbeddedResource Remove="Views\Forms\**" />
+    <EmbeddedResource Remove="Views\Home\**" />
+    <EmbeddedResource Remove="Views\LayoutExamples\**" />
+    <EmbeddedResource Remove="Views\Ui\**" />
+    <None Remove="Views\Auth\**" />
+    <None Remove="Views\Cards\**" />
+    <None Remove="Views\ExtendedUi\**" />
+    <None Remove="Views\FormLayouts\**" />
+    <None Remove="Views\Forms\**" />
+    <None Remove="Views\Home\**" />
+    <None Remove="Views\LayoutExamples\**" />
+    <None Remove="Views\Ui\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\MachineController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Dashboards\IndexBak.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
