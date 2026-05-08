@@ -1201,11 +1201,11 @@ async function BindDataTableTop10Failed(series) {
   return;
 }
 
-
+var ResultData;
 async function BindDataTableDailyProd(series) {
-  //let series = $("#curModel").val();
+  let flagrange = $('input[name="criteria"]:checked').val();
 
-  const query = new URLSearchParams({ series }).toString();
+  const query = new URLSearchParams({ series: series, flagrange: flagrange }).toString();
   const response = await fetch(`/Dashboards/GetDailyProduction?${query}`);
 
   if (!response.ok) {
@@ -1217,6 +1217,7 @@ async function BindDataTableDailyProd(series) {
   }
 
   const result = await response.json();
+  ResultData = result;
   console.log(result);
   //const data = result;
   // --- ส่วนที่แก้ไข: กรองข้อมูลที่ MachineCount > 0 ---
@@ -1371,4 +1372,79 @@ function showDailyData() {
     dailyToggle = false;
     $("#spanDailyData").prop("style", "display:none;");
   }
+}
+function loadCalibrationChart() {
+  let curModel = $("#curModel").val();
+  BindDataTableDailyProd(curModel);
+}
+// Start Ecxel Export
+document.getElementById("btnExport").addEventListener("click", async () => {
+  let flagrange = '';
+  if ($('input[name="criteria"]:checked').val() == 'W') flagrange = "Weekly";
+  else if ($('input[name="criteria"]:checked').val() == 'M') flagrange = "Monthly";
+  else if ($('input[name="criteria"]:checked').val() == 'HY') flagrange = "Yearly";
+
+  if (confirm(`${flagrange} data: Confirm to export`)) {
+    await exportToExcel();
+  }
+});
+async function exportToExcel() {
+  //console.log(ResultData); return;
+  //const result = await response.json();
+  let curModel = $("#curModel").val();
+  let flagrange = '';
+  if ($('input[name="criteria"]:checked').val() == 'W') flagrange = "Weekly";
+  else if ($('input[name="criteria"]:checked').val() == 'M') flagrange = "Monthly";
+  else if ($('input[name="criteria"]:checked').val() == 'HY') flagrange = "Yearly";
+  const data = ResultData;           // ✅ ดึงข้อมูล
+  if (data.length == 0) {
+    return;
+  }
+
+  // กำหนดแถวส่วนหัวเอง $("#start_dt").val(), $("#end_dt").val()
+  const customHeaderRows = [
+    [`Export Model: ${curModel}`],                // Row 1
+    [`Range : ${flagrange}`],               // Row 2
+    [``]     // Row 3
+  ];
+  // กำหนดชื่อคอลัมน์ Excel (Row 4)
+  const headerRow = [
+    "Model",
+    "Date",
+    "MachineCount"
+  ];
+  // แปลงข้อมูล JSON เป็น Array สำหรับ export
+  const dataRows = data.map(row => [
+    row.displayName,
+    row.monitor_dt,
+    row.MachineCount
+  ]);
+  // * กรณี อยากใส่ท้ายเอกสาร
+  /*
+  // ✅ คำนวณรวม mas_qty
+  const totalQty = dataRows.reduce((sum, row) => sum + (parseFloat(row.mas_qty) || 0), 0);
+  // ✅ แถว Total
+  const totalRow = ["", "", "Total", totalQty, "", ""];
+  */
+  // ✅ แถว Total
+  const totalRow = ["", "", "Total", dataRows.length, " Items", ""];
+
+  // รวมทั้งหมด
+  const finalSheetData = [
+    ...customHeaderRows,
+    headerRow,
+    ...dataRows,
+    totalRow  // ✅ ใส่ท้ายสุด
+  ];
+
+  // สร้าง worksheet
+  const worksheet = XLSX.utils.aoa_to_sheet(finalSheetData);
+
+  // สร้าง workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Foot3A");
+
+  // บันทึกเป็นไฟล์ Excel
+  XLSX.writeFile(workbook, `Model_${curModel}_${flagrange}.xlsx`);
+
 }
