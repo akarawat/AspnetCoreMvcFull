@@ -1,0 +1,55 @@
+/* power-consumption.css
+   wwwroot/css/power-consumption.css
+*/
+
+/* ── Table ──────────────────────────────────────── */
+.pc-table {
+  font-size: 0.82rem;
+}
+
+.pc-table th {
+  white-space: nowrap;
+  outline: none;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+  background: none;
+}
+
+/* ── Clickable rows ─────────────────────────────── */
+.pc-clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pc-clickable-row:hover {
+  background-color: rgba(105, 108, 255, 0.06) !important;
+}
+
+.pc-row-selected,
+.pc-row-selected:hover {
+  background-color: rgba(105, 108, 255, 0.14) !important;
+  outline: 1px solid rgba(105, 108, 255, 0.35);
+}
+
+/* ── Reduction cell colours ─────────────────────── */
+.pc-reduct-neg {
+  color: #28c76f;   /* green  = power went DOWN (good) */
+}
+
+.pc-reduct-pos {
+  color: #ea5455;   /* red    = power went UP  (unexpected) */
+}
+
+/* ── Profile panel border accent ───────────────── */
+.pc-profile-card {
+  border-top: 3px solid #696cff !important;
+}
+
+/* ── Hint text ──────────────────────────────────── */
+.pc-hint-row {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}

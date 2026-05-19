@@ -1,0 +1,243 @@
+@{
+    ViewData["Title"] = "Power Consumption – Burn-in";
+
+    // Series default จาก Controller (URL param ?series=3|7)
+    var activeSeries = ViewData["ActiveSeries"]?.ToString() ?? "7";
+    var isB3Active   = activeSeries == "3";
+    var isB7Active   = activeSeries == "7";
+}
+
+@section VendorStyles {
+    <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="~/css/power-consumption.css?v=1.0.0" rel="stylesheet" />
+}
+
+@section VendorScripts {
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/vendor/libs/apex-charts/apexcharts.js"></script>
+}
+
+@section PageScripts {
+    <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+    <script src="~/js/power-consumption.js?v=1.0.1"></script>
+}
+
+@* ═══════════════════════ Content ═══════════════════════ *@
+<div class="row g-4 mb-4">
+
+  @* ── Page Header ─────────────────────────────────────── *@
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body py-3">
+        <div class="d-flex flex-wrap align-items-center gap-3">
+
+          <a href="/" class="text-muted me-2">
+            <i class="ri-arrow-left-circle-line me-1"></i>Home
+          </a>
+
+          @* Series buttons — active state set from URL param *@
+          <div class="btn-group" role="group" aria-label="Series" style="display:none">
+            <button id="btnB3"
+                    class="btn @(isB3Active ? "btn-primary" : "btn-outline-primary")"
+                    type="button"
+                    onclick="changeSeries('3')">B3</button>
+            <button id="btnB7"
+                    class="btn @(isB7Active ? "btn-primary" : "btn-outline-primary")"
+                    type="button"
+                    onclick="changeSeries('7')">B7</button>
+          </div>
+
+          <h5 class="card-title mb-0 ms-2">
+            @ViewData["Title"]
+            <span id="lblSeries" class="text-primary fw-bold ms-1"></span>
+          </h5>
+
+          <div class="flex-grow-1"></div>
+
+          @* Date-range radio buttons *@
+          <div class="d-flex align-items-center gap-1 me-2">
+            <small class="text-muted fw-medium me-2">Data range :</small>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="rangeRadio" id="radioWeek"  value="W" checked />
+              <label class="form-check-label" for="radioWeek">Weekly</label>
+            </div>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="rangeRadio" id="radioMonth" value="M" />
+              <label class="form-check-label" for="radioMonth">Monthly</label>
+            </div>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="rangeRadio" id="radioYear"  value="Y" />
+              <label class="form-check-label" for="radioYear">Yearly</label>
+            </div>
+          </div>
+
+          <button class="btn btn-outline-secondary btn-sm" onclick="loadPowerConsumption()">
+            <i class="ri-refresh-line"></i> Reload
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @* ── Summary Cards ───────────────────────────────────── *@
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <p class="mb-1 text-muted small">Avg Start Power</p>
+            <h4 class="mb-0 fw-bold" id="statAvgStart">–</h4>
+          </div>
+          <div class="avatar flex-shrink-0">
+            <span class="avatar-initial rounded bg-label-warning">
+              <i class="ri-flashlight-line"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <p class="mb-1 text-muted small">Avg End Power</p>
+            <h4 class="mb-0 fw-bold" id="statAvgEnd">–</h4>
+          </div>
+          <div class="avatar flex-shrink-0">
+            <span class="avatar-initial rounded bg-label-success">
+              <i class="ri-battery-low-line"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <p class="mb-1 text-muted small">Avg Power Reduction</p>
+            <h4 class="mb-0 fw-bold" id="statAvgReduct">–</h4>
+          </div>
+          <div class="avatar flex-shrink-0">
+            <span class="avatar-initial rounded bg-label-info">
+              <i class="ri-arrow-down-line"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <p class="mb-1 text-muted small">Total Machines</p>
+            <h4 class="mb-0 fw-bold" id="statTotal">–</h4>
+          </div>
+          <div class="avatar flex-shrink-0">
+            <span class="avatar-initial rounded bg-label-primary">
+              <i class="ri-list-check-2"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @* ── DataTable 1 : Per-machine Burn-in Summary ──────── *@
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0">
+          <i class="ri-table-line me-1"></i>
+          Burn-in Power Summary
+          <span class="badge bg-label-secondary ms-2 small" id="badgeSeries"></span>
+        </h6>
+        <div class="d-flex align-items-center gap-3">
+          <small class="text-muted pc-hint-row">
+            <i class="ri-hand-coin-line me-1"></i>Click a row to view the burn-in time profile below
+          </small>
+          <button class="btn btn-sm btn-success" onclick="exportSummaryExcel()" id="btnExportSummary" disabled>
+            <i class="ri-file-excel-2-line me-1"></i>Export Excel
+          </button>
+        </div>
+      </div>
+      <div class="card-datatable table-responsive">
+        <table id="tblPowerSummary" class="table table-hover table-sm datatables-basic pc-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Serial</th>
+              <th>Production Date</th>
+              <th>Series</th>
+              <th>Model</th>
+              <th>Start Power (W)</th>
+              <th>End Power (W)</th>
+              <th>Reduction (W)</th>
+            </tr>
+          </thead>
+          <tbody id="tblPowerSummaryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  @* ── Panel : Burn-in Time Profile (visible after row click) *@
+  <div class="col-12" id="panelTimeProfile" style="display:none;">
+    <div class="card pc-profile-card">
+      <div class="card-header d-flex justify-content-between align-items-center py-3">
+        <h6 class="mb-0">
+          <i class="ri-pulse-line me-1 text-primary"></i>
+          Burn-in Time Profile —
+          <span id="lblProfileSerial" class="text-primary fw-bold"></span>
+          <span id="lblProfileDate"   class="text-muted small ms-2"></span>
+        </h6>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-success" onclick="exportTimeProfileExcel()" id="btnExportTime">
+            <i class="ri-file-excel-2-line me-1"></i>Export Excel
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="closeTimeProfile()">
+            <i class="ri-close-line"></i> Close
+          </button>
+        </div>
+      </div>
+
+      @* ApexCharts line chart *@
+      <div class="card-body pb-1">
+        <div id="chartBurninProfile"></div>
+      </div>
+
+      @* Detail table *@
+      <div class="card-datatable table-responsive">
+        <table id="tblTimeProfile" class="table table-hover table-sm datatables-basic pc-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Serial</th>
+              <th>Production Date</th>
+              <th>Time (s)</th>
+              <th>Power (W)</th>
+            </tr>
+          </thead>
+          <tbody id="tblTimeProfileBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+@* Hidden state — ค่าเริ่มต้น series มาจาก URL param ผ่าน ViewData *@
+<input type="hidden" id="hdnSeries"    value="@activeSeries" />
+<input type="hidden" id="hdnFlagrange" value="W" />

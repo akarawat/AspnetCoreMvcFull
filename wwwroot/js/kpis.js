@@ -484,8 +484,8 @@ function formatNumber(value, fix) {
   return `${integerPart}.${decimalPart}`;
 }
 function loadAutoThreader(serial) {
-  const imgPath = 'img/avatars/autothreader.png';
-  const container = $('#kpiAutoThreader');
+  const imgPath = 'img/avatars/power_consumption.png';
+  const container = $('#kpiPowerConsumption');
   container.empty();
   let dtFrom = '';
   let dtTo = '';
@@ -496,11 +496,11 @@ function loadAutoThreader(serial) {
                   <div class="col-6 text-start">
                     <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
                     <div class="text-bold">${dtFrom} - ${dtTo}</div>
-                    <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
+                    <p class="text-center"><button class="btn" onclick="GotoPowerConSumption('${serial}');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
                     <div class="value">Summary Data <br/>
-                      <label id="accum_mnu1"></label>
+                      <label id="accum_mnu1">-</label>
                     </div>
                   </div>
                 </div>
@@ -804,7 +804,11 @@ function loadBasePlate(serial) {
               </div>`;
   container.append(html);
 }
+function GotoPowerConSumption(series) {
+  var url = '/PowerConsumption/?fullscreen=true&series=' + series;
+  window.location.href = url;
 
+}
 function GotoCuttingDetail(series) {
   var url = '/ASSPrdData/MaxThread?fullscreen=true&series=' + series;
   window.location.href = url;
@@ -1323,7 +1327,10 @@ function renderChart(data) {
   });
 
   const ctx = document.getElementById('dailyProdChart').getContext('2d');
-
+  let rdoRange = 14;
+  if ($('input[name="criteria"]:checked').val() == 'HY') {
+    rdoRange = 0;
+  }
   myChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -1341,7 +1348,7 @@ function renderChart(data) {
           color: '#000000', // เปลี่ยนสีข้อความเป็นสีดำ
           font: {
             weight: 'bold',
-            size: 14 // เพิ่มขนาด Font ตามต้องการ (เช่น 14px)
+            size: rdoRange // แก้ไขยนาด ถ้าเลือกเป็น Year ให้ลดขนาด Font จะได้ไม่รก Bar
           },
           formatter: function (value, context) {
             // 2. ซ่อนเลข 0 ไม่ให้รกกราฟ
