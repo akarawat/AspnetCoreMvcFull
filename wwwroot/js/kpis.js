@@ -208,7 +208,7 @@ function callFuncButton(serial) {
 // Release Bachground color for all button
 function GetPassFailScore(serial) {
   $("#btnGreenStatus").html('Minimum fail ratio [ < ' + SetMinFail + '%]');
-  $("#btnYellowStatus").html('Between Max [' + SetMaxFail + '%] & Min ['+ SetMinFail +'%] ');
+  $("#btnYellowStatus").html('Between Max [' + SetMaxFail + '%] & Min [' + SetMinFail + '%] ');
   $("#btnRedStatus").html('Maximum fail ratio [ > ' + SetMaxFail + '%]');
 
   $.ajax({
@@ -330,7 +330,7 @@ function GetPassFailScore(serial) {
           $('#bg_param9').addClass('card h-100 machine-status-green');
         }
 
-        
+
       }
     },
     error: function () {
@@ -484,28 +484,87 @@ function formatNumber(value, fix) {
 
   return `${integerPart}.${decimalPart}`;
 }
-function loadAutoThreader(serial) {
+async function loadAutoThreader(serial) {
   const imgPath = 'img/avatars/power_consumption.png';
   const container = $('#kpiPowerConsumption');
   container.empty();
-  let dtFrom = '';
-  let dtTo = '';
-  var html = '';
-  html = `
-              <div class="kpi-card">
-                <div class="row">
-                  <div class="col-6 text-start">
-                    <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
-                    <div class="text-bold">${dtFrom} - ${dtTo}</div>
-                    <p class="text-center"><button class="btn" onclick="GotoPowerConSumption('${serial}');"><img src="${imgPath}" alt="Click for detail" /></button></p>
-                  </div>
-                  <div class="col-6 mb-0 text-start">
-                    <div class="value">Summary Data <br/>
-                      <label id="accum_mnu1">-</label>
-                    </div>
-                  </div>
-                </div>
-              </div>`;
+
+  // ─── Threshold สำหรับ background color (แก้ไขได้ที่นี่) ───
+  const PC_YELLOW_MIN = 2;   // >= 2%  → yellow
+  const PC_ORANGE_MIN = 5;   // >= 5%  → orange
+
+  // ─── Fetch KPI data ───────────────────────────────────────
+  let kpi = null;
+  try {
+    const q = new URLSearchParams({ series: serial, flagrange: 'W' }).toString();
+    const resp = await fetch(`/PowerConsumption/GetPowerConsumptionKPI?${q}`);
+    kpi = await resp.json();
+  } catch (e) {
+    console.error('GetPowerConsumptionKPI error:', e);
+  }
+
+  // ─── คำนวณสถานะ ───────────────────────────────────────────
+  let bgClass = 'card-status-green';
+  let failPct = 0;
+  let summaryHtml = 'No limit defined';
+
+  if (kpi && kpi.has_limit === 1) {
+    failPct = parseFloat(kpi.fail_pct) || 0;
+
+    if (failPct >= PC_ORANGE_MIN) {
+      bgClass = 'card-status-orange';
+    } else if (failPct >= PC_YELLOW_MIN) {
+      bgClass = 'card-status-yellow';
+    } else {
+      bgClass = 'card-status-green';
+    }
+
+    summaryHtml = `
+      Total [${kpi.total_count}] <br/>
+      Fail&nbsp;: ${kpi.fail_count} &nbsp;[<b>${failPct.toFixed(2)} %</b>]<br/>
+      Limit: ${kpi.max_fail} / ${kpi.min_fail} W
+    `;
+  } else if (kpi && kpi.total_count > 0) {
+    // มีข้อมูล แต่ยังไม่ได้ตั้ง limit → แสดงปกติ ไม่ตัดสิน
+    bgClass = 'card-status-green';
+    summaryHtml = `Total [${kpi.total_count}] <br/><small class="text-muted">No limit set</small>`;
+  } else {
+    // ไม่มีข้อมูลเลย (total_count = 0) หรือ fetch ล้มเหลว → disabled
+    bgClass = 'card-status-disable';
+    summaryHtml = '<small class="text-muted"><i class="ri-forbid-line me-1"></i>No data available</small>';
+  }
+
+  // ─── Apply background class ───────────────────────────────
+  const cardEl = $('#kpiPowerConsumption').closest('.card, [class*="machine-status"], [class*="card-status"]');
+  // กรณี card อยู่ใน wrapper ที่มี id ─ ปรับ bg ที่ตัว card parent ด้วย
+  $('#bg_param1').removeClass('card-status-green card-status-yellow card-status-orange card-status-disable')
+    .addClass('card h-100 ' + bgClass);
+
+  // ─── Render HTML ──────────────────────────────────────────
+  const dtFrom = kpi?.dt_from || '';
+  const dtTo = kpi?.dt_to || '';
+
+  const html = `
+    <div class="kpi-card">
+      <div class="row">
+        <div class="col-6 text-start">
+          <div><strong><h5 class="text-secondary">Model B${serial}</h5></strong></div>
+          <div class="text-bold">${dtFrom} - ${dtTo}</div>
+          <p class="text-center">
+            <button class="btn" onclick="GotoPowerConSumption('${serial}');">
+              <img src="${imgPath}" alt="Click for detail" />
+            </button>
+          </p>
+        </div>
+        <div class="col-6 mb-0 text-start">
+          <div class="value">
+            Summary Data <br/>
+            <label id="accum_mnu1">${summaryHtml}</label>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
   container.append(html);
 }
 function loadButtonHold(serial) {

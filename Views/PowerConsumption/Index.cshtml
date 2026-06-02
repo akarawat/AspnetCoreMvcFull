@@ -164,9 +164,20 @@
           End Power Distribution
           <span class="badge bg-label-secondary ms-2 small" id="badgeScatterSeries"></span>
         </h6>
-        <small class="text-muted pc-hint-row">
-          <i class="ri-information-line me-1"></i>Hover each point to see Serial &amp; Model
-        </small>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          @* Limit badges *@
+          <div id="limitBadgeGroup" class="d-flex align-items-center gap-2" style="display:none!important;">
+            <span class="badge bg-label-danger small" id="lblLimitMax">Max: –</span>
+            <span class="badge bg-label-warning small" id="lblLimitMin">Min: –</span>
+          </div>
+          <small class="text-muted pc-hint-row me-1">
+            <i class="ri-information-line me-1"></i>Hover each point to see Serial &amp; Model
+          </small>
+          <button class="btn btn-sm btn-outline-secondary" onclick="openLimitModal()"
+                  title="Edit Pass/Fail Limit">
+            <i class="ri-settings-3-line me-1"></i>Edit Limit
+          </button>
+        </div>
       </div>
       <div class="card-body">
         <div id="chartEndPowerScatter"></div>
@@ -251,6 +262,66 @@
     </div>
   </div>
 
+</div>
+
+
+@* ── Modal : Edit Pass/Fail Limit ──────────────────────── *@
+<div class="modal fade" id="modalEditLimit" tabindex="-1" aria-labelledby="modalEditLimitLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditLimitLabel">
+          <i class="ri-settings-3-line me-2 text-primary"></i>
+          Edit Pass/Fail Limit —
+          <span class="text-primary fw-bold" id="modalLimitSeries"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        @* Alert *@
+        <div id="modalLimitAlert" class="alert mb-3" style="display:none;" role="alert"></div>
+
+        <p class="text-muted small mb-3">
+          <i class="ri-information-line me-1"></i>
+          Power Consumption: ค่าน้อย = ดี &nbsp;|&nbsp;
+          <span class="text-danger">Fail High</span> = end_power &gt; Max &nbsp;|&nbsp;
+          <span class="text-warning">Fail Low</span> = end_power &le; Min (test error / ค่าเป็น 0)
+        </p>
+
+        <input type="hidden" id="inputLimitSeries" />
+        <input type="hidden" id="inputLimitMnufunc" />
+
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label fw-semibold">
+              <span class="text-danger me-1">●</span>Max Limit (W)
+            </label>
+            <input type="number" class="form-control" id="inputMaxFail"
+                   step="0.001" placeholder="e.g. 100" />
+            <div class="form-text">end_power &gt; Max → Fail High</div>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-semibold">
+              <span class="text-warning me-1">●</span>Min Limit (W)
+            </label>
+            <input type="number" class="form-control" id="inputMinFail"
+                   step="0.001" placeholder="e.g. 0" />
+            <div class="form-text">end_power &le; Min → Fail Low / Error</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="btnSaveLimit" onclick="saveLimitParam()">
+          <i class="ri-save-line me-1"></i>Save
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 @* Hidden state — ค่าเริ่มต้น series มาจาก URL param ผ่าน ViewData *@

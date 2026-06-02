@@ -7,10 +7,10 @@
   font-size: 0.82rem;
 }
 
-  .pc-table th {
-    white-space: nowrap;
-    outline: none;
-  }
+.pc-table th {
+  white-space: nowrap;
+  outline: none;
+}
 
 table.dataTable thead .sorting,
 table.dataTable thead .sorting_asc,
@@ -24,9 +24,9 @@ table.dataTable thead .sorting_desc {
   transition: background-color 0.15s ease;
 }
 
-  .pc-clickable-row:hover {
-    background-color: rgba(105, 108, 255, 0.06) !important;
-  }
+.pc-clickable-row:hover {
+  background-color: rgba(105, 108, 255, 0.06) !important;
+}
 
 .pc-row-selected,
 .pc-row-selected:hover {
@@ -36,77 +36,11 @@ table.dataTable thead .sorting_desc {
 
 /* ── Reduction cell colours ─────────────────────── */
 .pc-reduct-neg {
-  color: #28c76f; /* green  = power went DOWN (good) */
+  color: #28c76f;   /* green  = power went DOWN (good) */
 }
 
 .pc-reduct-pos {
-  color: #ea5455; /* red    = power went UP  (unexpected) */
-}
-
-/* ── Profile panel border accent ───────────────── */
-.pc-profile-card {
-  border-top: 3px solid #696cff !important;
-}
-
-/* ── Hint text ──────────────────────────────────── */
-.pc-hint-row {
-  font-size: 0.78rem;
-  opacity: 0.75;
-}
-
-/* ── Scatter chart custom tooltip ──────────────────── */
-.pc-scatter-tooltip {
-  padding: 10px 14px;
-  font-size: 0.82rem;
-  min-width: 200px;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-/* power-consumption.css
-   wwwroot/css/power-consumption.css
-*/
-
-/* ── Table ──────────────────────────────────────── */
-.pc-table {
-  font-size: 0.82rem;
-}
-
-  .pc-table th {
-    white-space: nowrap;
-    outline: none;
-  }
-
-table.dataTable thead .sorting,
-table.dataTable thead .sorting_asc,
-table.dataTable thead .sorting_desc {
-  background: none;
-}
-
-/* ── Clickable rows ─────────────────────────────── */
-.pc-clickable-row {
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-  .pc-clickable-row:hover {
-    background-color: rgba(105, 108, 255, 0.06) !important;
-  }
-
-.pc-row-selected,
-.pc-row-selected:hover {
-  background-color: rgba(105, 108, 255, 0.14) !important;
-  outline: 1px solid rgba(105, 108, 255, 0.35);
-}
-
-/* ── Reduction cell colours ─────────────────────── */
-.pc-reduct-neg {
-  color: #28c76f; /* green  = power went DOWN (good) */
-}
-
-.pc-reduct-pos {
-  color: #ea5455; /* red    = power went UP  (unexpected) */
+  color: #ea5455;   /* red    = power went UP  (unexpected) */
 }
 
 /* ── Profile panel border accent ───────────────── */
@@ -165,26 +99,30 @@ table.dataTable thead .sorting_desc {
   font-style: italic;
 }
 
-.pc-st-header {
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: #696cff;
-  margin-bottom: 6px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #f0f0f0;
+/* ── Pass/Fail Limit row highlight ─────────────── */
+.pc-row-fail-high {
+  background-color: rgba(255, 62, 29, 0.07) !important;
+}
+.pc-row-fail-high:hover {
+  background-color: rgba(255, 62, 29, 0.13) !important;
+}
+.pc-row-fail-low {
+  background-color: rgba(255, 159, 67, 0.08) !important;
+}
+.pc-row-fail-low:hover {
+  background-color: rgba(255, 159, 67, 0.15) !important;
 }
 
-.pc-st-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 4px;
+/* ── Tooltip fail badges ────────────────────────── */
+.pc-tt-fail-badge {
+  display      : inline-block;
+  font-size    : 0.70rem;
+  font-weight  : 700;
+  border-radius: 4px;
+  padding      : 1px 6px;
+  margin-left  : 6px;
+  vertical-align: middle;
 }
-
-.pc-st-label {
-  color: #a1acb8;
-}
-
-.pc-st-value {
-  color: #566a7f;
-}
+.pc-tt-fail-high { background: rgba(255,62,29,0.12);  color: #ff3e1d; }
+.pc-tt-fail-low  { background: rgba(255,159,67,0.15); color: #ff9f43; }
+.pc-tt-pass      { background: rgba(40,199,111,0.12); color: #28c76f; }
