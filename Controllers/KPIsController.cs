@@ -251,4 +251,37 @@ public class KPIsController : Controller
 
     return Json(result);
   }
+  [HttpGet]
+  public JsonResult GetTop10Failed(string? series, string? flagrange)
+  {
+    string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
+    List<Top10FailedModel> result = new List<Top10FailedModel>();
+
+    using (SqlConnection conn = new SqlConnection(connStr))
+    {
+      conn.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetTop10FailedRatio", conn);
+      cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.AddWithValue("@series", SqlDbType.VarChar).Value = series ?? (object)DBNull.Value;
+      cmd.Parameters.AddWithValue("@flagrange", SqlDbType.VarChar).Value = flagrange ?? (object)DBNull.Value;
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+      while (rdr.Read())
+      {
+        decimal ratioVal = rdr["ratio_val"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ratio_val"]);
+        result.Add(new Top10FailedModel
+        {
+          monitor_dt_txt = Convert.ToDateTime(rdr["monitor_dt"]).ToString("dd-MM"),
+          series = rdr["series"]?.ToString(),
+          test = rdr["Test"]?.ToString(),
+          fails = rdr["fails"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["fails"]),
+          ratio_val = ratioVal,
+          ratio_txt = ratioVal.ToString("0.0") + " %"
+        });
+      }
+      conn.Close();
+    }
+    return Json(result);
+  }
+
 }

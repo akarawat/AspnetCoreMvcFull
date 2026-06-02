@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Power Consumption – Burn-in";
+    ViewData["Title"] = "Baseplate Weight – DiffMP1to4";
 
     // Series default จาก Controller (URL param ?series=3|4|5|7|9)
     var activeSeries = ViewData["ActiveSeries"]?.ToString() ?? "7";
@@ -8,7 +8,7 @@
 @section VendorStyles {
     <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
     <link href="~/css/site.css" rel="stylesheet" />
-    <link href="~/css/power-consumption.css?v=1.0.0" rel="stylesheet" />
+    <link href="~/css/baseplate-weight.css?v=1.0.0" rel="stylesheet" />
 }
 
 @section VendorScripts {
@@ -22,7 +22,7 @@
 @section PageScripts {
     <script src="~/js/xlsx.full.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
-    <script src="~/js/power-consumption.js?v=1.0.2"></script>
+    <script src="~/js/baseplate-weight.js?v=1.0.0"></script>
 }
 
 @* ═══════════════════════ Content ═══════════════════════ *@
@@ -38,8 +38,8 @@
             <i class="ri-arrow-left-circle-line me-1"></i>Home
           </a>
 
-          @* Series buttons — active state set from URL param *@
-          <div class="btn-group" role="group" aria-label="Series" id="btnConsumPanel" style="display:none">
+          @* Series buttons *@
+          <div class="btn-group" role="group" aria-label="Series" style="display:none">
             <button id="btnB3" class="btn @(activeSeries == "3" ? "btn-primary" : "btn-outline-primary")"
                     type="button" onclick="changeSeries('3')">B3</button>
             <button id="btnB4" class="btn @(activeSeries == "4" ? "btn-primary" : "btn-outline-primary")"
@@ -59,24 +59,24 @@
 
           <div class="flex-grow-1"></div>
 
-          @* Date-range radio buttons *@
+          @* Date-range radio buttons (W / M / H) *@
           <div class="d-flex align-items-center gap-1 me-2">
             <small class="text-muted fw-medium me-2">Data range :</small>
             <div class="form-check form-check-inline mb-0">
               <input class="form-check-input" type="radio" name="rangeRadio" id="radioWeek"  value="W" checked />
-              <label class="form-check-label" for="radioWeek">Weekly</label>
+              <label class="form-check-label" for="radioWeek">7 Days</label>
             </div>
             <div class="form-check form-check-inline mb-0">
               <input class="form-check-input" type="radio" name="rangeRadio" id="radioMonth" value="M" />
-              <label class="form-check-label" for="radioMonth">Monthly</label>
+              <label class="form-check-label" for="radioMonth">30 Days</label>
             </div>
             <div class="form-check form-check-inline mb-0">
-              <input class="form-check-input" type="radio" name="rangeRadio" id="radioYear"  value="Y" />
-              <label class="form-check-label" for="radioYear">Yearly</label>
+              <input class="form-check-input" type="radio" name="rangeRadio" id="radioHalf"  value="H" />
+              <label class="form-check-label" for="radioHalf">6 Months</label>
             </div>
           </div>
 
-          <button class="btn btn-outline-secondary btn-sm" onclick="loadPowerConsumption()">
+          <button id="btnReload" class="btn btn-outline-secondary btn-sm" onclick="loadBaseplateWeight()">
             <i class="ri-refresh-line"></i> Reload
           </button>
 
@@ -91,12 +91,12 @@
       <div class="card-body">
         <div class="d-flex justify-content-between">
           <div>
-            <p class="mb-1 text-muted small">Avg Start Power</p>
-            <h4 class="mb-0 fw-bold" id="statAvgStart">–</h4>
+            <p class="mb-1 text-muted small">Avg DiffMP1to4</p>
+            <h4 class="mb-0 fw-bold" id="statAvgDiff">–</h4>
           </div>
           <div class="avatar flex-shrink-0">
-            <span class="avatar-initial rounded bg-label-warning">
-              <i class="ri-flashlight-line"></i>
+            <span class="avatar-initial rounded bg-label-primary">
+              <i class="ri-scales-line"></i>
             </span>
           </div>
         </div>
@@ -108,12 +108,12 @@
       <div class="card-body">
         <div class="d-flex justify-content-between">
           <div>
-            <p class="mb-1 text-muted small">Avg End Power</p>
-            <h4 class="mb-0 fw-bold" id="statAvgEnd">–</h4>
+            <p class="mb-1 text-muted small">Max DiffMP1to4</p>
+            <h4 class="mb-0 fw-bold" id="statMaxDiff">–</h4>
           </div>
           <div class="avatar flex-shrink-0">
-            <span class="avatar-initial rounded bg-label-success">
-              <i class="ri-battery-low-line"></i>
+            <span class="avatar-initial rounded bg-label-danger">
+              <i class="ri-arrow-up-line"></i>
             </span>
           </div>
         </div>
@@ -125,8 +125,8 @@
       <div class="card-body">
         <div class="d-flex justify-content-between">
           <div>
-            <p class="mb-1 text-muted small">Avg Power Reduction</p>
-            <h4 class="mb-0 fw-bold" id="statAvgReduct">–</h4>
+            <p class="mb-1 text-muted small">Min DiffMP1to4</p>
+            <h4 class="mb-0 fw-bold" id="statMinDiff">–</h4>
           </div>
           <div class="avatar flex-shrink-0">
             <span class="avatar-initial rounded bg-label-info">
@@ -138,16 +138,22 @@
     </div>
   </div>
   <div class="col-sm-6 col-xl-3">
-    <div class="card">
+    <div class="card" id="cardOutSpec">
       <div class="card-body">
         <div class="d-flex justify-content-between">
           <div>
-            <p class="mb-1 text-muted small">Total Machines</p>
-            <h4 class="mb-0 fw-bold" id="statTotal">–</h4>
+            <p class="mb-1 text-muted small">
+              Out of Spec
+              <span id="lblOosFilterActive" class="badge bg-danger ms-1" style="display:none;">
+                <i class="ri-filter-line me-1"></i>Filtered
+              </span>
+            </p>
+            <h4 class="mb-0 fw-bold" id="statOutSpec">–</h4>
           </div>
-          <div class="avatar flex-shrink-0">
-            <span class="avatar-initial rounded bg-label-primary">
-              <i class="ri-list-check-2"></i>
+          <div class="avatar flex-shrink-0 bw-avatar-btn" id="btnFilterOOS"
+               title="Click to filter out-of-spec records">
+            <span class="avatar-initial rounded bg-label-warning" id="iconFilterOOS">
+              <i class="ri-alert-line"></i>
             </span>
           </div>
         </div>
@@ -155,97 +161,67 @@
     </div>
   </div>
 
-  @* ── Scatter Chart : End Power per machine ───────────── *@
+  @* ── Line Chart : DiffMP1to4 over time ──────────────── *@
   <div class="col-12">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center py-3">
         <h6 class="mb-0">
-          <i class="ri-bubble-chart-line me-1"></i>
-          End Power Distribution
-          <span class="badge bg-label-secondary ms-2 small" id="badgeScatterSeries"></span>
+          <i class="ri-line-chart-line me-1"></i>
+          DiffMP1to4 over Time
+          <span class="badge bg-label-secondary ms-2 small" id="badgeSeries"></span>
         </h6>
-        <small class="text-muted pc-hint-row">
-          <i class="ri-information-line me-1"></i>Hover each point to see Serial &amp; Model
-        </small>
+        <div class="d-flex align-items-center gap-2">
+          @* Spec legend *@
+          <div class="d-flex align-items-center gap-3 me-3" id="specLegend">
+            <span class="bw-legend-dot bw-legend-upper"></span>
+            <small class="text-muted" id="lblSpecUpper">USL</small>
+            <span class="bw-legend-dot bw-legend-target"></span>
+            <small class="text-muted">Target</small>
+            <span class="bw-legend-dot bw-legend-lower"></span>
+            <small class="text-muted" id="lblSpecLower">LSL</small>
+          </div>
+          <button class="btn btn-sm btn-success" onclick="exportExcel()" id="btnExport" disabled>
+            <i class="ri-file-excel-2-line me-1"></i>Export Excel
+          </button>
+        </div>
       </div>
-      <div class="card-body">
-        <div id="chartEndPowerScatter"></div>
+      <div class="card-body pb-1">
+        <div id="chartDiffLine"></div>
       </div>
     </div>
   </div>
 
-  @* ── DataTable 1 : Per-machine Burn-in Summary ──────── *@
+  @* ── DataTable : Raw data ────────────────────────────── *@
   <div class="col-12">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center py-3">
         <h6 class="mb-0">
           <i class="ri-table-line me-1"></i>
-          Burn-in Power Summary
-          <span class="badge bg-label-secondary ms-2 small" id="badgeSeries"></span>
+          Measurement Records
+          <span class="badge bg-label-secondary ms-2 small" id="badgeSeriesTable"></span>
         </h6>
-        <div class="d-flex align-items-center gap-3">
-          <small class="text-muted pc-hint-row">
-            <i class="ri-hand-coin-line me-1"></i>Click a row to view the burn-in time profile below
-          </small>
-          <button class="btn btn-sm btn-success" onclick="exportSummaryExcel()" id="btnExportSummary" disabled>
-            <i class="ri-file-excel-2-line me-1"></i>Export Excel
-          </button>
-        </div>
+        <small class="text-muted bw-hint-row">
+          <i class="ri-information-line me-1"></i>
+          <span id="lblOutSpecHint"></span>
+        </small>
       </div>
       <div class="card-datatable table-responsive">
-        <table id="tblPowerSummary" class="table table-hover table-sm datatables-basic pc-table">
+        <table id="tblBaseplateWeight" class="table table-hover table-sm datatables-basic bw-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>Serial</th>
-              <th>Production Date</th>
-              <th>Series</th>
-              <th>Model</th>
-              <th>Start Power (W)</th>
-              <th>End Power (W)</th>
-              <th>Reduction (W)</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>SeriesNo</th>
+              <th>UserCode</th>
+              <th>MP1</th>
+              <th>MP4</th>
+              <th>DiffMP1to4</th>
+              <th>CalMP1</th>
+              <th>CalMP4</th>
             </tr>
           </thead>
-          <tbody id="tblPowerSummaryBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  @* ── Panel : Burn-in Time Profile (visible after row click) *@
-  <div class="col-12" id="panelTimeProfile" style="display:none;">
-    <div class="card pc-profile-card">
-      <div class="card-header d-flex justify-content-between align-items-center py-3">
-        <h6 class="mb-0">
-          <i class="ri-pulse-line me-1 text-primary"></i>
-          Burn-in Time Profile —
-          <span id="lblProfileSerial" class="text-primary fw-bold"></span>
-          <span id="lblProfileDate"   class="text-muted small ms-2"></span>
-        </h6>
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-sm btn-success" onclick="exportTimeProfileExcel()" id="btnExportTime">
-            <i class="ri-file-excel-2-line me-1"></i>Export Excel
-          </button>
-          <button class="btn btn-sm btn-outline-secondary" onclick="closeTimeProfile()">
-            <i class="ri-close-line"></i> Close
-          </button>
-        </div>
-      </div>
-      <div class="card-body pb-1">
-        <div id="chartBurninProfile"></div>
-      </div>
-      <div class="card-datatable table-responsive">
-        <table id="tblTimeProfile" class="table table-hover table-sm datatables-basic pc-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Serial</th>
-              <th>Production Date</th>
-              <th>Time (s)</th>
-              <th>Power (W)</th>
-            </tr>
-          </thead>
-          <tbody id="tblTimeProfileBody"></tbody>
+          <tbody id="tblBaseplateWeightBody"></tbody>
         </table>
       </div>
     </div>
@@ -253,6 +229,6 @@
 
 </div>
 
-@* Hidden state — ค่าเริ่มต้น series มาจาก URL param ผ่าน ViewData *@
+@* Hidden state *@
 <input type="hidden" id="hdnSeries"    value="@activeSeries" />
 <input type="hidden" id="hdnFlagrange" value="W" />

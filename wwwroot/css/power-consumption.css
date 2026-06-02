@@ -7,10 +7,10 @@
   font-size: 0.82rem;
 }
 
-.pc-table th {
-  white-space: nowrap;
-  outline: none;
-}
+  .pc-table th {
+    white-space: nowrap;
+    outline: none;
+  }
 
 table.dataTable thead .sorting,
 table.dataTable thead .sorting_asc,
@@ -24,9 +24,9 @@ table.dataTable thead .sorting_desc {
   transition: background-color 0.15s ease;
 }
 
-.pc-clickable-row:hover {
-  background-color: rgba(105, 108, 255, 0.06) !important;
-}
+  .pc-clickable-row:hover {
+    background-color: rgba(105, 108, 255, 0.06) !important;
+  }
 
 .pc-row-selected,
 .pc-row-selected:hover {
@@ -36,11 +36,11 @@ table.dataTable thead .sorting_desc {
 
 /* ── Reduction cell colours ─────────────────────── */
 .pc-reduct-neg {
-  color: #28c76f;   /* green  = power went DOWN (good) */
+  color: #28c76f; /* green  = power went DOWN (good) */
 }
 
 .pc-reduct-pos {
-  color: #ea5455;   /* red    = power went UP  (unexpected) */
+  color: #ea5455; /* red    = power went UP  (unexpected) */
 }
 
 /* ── Profile panel border accent ───────────────── */
@@ -52,4 +52,139 @@ table.dataTable thead .sorting_desc {
 .pc-hint-row {
   font-size: 0.78rem;
   opacity: 0.75;
+}
+
+/* ── Scatter chart custom tooltip ──────────────────── */
+.pc-scatter-tooltip {
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+/* power-consumption.css
+   wwwroot/css/power-consumption.css
+*/
+
+/* ── Table ──────────────────────────────────────── */
+.pc-table {
+  font-size: 0.82rem;
+}
+
+  .pc-table th {
+    white-space: nowrap;
+    outline: none;
+  }
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+  background: none;
+}
+
+/* ── Clickable rows ─────────────────────────────── */
+.pc-clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+  .pc-clickable-row:hover {
+    background-color: rgba(105, 108, 255, 0.06) !important;
+  }
+
+.pc-row-selected,
+.pc-row-selected:hover {
+  background-color: rgba(105, 108, 255, 0.14) !important;
+  outline: 1px solid rgba(105, 108, 255, 0.35);
+}
+
+/* ── Reduction cell colours ─────────────────────── */
+.pc-reduct-neg {
+  color: #28c76f; /* green  = power went DOWN (good) */
+}
+
+.pc-reduct-pos {
+  color: #ea5455; /* red    = power went UP  (unexpected) */
+}
+
+/* ── Profile panel border accent ───────────────── */
+.pc-profile-card {
+  border-top: 3px solid #696cff !important;
+}
+
+/* ── Hint text ──────────────────────────────────── */
+.pc-hint-row {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+/* ── Scatter chart custom tooltip ──────────────────── */
+.pc-scatter-tooltip {
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.pc-st-header {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #696cff;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pc-st-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.pc-st-label {
+  color: #a1acb8;
+}
+
+.pc-st-value {
+  color: #566a7f;
+}
+
+/* ── Scatter tooltip click hint ────────────────────── */
+.pc-st-click-hint {
+  margin-top: 7px;
+  padding-top: 5px;
+  border-top: 1px dashed #e0e0e0;
+  color: #696cff;
+  font-size: 0.76rem;
+  font-style: italic;
+}
+
+.pc-st-header {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #696cff;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.pc-st-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.pc-st-label {
+  color: #a1acb8;
+}
+
+.pc-st-value {
+  color: #566a7f;
 }

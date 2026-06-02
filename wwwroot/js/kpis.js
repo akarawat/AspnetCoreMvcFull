@@ -375,9 +375,10 @@ function setVisibleDisplay(serial) {
         if (data[0]["view7"] == 1) document.getElementById("display_param7").style.display = "block"; else document.getElementById("display_param7").style.display = "none";
         if (data[0]["view8"] == 1) document.getElementById("display_param8").style.display = "block"; else document.getElementById("display_param8").style.display = "none";
         if (data[0]["view9"] == 1) document.getElementById("display_param9").style.display = "block"; else document.getElementById("display_param9").style.display = "none";
-        if (data[0]["view10"] == 1) document.getElementById("display_param10").style.display = "block"; else document.getElementById("display_param10").style.display = "none";
-        if (data[0]["view91"] == 1) document.getElementById("display_param11").style.display = "block"; else document.getElementById("display_param11").style.display = "none";
-        if (data[0]["view92"] == 1) document.getElementById("display_param12").style.display = "block"; else document.getElementById("display_param12").style.display = "none";
+        //if (data[0]["view10"] == 1) document.getElementById("display_param10").style.display = "block"; else document.getElementById("display_param10").style.display = "none";
+        if (data[0]["view91"] == 1) document.getElementById("display_param91").style.display = "block"; else document.getElementById("display_param91").style.display = "none";
+        if (data[0]["view92"] == 1) document.getElementById("display_param92").style.display = "block"; else document.getElementById("display_param92").style.display = "none";
+        if (data[0]["view12"] == 1) document.getElementById("display_param12").style.display = "block"; else document.getElementById("display_param12").style.display = "none";
       }
     },
     error: function () {
@@ -795,10 +796,12 @@ function loadBasePlate(serial) {
                   <div class="col-6 text-start">
                     <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
                     <div class="text-bold">${dtFrom} - ${dtTo}</div>
-                    <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
+                    <p class="text-center"><button class="btn" onclick="GotoBasePlat('${serial}');"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
-                    <div class="value">Total ${0}</div>
+                    <div class="value">Summary Data <br/>
+                      <label id="accum_mnu1">-</label>
+                    </div>
                   </div>
                 </div>
               </div>`;
@@ -806,6 +809,11 @@ function loadBasePlate(serial) {
 }
 function GotoPowerConSumption(series) {
   var url = '/PowerConsumption/?fullscreen=true&series=' + series;
+  window.location.href = url;
+
+}
+function GotoBasePlat(series) {
+  var url = '/BaseplateWeight/?fullscreen=true&series=' + series;
   window.location.href = url;
 
 }

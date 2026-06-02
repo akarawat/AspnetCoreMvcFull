@@ -33,6 +33,7 @@
 
 @section VendorStyles {
     <link href="~/css/site.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
 }
 
 @section VendorScripts {
@@ -50,7 +51,7 @@
 
     <!-- Chart.js Luxon Adapter -->
     <script src="~/js/chartjs-adapter-luxon@1.js"></script>
-
+    <script src="~/vendor/libs/apex-charts/apexcharts.js"></script>
 }
 
 @section PageStyles {
@@ -128,10 +129,47 @@
                         </table>
                     </div>
                 </div>
+                <div class="row" style="display:none">
+                    <div class="col-md-12">
+
+                        @* Header row: title + series selector *@
+                        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                            <div class="card-title mb-0">
+                                <strong id="lblTop10Failed">Top 10 Failing Ratio</strong>
+                                <span class="badge bg-label-secondary ms-1 small" id="badgeTop10Series"></span>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Top10 Series">
+                                <button id="t10BtnB4" class="btn btn-outline-primary" type="button" onclick="changeTop10Series('4')">B4</button>
+                                <button id="t10BtnB5" class="btn btn-outline-primary" type="button" onclick="changeTop10Series('5')">B5</button>
+                                <button id="t10BtnB7" class="btn btn-primary" type="button" onclick="changeTop10Series('7')">B7</button>
+                                <button id="t10BtnB9" class="btn btn-outline-primary" type="button" onclick="changeTop10Series('9')">B9</button>
+                            </div>
+                        </div>
+
+                        @* Heatmap container *@
+                        <div id="chartTop10Heatmap" style="min-height:320px;">
+                            <div class="d-flex align-items-center justify-content-center" style="height:320px;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* Footer hint *@
+                        <small class="text-muted">
+                            <i class="ri-information-line me-1"></i>
+                            Color intensity = failure ratio % &nbsp;|&nbsp; Hover for details
+                        </small>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <!-- /Top 10 Failed -->
+    @* Hidden state สำหรับ Top10 widget *@
+    <input type="hidden" id="hdnTop10Series" value="7" />
+    <input type="hidden" id="hdnTop10Flagrange" value="W" />
     <!-- Daily production -->
     <div class="col-md-6">
       <div class="card h-100">
@@ -508,13 +546,13 @@
   <!-- /Balance Rough Adjustment -->
 
   <!-- Balance Fine Adjustment -->
-  <div class="col-md-4" id="display_param10">
-      <div class="card h-100" id="bg_param10">
+  <div class="col-md-4" id="display_param91">
+      <div class="card h-100" id="bg_param91">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
-                      <div class="card-title"><strong id="lblMnu91">9.1 Balance Fine Adjustment</strong></div>
-                      <div class="row" id="kpiBalanceFine">
+                      <div class="card-title"><strong id="lblMnu91">10 Baseplat</strong></div>
+                      <div class="row" id="kpiBasePlate">
                           <!-- AJAX will load here -->
                       </div>
                   </div>
@@ -539,8 +577,8 @@
   </div>
   <!-- /Balance Fine Adjustment -->
   <!-- BDF Balance Fine Adjustment -->
-  <div class="col-md-4" id="display_param11">
-      <div class="card h-100" id="bg_param11">
+  <div class="col-md-4" id="display_param92">
+      <div class="card h-100" id="bg_param92">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
@@ -575,8 +613,8 @@
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
-                      <div class="card-title"><strong id="lblMnu10">10. Base plate</strong></div>
-                      <div class="row" id="kpiBasePlate">
+                      <div class="card-title"><strong id="lblMnu12">12. Base plate</strong></div>
+                      <div class="row" id="kpiBalanceFine">
                           <!-- AJAX will load here -->
                       </div>
                   </div>
@@ -675,5 +713,5 @@
     <script src="~/js/jszip.min.js"></script>
 
     <script src="~/js/kpis.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
-
+    <script src="~/js/top10-failed.js"></script>
 }

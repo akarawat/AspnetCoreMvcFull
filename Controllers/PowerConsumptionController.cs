@@ -22,7 +22,8 @@ public class PowerConsumptionController : Controller
   public IActionResult Index(string? series, string? fullscreen)
   {
     // Default series to '7' when not supplied or invalid
-    string activeSeries = (series == "3" || series == "7") ? series : "7";
+    string[] validSeries = { "3", "4", "5", "7", "9" };
+    string activeSeries  = validSeries.Contains(series) ? series : "7";
     ViewData["ActiveSeries"] = activeSeries;
 
     // Fullscreen layout — mirrors the pattern used in BalanceAdjustController
