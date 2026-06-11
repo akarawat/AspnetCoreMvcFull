@@ -7,10 +7,10 @@
   font-size: 0.82rem;
 }
 
-.bw-table th {
-  white-space: nowrap;
-  outline: none;
-}
+  .bw-table th {
+    white-space: nowrap;
+    outline: none;
+  }
 
 table.dataTable thead .sorting,
 table.dataTable thead .sorting_asc,
@@ -23,9 +23,9 @@ table.dataTable thead .sorting_desc {
   background-color: rgba(255, 62, 29, 0.06) !important;
 }
 
-.bw-row-oos:hover {
-  background-color: rgba(255, 62, 29, 0.12) !important;
-}
+  .bw-row-oos:hover {
+    background-color: rgba(255, 62, 29, 0.12) !important;
+  }
 
 .bw-oos {
   color: #ff3e1d;
@@ -39,84 +39,134 @@ table.dataTable thead .sorting_desc {
 
 /* ── Spec legend dots ───────────────────────────── */
 .bw-legend-dot {
-  display      : inline-block;
-  width        : 28px;
-  height       : 3px;
+  display: inline-block;
+  width: 28px;
+  height: 3px;
   border-radius: 2px;
   vertical-align: middle;
 }
 
-.bw-legend-upper  { background: #ff3e1d; border-top: 2px dashed #ff3e1d; }
-.bw-legend-lower  { background: #ff3e1d; border-top: 2px dashed #ff3e1d; }
-.bw-legend-target { background: #28c76f; border-top: 2px dashed #28c76f; }
+.bw-legend-upper {
+  background: #ff3e1d;
+  border-top: 2px dashed #ff3e1d;
+}
+
+.bw-legend-lower {
+  background: #ff3e1d;
+  border-top: 2px dashed #ff3e1d;
+}
+
+.bw-legend-target {
+  background: #28c76f;
+  border-top: 2px dashed #28c76f;
+}
 
 /* ── Chart tooltip ──────────────────────────────── */
 .bw-tooltip {
-  padding      : 10px 14px;
-  font-size    : 0.82rem;
-  min-width    : 210px;
-  background   : #fff;
-  border       : 1px solid #e0e0e0;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  min-width: 210px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
   border-radius: 6px;
-  box-shadow   : 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .bw-tt-header {
-  font-weight  : 700;
-  font-size    : 0.86rem;
-  color        : #566a7f;
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #566a7f;
   margin-bottom: 6px;
   padding-bottom: 4px;
   border-bottom: 1px solid #f0f0f0;
-  display      : flex;
-  align-items  : center;
-  gap          : 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .bw-tt-oos {
-  margin-left  : auto;
-  font-size    : 0.75rem;
-  color        : #ff3e1d;
-  font-weight  : 700;
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: #ff3e1d;
+  font-weight: 700;
 }
 
 .bw-tt-row {
-  display        : flex;
+  display: flex;
   justify-content: space-between;
-  gap            : 12px;
-  margin-top     : 4px;
+  gap: 12px;
+  margin-top: 4px;
 }
 
-.bw-tt-label { color: #a1acb8; }
-.bw-tt-value { color: #566a7f; }
+.bw-tt-label {
+  color: #a1acb8;
+}
+
+.bw-tt-value {
+  color: #566a7f;
+}
 
 /* ── Auto-reload countdown badge ──────────────── */
 .bw-countdown-badge {
-  font-size   : 0.78rem;
+  font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
-  min-width   : 58px;
-  text-align  : center;
-  transition  : background-color 0.4s ease;
+  min-width: 58px;
+  text-align: center;
+  transition: background-color 0.4s ease;
   vertical-align: middle;
 }
 
 /* ── OOS Filter icon button ────────────────────── */
 .bw-avatar-btn {
-  cursor    : pointer;
+  cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.bw-avatar-btn:hover {
-  transform : scale(1.12);
-  box-shadow: 0 4px 12px rgba(255, 171, 0, 0.35);
-}
+  .bw-avatar-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 4px 12px rgba(255, 171, 0, 0.35);
+  }
 
 /* Active state เมื่อ filter เปิดอยู่ */
 .bw-card-oos-active {
-  border    : 1px solid rgba(255, 62, 29, 0.45) !important;
+  border: 1px solid rgba(255, 62, 29, 0.45) !important;
   box-shadow: 0 0 0 3px rgba(255, 62, 29, 0.12) !important;
 }
 
-.bw-card-oos-active .bw-avatar-btn:hover {
-  box-shadow: 0 4px 12px rgba(255, 62, 29, 0.4);
+  .bw-card-oos-active .bw-avatar-btn:hover {
+    box-shadow: 0 4px 12px rgba(255, 62, 29, 0.4);
+  }
+
+/* ── Tooltip Pass/Fail badges ──────────────────── */
+.bw-tt-badge {
+  display: inline-block;
+  font-size: 0.70rem;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.bw-tt-fail-high {
+  background: rgba(255,62,29,0.12);
+  color: #ff3e1d;
+}
+
+.bw-tt-fail-low {
+  background: rgba(255,159,67,0.15);
+  color: #ff9f43;
+}
+
+.bw-tt-pass {
+  background: rgba(40,199,111,0.12);
+  color: #28c76f;
+}
+
+/* ── Spec legend: indicate using default (not configured) ─ */
+.bw-spec-default {
+  border: 1px dashed #ffab00;
+  border-radius: 6px;
+  padding: 2px 8px;
+  background: rgba(255, 171, 0, 0.06);
 }

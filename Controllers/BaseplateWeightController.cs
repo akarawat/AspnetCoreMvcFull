@@ -10,11 +10,14 @@ public class BaseplateWeightController : Controller
   private readonly ILogger<BaseplateWeightController> _logger;
   private readonly IConfiguration _configuration;
 
+  // mnufunc คงที่สำหรับ Baseplate Weight
+  private const string MNUFUNC_BASEPLATE = "10";
+
   public BaseplateWeightController(
     ILogger<BaseplateWeightController> logger,
     IConfiguration configuration)
   {
-    _logger       = logger;
+    _logger = logger;
     _configuration = configuration;
   }
 
@@ -25,16 +28,16 @@ public class BaseplateWeightController : Controller
   {
     // Validate series — default '7'
     string[] validSeries = { "3", "4", "5", "7", "9" };
-    string activeSeries  = validSeries.Contains(series) ? series : "7";
+    string activeSeries = validSeries.Contains(series) ? series : "7";
     ViewData["ActiveSeries"] = activeSeries;
 
     // Fullscreen layout
-    bool isFullscreen        = fullscreen?.ToLower() == "true";
+    bool isFullscreen = fullscreen?.ToLower() == "true";
     ViewData["isFullscreen"] = isFullscreen;
-    ViewData["isMenu"]       = !isFullscreen;
-    ViewData["isNavbar"]     = !isFullscreen;
-    ViewData["menuFixed"]    = isFullscreen ? "" : "menu-fixed";
-    ViewData["navbarType"]   = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    ViewData["isMenu"] = !isFullscreen;
+    ViewData["isNavbar"] = !isFullscreen;
+    ViewData["menuFixed"] = isFullscreen ? "" : "menu-fixed";
+    ViewData["navbarType"] = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
 
     return View();
   }
@@ -50,15 +53,15 @@ public class BaseplateWeightController : Controller
   public JsonResult GetBaseplateWeight(string? series, string? flagrange)
   {
     string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
-    var result     = new List<BaseplateWeightModel>();
+    var result = new List<BaseplateWeightModel>();
 
     using (SqlConnection conn = new SqlConnection(connStr))
     {
       conn.Open();
-      SqlCommand cmd   = new SqlCommand("SP_GetBaseplateWeight", conn);
-      cmd.CommandType  = CommandType.StoredProcedure;
-      cmd.Parameters.AddWithValue("@series",    SqlDbType.VarChar).Value
-        = series    ?? (object)DBNull.Value;
+      SqlCommand cmd = new SqlCommand("SP_GetBaseplateWeight", conn);
+      cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.AddWithValue("@series", SqlDbType.VarChar).Value
+        = series ?? (object)DBNull.Value;
       cmd.Parameters.AddWithValue("@flagrange", SqlDbType.VarChar).Value
         = flagrange ?? (object)DBNull.Value;
 
@@ -66,32 +69,104 @@ public class BaseplateWeightController : Controller
       while (rdr.Read())
       {
         // Combine LogDate + LogTime → DateTime
-        DateTime logDate  = Convert.ToDateTime(rdr["LogDate"]);
-        TimeSpan logTime  = TimeSpan.Parse(rdr["LogTime"].ToString());
-        DateTime logDT    = logDate.Date + logTime;
+        DateTime logDate = Convert.ToDateTime(rdr["LogDate"]);
+        TimeSpan logTime = TimeSpan.Parse(rdr["LogTime"].ToString());
+        DateTime logDT = logDate.Date + logTime;
 
         // Unix timestamp (ms) for ApexCharts datetime axis
         long ts = new DateTimeOffset(logDT).ToUnixTimeMilliseconds();
 
         result.Add(new BaseplateWeightModel
         {
-          id              = Convert.ToInt32(rdr["ID"]),
-          logDate_txt     = logDate.ToString("dd-MM-yyyy"),
-          logTime_txt     = rdr["LogTime"].ToString(),
+          id = Convert.ToInt32(rdr["ID"]),
+          logDate_txt = logDate.ToString("dd-MM-yyyy"),
+          logTime_txt = rdr["LogTime"].ToString(),
           logDateTime_txt = logDT.ToString("dd-MM-yyyy HH:mm"),
-          logDateTime_ts  = ts,
-          seriesNo        = rdr["SeriesNo"]?.ToString(),
-          userCode        = rdr["UserCode"]?.ToString(),
-          calMP1          = rdr["CalMP1"]     == DBNull.Value ? 0 : Convert.ToDecimal(rdr["CalMP1"]),
-          calMP4          = rdr["CalMP4"]     == DBNull.Value ? 0 : Convert.ToDecimal(rdr["CalMP4"]),
-          mp1             = rdr["MP1"]        == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MP1"]),
-          mp4             = rdr["MP4"]        == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MP4"]),
-          diffMP1to4      = rdr["DiffMP1to4"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["DiffMP1to4"]),
-          sourceFile      = rdr["SourceFile"]?.ToString()
+          logDateTime_ts = ts,
+          seriesNo = rdr["SeriesNo"]?.ToString(),
+          userCode = rdr["UserCode"]?.ToString(),
+          calMP1 = rdr["CalMP1"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["CalMP1"]),
+          calMP4 = rdr["CalMP4"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["CalMP4"]),
+          mp1 = rdr["MP1"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MP1"]),
+          mp4 = rdr["MP4"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MP4"]),
+          diffMP1to4 = rdr["DiffMP1to4"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["DiffMP1to4"]),
+          sourceFile = rdr["SourceFile"]?.ToString()
         });
       }
       conn.Close();
     }
     return Json(result);
+  }
+
+  // -----------------------------------------------------------------------
+  // GET /BaseplateWeight/GetPassFailParam?series=7
+  // SP: SP_GetPassFailParam  (@series, @mnufunc='10')
+  // คืนค่า max_fail (USL) / min_fail (LSL) — null-safe ถ้า series ไม่มีข้อมูล
+  // -----------------------------------------------------------------------
+  [HttpGet]
+  public JsonResult GetPassFailParam(string? series)
+  {
+    string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
+    PassFailParamModel? result = null;
+
+    using (SqlConnection conn = new SqlConnection(connStr))
+    {
+      conn.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetPassFailParam", conn);
+      cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.AddWithValue("@series", SqlDbType.VarChar).Value = series ?? (object)DBNull.Value;
+      cmd.Parameters.AddWithValue("@mnufunc", SqlDbType.VarChar).Value = MNUFUNC_BASEPLATE;
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+      if (rdr.Read())
+      {
+        result = new PassFailParamModel
+        {
+          id = Convert.ToInt32(rdr["id"]),
+          series = rdr["series"]?.ToString(),
+          mnufunc = rdr["mnufunc"]?.ToString(),
+          max_fail = rdr["max_fail"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["max_fail"]),
+          min_fail = rdr["min_fail"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["min_fail"])
+        };
+      }
+      conn.Close();
+    }
+    // คืน null ถ้า series นี้ยังไม่มี config — JS จะ fallback เป็นค่า default
+    return Json(result);
+  }
+
+  // -----------------------------------------------------------------------
+  // POST /BaseplateWeight/UpdatePassFailParam
+  // SP: SP_UpdatePassFailParam  (@series, @mnufunc='10', @max_fail (USL), @min_fail (LSL))
+  // -----------------------------------------------------------------------
+  [HttpPost]
+  public JsonResult UpdatePassFailParam(string series, decimal max_fail, decimal min_fail)
+  {
+    string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
+    int affected = 0;
+
+    try
+    {
+      using (SqlConnection conn = new SqlConnection(connStr))
+      {
+        conn.Open();
+        SqlCommand cmd = new SqlCommand("SP_UpdatePassFailParam", conn);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@series", SqlDbType.VarChar).Value = series;
+        cmd.Parameters.AddWithValue("@mnufunc", SqlDbType.VarChar).Value = MNUFUNC_BASEPLATE;
+        cmd.Parameters.AddWithValue("@max_fail", SqlDbType.Decimal).Value = max_fail;
+        cmd.Parameters.AddWithValue("@min_fail", SqlDbType.Decimal).Value = min_fail;
+
+        SqlDataReader rdr = cmd.ExecuteReader();
+        if (rdr.Read()) affected = Convert.ToInt32(rdr["affected_rows"]);
+        conn.Close();
+      }
+      return Json(new { success = true, affected_rows = affected });
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "UpdatePassFailParam (Baseplate) failed");
+      return Json(new { success = false, message = ex.Message });
+    }
   }
 }

@@ -28,207 +28,280 @@
 @* ═══════════════════════ Content ═══════════════════════ *@
 <div class="row g-4 mb-4">
 
-  @* ── Page Header ─────────────────────────────────────── *@
-  <div class="col-12">
-    <div class="card">
-      <div class="card-body py-3">
-        <div class="d-flex flex-wrap align-items-center gap-3">
+    @* ── Page Header ─────────────────────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap align-items-center gap-3">
 
-          <a href="/" class="text-muted me-2">
-            <i class="ri-arrow-left-circle-line me-1"></i>Home
-          </a>
+                    <a href="/" class="text-muted me-2">
+                        <i class="ri-arrow-left-circle-line me-1"></i>Home
+                    </a>
 
-          @* Series buttons *@
-          <div class="btn-group" role="group" aria-label="Series">
-            <button id="btnB3" class="btn @(activeSeries == "3" ? "btn-primary" : "btn-outline-primary")"
-                    type="button" onclick="changeSeries('3')">B3</button>
-            <button id="btnB4" class="btn @(activeSeries == "4" ? "btn-primary" : "btn-outline-primary")"
-                    type="button" onclick="changeSeries('4')">B4</button>
-            <button id="btnB5" class="btn @(activeSeries == "5" ? "btn-primary" : "btn-outline-primary")"
-                    type="button" onclick="changeSeries('5')">B5</button>
-            <button id="btnB7" class="btn @(activeSeries == "7" ? "btn-primary" : "btn-outline-primary")"
-                    type="button" onclick="changeSeries('7')">B7</button>
-            <button id="btnB9" class="btn @(activeSeries == "9" ? "btn-primary" : "btn-outline-primary")"
-                    type="button" onclick="changeSeries('9')">B9</button>
-          </div>
+                    @* Series buttons *@
+                    <div class="btn-group" role="group" aria-label="Series">
+                        <button id="btnB3" class="btn @(activeSeries == "3" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeSeries('3')">
+                            B3
+                        </button>
+                        <button id="btnB4" class="btn @(activeSeries == "4" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeSeries('4')">
+                            B4
+                        </button>
+                        <button id="btnB5" class="btn @(activeSeries == "5" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeSeries('5')">
+                            B5
+                        </button>
+                        <button id="btnB7" class="btn @(activeSeries == "7" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeSeries('7')">
+                            B7
+                        </button>
+                        <button id="btnB9" class="btn @(activeSeries == "9" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeSeries('9')">
+                            B9
+                        </button>
+                    </div>
 
-          <h5 class="card-title mb-0 ms-2">
-            @ViewData["Title"]
-            <span id="lblSeries" class="text-primary fw-bold ms-1"></span>
-          </h5>
+                    <h5 class="card-title mb-0 ms-2">
+                        @ViewData["Title"]
+                        <span id="lblSeries" class="text-primary fw-bold ms-1"></span>
+                    </h5>
 
-          <div class="flex-grow-1"></div>
+                    <div class="flex-grow-1"></div>
 
-          @* Date-range radio buttons (W / M / H) *@
-          <div class="d-flex align-items-center gap-1 me-2">
-            <small class="text-muted fw-medium me-2">Data range :</small>
-            <div class="form-check form-check-inline mb-0">
-              <input class="form-check-input" type="radio" name="rangeRadio" id="radioWeek"  value="W" checked />
-              <label class="form-check-label" for="radioWeek">7 Days</label>
+                    @* Date-range radio buttons (W / M / H) *@
+                    <div class="d-flex align-items-center gap-1 me-2">
+                        <small class="text-muted fw-medium me-2">Data range :</small>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="rangeRadio" id="radioWeek" value="W" checked />
+                            <label class="form-check-label" for="radioWeek">7 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="rangeRadio" id="radioMonth" value="M" />
+                            <label class="form-check-label" for="radioMonth">30 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="rangeRadio" id="radioHalf" value="H" />
+                            <label class="form-check-label" for="radioHalf">6 Months</label>
+                        </div>
+                    </div>
+
+                    <button id="btnReload" class="btn btn-outline-secondary btn-sm" onclick="loadBaseplateWeight()">
+                        <i class="ri-refresh-line"></i> Reload
+                    </button>
+
+                </div>
             </div>
-            <div class="form-check form-check-inline mb-0">
-              <input class="form-check-input" type="radio" name="rangeRadio" id="radioMonth" value="M" />
-              <label class="form-check-label" for="radioMonth">30 Days</label>
+        </div>
+    </div>
+
+    @* ── Summary Cards ───────────────────────────────────── *@
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Avg DiffMP1to4</p>
+                        <h4 class="mb-0 fw-bold" id="statAvgDiff">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="ri-scales-line"></i>
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div class="form-check form-check-inline mb-0">
-              <input class="form-check-input" type="radio" name="rangeRadio" id="radioHalf"  value="H" />
-              <label class="form-check-label" for="radioHalf">6 Months</label>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Max DiffMP1to4</p>
+                        <h4 class="mb-0 fw-bold" id="statMaxDiff">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-danger">
+                            <i class="ri-arrow-up-line"></i>
+                        </span>
+                    </div>
+                </div>
             </div>
-          </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Min DiffMP1to4</p>
+                        <h4 class="mb-0 fw-bold" id="statMinDiff">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-info">
+                            <i class="ri-arrow-down-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card" id="cardOutSpec">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">
+                            Out of Spec
+                            <span id="lblOosFilterActive" class="badge bg-danger ms-1" style="display:none;">
+                                <i class="ri-filter-line me-1"></i>Filtered
+                            </span>
+                        </p>
+                        <h4 class="mb-0 fw-bold" id="statOutSpec">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0 bw-avatar-btn" id="btnFilterOOS"
+                         title="Click to filter out-of-spec records">
+                        <span class="avatar-initial rounded bg-label-warning" id="iconFilterOOS">
+                            <i class="ri-alert-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-          <button id="btnReload" class="btn btn-outline-secondary btn-sm" onclick="loadBaseplateWeight()">
-            <i class="ri-refresh-line"></i> Reload
-          </button>
+    @* ── Line Chart : DiffMP1to4 over time ──────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-line-chart-line me-1"></i>
+                    DiffMP1to4 over Time
+                    <span class="badge bg-label-secondary ms-2 small" id="badgeSeries"></span>
+                </h6>
+                <div class="d-flex align-items-center gap-2">
+                    @* Spec legend *@
+                    <div class="d-flex align-items-center gap-3 me-2" id="specLegend">
+                        <span class="bw-legend-dot bw-legend-upper"></span>
+                        <small class="text-muted" id="lblSpecUpper">USL</small>
+                        <span class="bw-legend-dot bw-legend-target"></span>
+                        <small class="text-muted">Target</small>
+                        <span class="bw-legend-dot bw-legend-lower"></span>
+                        <small class="text-muted" id="lblSpecLower">LSL</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary me-1" onclick="openLimitModal()"
+                            title="Edit Pass/Fail Limit (USL/LSL)">
+                        <i class="ri-settings-3-line me-1"></i>Edit Limit
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="exportExcel()" id="btnExport" disabled>
+                        <i class="ri-file-excel-2-line me-1"></i>Export Excel
+                    </button>
+                </div>
+            </div>
+            <div class="card-body pb-1">
+                <div id="chartDiffLine"></div>
+            </div>
+        </div>
+    </div>
 
+    @* ── DataTable : Raw data ────────────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-table-line me-1"></i>
+                    Measurement Records
+                    <span class="badge bg-label-secondary ms-2 small" id="badgeSeriesTable"></span>
+                </h6>
+                <small class="text-muted bw-hint-row">
+                    <i class="ri-information-line me-1"></i>
+                    <span id="lblOutSpecHint"></span>
+                </small>
+            </div>
+            <div class="card-datatable table-responsive">
+                <table id="tblBaseplateWeight" class="table table-hover table-sm datatables-basic bw-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>SeriesNo</th>
+                            <th>UserCode</th>
+                            <th>MP1</th>
+                            <th>MP4</th>
+                            <th>DiffMP1to4</th>
+                            <th>CalMP1</th>
+                            <th>CalMP4</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblBaseplateWeightBody"></tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-
-  @* ── Summary Cards ───────────────────────────────────── *@
-  <div class="col-sm-6 col-xl-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div>
-            <p class="mb-1 text-muted small">Avg DiffMP1to4</p>
-            <h4 class="mb-0 fw-bold" id="statAvgDiff">–</h4>
-          </div>
-          <div class="avatar flex-shrink-0">
-            <span class="avatar-initial rounded bg-label-primary">
-              <i class="ri-scales-line"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-6 col-xl-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div>
-            <p class="mb-1 text-muted small">Max DiffMP1to4</p>
-            <h4 class="mb-0 fw-bold" id="statMaxDiff">–</h4>
-          </div>
-          <div class="avatar flex-shrink-0">
-            <span class="avatar-initial rounded bg-label-danger">
-              <i class="ri-arrow-up-line"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-6 col-xl-3">
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div>
-            <p class="mb-1 text-muted small">Min DiffMP1to4</p>
-            <h4 class="mb-0 fw-bold" id="statMinDiff">–</h4>
-          </div>
-          <div class="avatar flex-shrink-0">
-            <span class="avatar-initial rounded bg-label-info">
-              <i class="ri-arrow-down-line"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-6 col-xl-3">
-    <div class="card" id="cardOutSpec">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div>
-            <p class="mb-1 text-muted small">
-              Out of Spec
-              <span id="lblOosFilterActive" class="badge bg-danger ms-1" style="display:none;">
-                <i class="ri-filter-line me-1"></i>Filtered
-              </span>
-            </p>
-            <h4 class="mb-0 fw-bold" id="statOutSpec">–</h4>
-          </div>
-          <div class="avatar flex-shrink-0 bw-avatar-btn" id="btnFilterOOS"
-               title="Click to filter out-of-spec records">
-            <span class="avatar-initial rounded bg-label-warning" id="iconFilterOOS">
-              <i class="ri-alert-line"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  @* ── Line Chart : DiffMP1to4 over time ──────────────── *@
-  <div class="col-12">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center py-3">
-        <h6 class="mb-0">
-          <i class="ri-line-chart-line me-1"></i>
-          DiffMP1to4 over Time
-          <span class="badge bg-label-secondary ms-2 small" id="badgeSeries"></span>
-        </h6>
-        <div class="d-flex align-items-center gap-2">
-          @* Spec legend *@
-          <div class="d-flex align-items-center gap-3 me-3" id="specLegend">
-            <span class="bw-legend-dot bw-legend-upper"></span>
-            <small class="text-muted" id="lblSpecUpper">USL</small>
-            <span class="bw-legend-dot bw-legend-target"></span>
-            <small class="text-muted">Target</small>
-            <span class="bw-legend-dot bw-legend-lower"></span>
-            <small class="text-muted" id="lblSpecLower">LSL</small>
-          </div>
-          <button class="btn btn-sm btn-success" onclick="exportExcel()" id="btnExport" disabled>
-            <i class="ri-file-excel-2-line me-1"></i>Export Excel
-          </button>
-        </div>
-      </div>
-      <div class="card-body pb-1">
-        <div id="chartDiffLine"></div>
-      </div>
-    </div>
-  </div>
-
-  @* ── DataTable : Raw data ────────────────────────────── *@
-  <div class="col-12">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center py-3">
-        <h6 class="mb-0">
-          <i class="ri-table-line me-1"></i>
-          Measurement Records
-          <span class="badge bg-label-secondary ms-2 small" id="badgeSeriesTable"></span>
-        </h6>
-        <small class="text-muted bw-hint-row">
-          <i class="ri-information-line me-1"></i>
-          <span id="lblOutSpecHint"></span>
-        </small>
-      </div>
-      <div class="card-datatable table-responsive">
-        <table id="tblBaseplateWeight" class="table table-hover table-sm datatables-basic bw-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>SeriesNo</th>
-              <th>UserCode</th>
-              <th>MP1</th>
-              <th>MP4</th>
-              <th>DiffMP1to4</th>
-              <th>CalMP1</th>
-              <th>CalMP4</th>
-            </tr>
-          </thead>
-          <tbody id="tblBaseplateWeightBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 
 </div>
 
+
+@* ── Modal : Edit Pass/Fail Limit (USL / LSL) ──────────── *@
+<div class="modal fade" id="modalEditLimit" tabindex="-1" aria-labelledby="modalEditLimitLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditLimitLabel">
+                    <i class="ri-settings-3-line me-2 text-primary"></i>
+                    Edit Pass/Fail Limit —
+                    <span class="text-primary fw-bold" id="modalLimitSeries"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                @* Alert *@
+                <div id="modalLimitAlert" class="alert mb-3" style="display:none;" role="alert"></div>
+
+                <p class="text-muted small mb-3">
+                    <i class="ri-information-line me-1"></i>
+                    DiffMP1to4 = MP4 − MP1 &nbsp;|&nbsp; Target คงที่ = 0 &nbsp;|&nbsp;
+                    <span class="text-danger">Fail High</span> = Diff &gt; USL &nbsp;|&nbsp;
+                    <span class="text-warning">Fail Low</span> = Diff &lt; LSL
+                </p>
+
+                <input type="hidden" id="inputLimitSeries" />
+
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">
+                            <span class="text-danger me-1">●</span>USL (Upper Limit)
+                        </label>
+                        <input type="number" class="form-control" id="inputUSL"
+                               step="0.001" placeholder="e.g. 25" />
+                        <div class="form-text">Diff &gt; USL → Fail High</div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">
+                            <span class="text-warning me-1">●</span>LSL (Lower Limit)
+                        </label>
+                        <input type="number" class="form-control" id="inputLSL"
+                               step="0.001" placeholder="e.g. 10" />
+                        <div class="form-text">Diff &lt; LSL → Fail Low</div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="btnSaveLimit" onclick="saveLimitParam()">
+                    <i class="ri-save-line me-1"></i>Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @* Hidden state *@
-<input type="hidden" id="hdnSeries"    value="@activeSeries" />
+<input type="hidden" id="hdnSeries" value="@activeSeries" />
 <input type="hidden" id="hdnFlagrange" value="W" />
