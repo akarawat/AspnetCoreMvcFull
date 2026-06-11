@@ -843,7 +843,7 @@ function loadBDFBalance(serial) {
   container.append(html);
 }
 function loadBasePlate(serial) {
-  const imgPath = 'img/avatars/autothreader.png';
+  const imgPath = 'img/avatars/baseplate.png';
   const container = $('#kpiBasePlate');
   container.empty();
   let dtFrom = '';
