@@ -73,7 +73,7 @@
               <button id="btnB4" class="btn btn-light h-50" type="button" onclick="callFuncButton('4');">B4</button>
               <button id="btnB5" class="btn btn-light h-50" type="button" onclick="callFuncButton('5');">B5</button>
               <button id="btnB7" class="btn btn-light h-50" type="button" onclick="callFuncButton('7');">B7</button>
-              <button id="btnB9P" class="btn btn-light h-50" type="button" onclick="callFuncButton('9 PAM');">B9 PAM</button>
+              <button id="btnB9P" class="btn btn-light h-50" type="button" onclick="callFuncButton('9');">B9</button>
               <button id="btnB9S" class="btn btn-light h-50" type="button" onclick="callFuncButton('9 Socle');">B9 Socle</button>
             </div>
           </div> 
@@ -301,6 +301,7 @@
                     <div class="card-title"><strong id="lblMnu3">3. Button Hole foot 3A calibration</strong></div>
                     <div class="row" id="kpiButtonHoldInfo">
                         <!-- AJAX will load here -->
+                        ----
                     </div>
                 </div>
             </div>
@@ -308,13 +309,11 @@
                 <div class="col-md-12">
                     <div class="kpi-footer">
                         <div class="col-12 text-start">
-                            <p class="card-text" id="kpiButtonHoldInfo">
-                                <small class="text-muted">
-                                    <a class="menu-link cursor-pointer" id="btn_rmk_mnu3" onclick="mnuRemark(3)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark3</a>
-                                    <span class="text-info" id="rmk_serial3"></span>
-                                    <span class="text-info" id="rmk_mnu3"></span>
-                                </small>
-                            </p>
+                            <small class="text-muted">
+                                <a class="menu-link cursor-pointer" id="btn_rmk_mnu3" onclick="mnuRemark(3)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark3</a>
+                                <span class="text-info" id="rmk_serial3"></span>
+                                <span class="text-info" id="rmk_mnu3"></span>
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -712,6 +711,6 @@
     <script src="~/js/xlsx.full.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
 
+    <script src="~/js/top10-failed.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
     <script src="~/js/kpis.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
-    <script src="~/js/top10-failed.js"></script>
 }

@@ -91,7 +91,7 @@ public class AdminCfgController : Controller
         {
           id = Convert.ToInt32(rdr["id"]),
           lineid = rdr["lineid"].ToString(),
-          view1  = Convert.ToInt32(rdr["view1 "]),
+          view1  = Convert.ToInt32(rdr["view1"]),
           view2  = Convert.ToInt32(rdr["view2"]),
           view3  = Convert.ToInt32(rdr["view3"]),
           view4  = Convert.ToInt32(rdr["view4"]),

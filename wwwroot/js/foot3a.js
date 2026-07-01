@@ -416,7 +416,7 @@ function setAlarmBgColor(series) {
 
     },
     success: function (response) {
-      //console.log(response);
+      console.log(response);
       //for (const [keyA, valueA] of Object.entries(response)) {
       //  //console.log(`Key: ${key}, Value: ${value}`);
       //  for (const [keyB, valueB] of Object.entries(valueA)) {

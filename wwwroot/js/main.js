@@ -201,7 +201,7 @@ function setBgButton(serial) {
     $("#btnB7").addClass("btn btn-light-secondary h-20");
     $("#btnB9P").addClass("btn btn-light h-20");
     $("#btnB9S").addClass("btn btn-light h-20");
-  } else if (serial == "9 PAM") {
+  } else if (serial == "9") {
     $("#btnB3").removeClass();
     $("#btnB4").removeClass();
     $("#btnB5").removeClass();

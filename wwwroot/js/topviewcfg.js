@@ -17,7 +17,7 @@ function setDisplay(id) {
       viewno: viewno,
       status: status
     }
-    //console.log(objForm); //UpdateTopviewCfg
+    console.log(objForm); //UpdateTopviewCfg
     $.ajax({
       type: "PUT",
       url: "/AdminCfg/UpdateTopviewCfg",
@@ -59,7 +59,7 @@ function setDisplayCfg() {
               }
               //console.log(value);
               if (LineValue != '') {
-                //console.log(`${LineValue}`, `Key: ${key}, Value: ${value}`);
+                console.log(`${LineValue}`, `Key: ${key}, Value: ${value}`);
                 SetDisplayTopView(`${LineValue}`, `${key}`, `${value}`);
               }              
             }

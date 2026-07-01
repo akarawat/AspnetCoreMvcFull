@@ -65,19 +65,20 @@ $(document).ready(function () {
       SetRemarkSerial("7");
     },
     function () {
-      loadKPIB4B5("9 PAM");
-      loadAutoThreader("9 PAM");
-      loadButtonHold("9 PAM");
-      loadBobbinCase("9 PAM");
-      loadSewingFoot("9 PAM");
-      loadDifferanceWeight("9 PAM");
-      loadThreadTension("9 PAM");
-      loadTTAAdjustment("9 PAM");
-      loadBalanceRough("9 PAM");
-      loadBalanceFine("9 PAM");
-      loadBDFBalance("9 PAM");
-      loadBasePlate("9 PAM");
-      SetRemarkSerial("9 PAM");
+      
+      loadKPIB4B5("9");
+      loadAutoThreader("9");
+      loadButtonHold("9");
+      loadBobbinCase("9");
+      loadSewingFoot("9");
+      loadDifferanceWeight("9");
+      loadThreadTension("9");
+      loadTTAAdjustment("9");
+      loadBalanceRough("9");
+      loadBalanceFine("9");
+      loadBDFBalance("9");
+      loadBasePlate("9");
+      SetRemarkSerial("9");
     },
     function () {
       loadKPIB4B5("9 Socle");
@@ -118,7 +119,7 @@ $(document).ready(function () {
   if (curModel == '9 Socle') {
     currentIndex = 5;
     GetPassFailScore("9");
-  } else if (curModel == '9 PAM') {
+  } else if (curModel == '9') {
     currentIndex = 4;
     GetPassFailScore("9");
   } else if (curModel == '7') {
@@ -168,11 +169,8 @@ function disableRemarkBtn() {
 }
 function callFuncButton(serial) {
   let ifB9Only = serial;
-  if (serial == '9 PAM') {
-    $("#curModel").val('9P');
-    ifB9Only = "9";
-  } else if (serial == '9 Socle') {
-    $("#curModel").val('9S');
+  if (serial == '9') {
+    $("#curModel").val('9');
     ifB9Only = "9";
   } else {
     $("#curModel").val(serial);
@@ -364,8 +362,9 @@ function setVisibleDisplay(serial) {
     },
     success: function (data) {
       console.log(data[0]);
-      //console.log(data[0]["view1"]);
-      if (data != null) {
+      if (data[0].length != 0) {
+      //if ((data[0]?.length || 0) !== 0) {
+        console.log(data[0]["view1"]);
         if (data[0]["view1"] == 1) document.getElementById("display_param1").style.display = "block"; else document.getElementById("display_param1").style.display = "none";
         if (data[0]["view2"] == 1) document.getElementById("display_param2").style.display = "block"; else document.getElementById("display_param2").style.display = "none";
         if (data[0]["view3"] == 1) document.getElementById("display_param3").style.display = "block"; else document.getElementById("display_param3").style.display = "none";
@@ -572,6 +571,7 @@ function loadButtonHold(serial) {
   const container = $('#kpiButtonHoldInfo');
   container.empty();
   //GetDataKPITopView
+  console.log(serial);
   $.ajax({
     url: '/Foot3A/GetDataKPITopView',
     method: 'GET',
@@ -616,7 +616,6 @@ function loadButtonHold(serial) {
     }
   });
 }
-
 function loadBobbinCase(serial) {
   const imgPath = 'img/avatars/autothreader.png';
   const container = $('#kpiBobbinCase');
