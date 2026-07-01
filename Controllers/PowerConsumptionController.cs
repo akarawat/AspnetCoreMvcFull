@@ -21,7 +21,7 @@ public class PowerConsumptionController : Controller
   //   @flagrange VARCHAR : 'W' = last 7 days (default)
   // -----------------------------------------------------------------------
   [HttpGet]
-  public JsonResult GetPowerConsumptionKPI(string? series, string? flagrange)
+  public JsonResult GetPowerConsumptionKPI(string? series, string? flagrange, string? dt_from, string? dt_to)
   {
     string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
     object result  = new { total_count = 0, fail_count = 0, fail_pct = 0m,
@@ -37,6 +37,10 @@ public class PowerConsumptionController : Controller
         = series    ?? (object)DBNull.Value;
       cmd.Parameters.AddWithValue("@flagrange", SqlDbType.VarChar).Value
         = flagrange ?? "W";
+      cmd.Parameters.AddWithValue("@dt_from",   SqlDbType.VarChar).Value
+        = string.IsNullOrEmpty(dt_from) ? (object)DBNull.Value : dt_from;
+      cmd.Parameters.AddWithValue("@dt_to",     SqlDbType.VarChar).Value
+        = string.IsNullOrEmpty(dt_to)   ? (object)DBNull.Value : dt_to;
 
       SqlDataReader rdr = cmd.ExecuteReader();
       if (rdr.Read())
@@ -89,7 +93,7 @@ public class PowerConsumptionController : Controller
   // SP: SP_GetPowerConsumption
   // -----------------------------------------------------------------------
   [HttpGet]
-  public JsonResult GetPowerConsumption(string? series, string? flagrange)
+  public JsonResult GetPowerConsumption(string? series, string? flagrange, string? dt_from, string? dt_to)
   {
     string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
     List<PowerConsumptionModel> result = new List<PowerConsumptionModel>();
@@ -101,6 +105,8 @@ public class PowerConsumptionController : Controller
       cmd.CommandType = CommandType.StoredProcedure;
       cmd.Parameters.AddWithValue("@series",    SqlDbType.VarChar).Value = series    ?? (object)DBNull.Value;
       cmd.Parameters.AddWithValue("@flagrange", SqlDbType.VarChar).Value = flagrange ?? (object)DBNull.Value;
+      cmd.Parameters.AddWithValue("@dt_from",   SqlDbType.VarChar).Value = string.IsNullOrEmpty(dt_from) ? (object)DBNull.Value : dt_from;
+      cmd.Parameters.AddWithValue("@dt_to",     SqlDbType.VarChar).Value = string.IsNullOrEmpty(dt_to)   ? (object)DBNull.Value : dt_to;
 
       SqlDataReader rdr = cmd.ExecuteReader();
       while (rdr.Read())
@@ -128,7 +134,7 @@ public class PowerConsumptionController : Controller
   // SP: SP_GetPowerConsumptionTime
   // -----------------------------------------------------------------------
   [HttpGet]
-  public JsonResult GetPowerConsumptionTime(string? serial, string? series, string? flagrange)
+  public JsonResult GetPowerConsumptionTime(string? serial, string? series, string? flagrange, string? dt_from, string? dt_to)
   {
     string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
     List<PowerConsumptionTimeModel> result = new List<PowerConsumptionTimeModel>();
@@ -141,6 +147,8 @@ public class PowerConsumptionController : Controller
       cmd.Parameters.AddWithValue("@serial",    SqlDbType.VarChar).Value = serial    ?? (object)DBNull.Value;
       cmd.Parameters.AddWithValue("@series",    SqlDbType.VarChar).Value = series    ?? (object)DBNull.Value;
       cmd.Parameters.AddWithValue("@flagrange", SqlDbType.VarChar).Value = flagrange ?? (object)DBNull.Value;
+      cmd.Parameters.AddWithValue("@dt_from",   SqlDbType.VarChar).Value = string.IsNullOrEmpty(dt_from) ? (object)DBNull.Value : dt_from;
+      cmd.Parameters.AddWithValue("@dt_to",     SqlDbType.VarChar).Value = string.IsNullOrEmpty(dt_to)   ? (object)DBNull.Value : dt_to;
 
       SqlDataReader rdr = cmd.ExecuteReader();
       while (rdr.Read())

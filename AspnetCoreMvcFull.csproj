@@ -50,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="SQL\" />
     <Folder Include="wwwroot\UploadedFiles\" />
   </ItemGroup>
 

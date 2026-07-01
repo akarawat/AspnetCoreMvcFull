@@ -8,7 +8,7 @@
 @section VendorStyles {
     <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
     <link href="~/css/site.css" rel="stylesheet" />
-    <link href="~/css/power-consumption.css?v=1.0.0" rel="stylesheet" />
+    <link href="~/css/power-consumption.css" rel="stylesheet" asp-append-version="true" />
 }
 
 @section VendorScripts {
@@ -22,7 +22,7 @@
 @section PageScripts {
     <script src="~/js/xlsx.full.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
-    <script src="~/js/power-consumption.js?v=1.0.2"></script>
+    <script src="~/js/power-consumption.js" asp-append-version="true"></script>
 }
 
 @* ═══════════════════════ Content ═══════════════════════ *@
@@ -60,7 +60,7 @@
           <div class="flex-grow-1"></div>
 
           @* Date-range radio buttons *@
-          <div class="d-flex align-items-center gap-1 me-2">
+          <div class="d-flex flex-wrap align-items-center gap-1 me-2">
             <small class="text-muted fw-medium me-2">Data range :</small>
             <div class="form-check form-check-inline mb-0">
               <input class="form-check-input" type="radio" name="rangeRadio" id="radioWeek"  value="W" checked />
@@ -73,6 +73,19 @@
             <div class="form-check form-check-inline mb-0">
               <input class="form-check-input" type="radio" name="rangeRadio" id="radioYear"  value="Y" />
               <label class="form-check-label" for="radioYear">Yearly</label>
+            </div>
+            <div class="form-check form-check-inline mb-0">
+              <input class="form-check-input" type="radio" name="rangeRadio" id="radioCustom" value="D" />
+              <label class="form-check-label" for="radioCustom">Date to Date</label>
+            </div>
+            @* Date picker — แสดงเฉพาะเมื่อเลือก Date to Date *@
+            <div id="customDateRange" class="d-flex align-items-center gap-2" style="display:none!important;">
+              <input type="date" id="inputDateFrom" class="form-control form-control-sm" style="width:140px;" />
+              <span class="text-muted small">–</span>
+              <input type="date" id="inputDateTo"   class="form-control form-control-sm" style="width:140px;" />
+              <button class="btn btn-sm btn-primary" onclick="applyCustomRange()">
+                <i class="ri-search-line"></i>
+              </button>
             </div>
           </div>
 
@@ -327,3 +340,5 @@
 @* Hidden state — ค่าเริ่มต้น series มาจาก URL param ผ่าน ViewData *@
 <input type="hidden" id="hdnSeries"    value="@activeSeries" />
 <input type="hidden" id="hdnFlagrange" value="W" />
+<input type="hidden" id="hdnDateFrom"  value="" />
+<input type="hidden" id="hdnDateTo"    value="" />

@@ -23,9 +23,24 @@ let _limitParam = null;   // PassFailParamModel | null
 
 /* ─── Init ──────────────────────────────────────────────── */
 $(document).ready(function () {
+  // กำหนดค่า default date ให้ input (today และ 7 วันก่อน)
+  const today = new Date();
+  const weekAgo = new Date(today);
+  weekAgo.setDate(today.getDate() - 6);
+  $('#inputDateFrom').val(fmtDateInput(weekAgo));
+  $('#inputDateTo').val(fmtDateInput(today));
+
   $('input[name="rangeRadio"]').on('change', function () {
-    $('#hdnFlagrange').val(this.value);
-    loadPowerConsumption();
+    const val = this.value;
+    $('#hdnFlagrange').val(val);
+    if (val === 'D') {
+      $('#customDateRange').css('display', 'flex');
+    } else {
+      $('#customDateRange').css('display', 'none');
+      $('#hdnDateFrom').val('');
+      $('#hdnDateTo').val('');
+      loadPowerConsumption();
+    }
   });
   loadPowerConsumption();
 });
@@ -39,20 +54,46 @@ function changeSeries(series) {
   loadPowerConsumption();
 }
 
+/* ─── Apply custom date range ───────────────────────────── */
+function applyCustomRange() {
+  const from = $('#inputDateFrom').val();
+  const to   = $('#inputDateTo').val();
+  if (!from || !to) {
+    alert('Please select both From and To dates.');
+    return;
+  }
+  if (from > to) {
+    alert('From date must not be later than To date.');
+    return;
+  }
+  $('#hdnDateFrom').val(from);
+  $('#hdnDateTo').val(to);
+  loadPowerConsumption();
+}
+
 /* ─── Load DataTable 1 + Chart ──────────────────────────── */
 async function loadPowerConsumption() {
-  const series = $('#hdnSeries').val();
+  const series    = $('#hdnSeries').val();
   const flagrange = $('#hdnFlagrange').val();
-  const label = 'B' + series + ' — ' + rangeLabel(flagrange);
+  const dtFrom    = $('#hdnDateFrom').val();
+  const dtTo      = $('#hdnDateTo').val();
+  const label     = 'B' + series + ' — ' + rangeLabel(flagrange, dtFrom, dtTo);
 
   $('#lblSeries').text('B' + series);
   $('#badgeSeries').text(label);
   $('#badgeScatterSeries').text(label);
   $('#btnExportSummary').prop('disabled', true);
 
+  // build query params — เพิ่ม dt_from/dt_to เมื่อเลือก Date to Date
+  const qMain = new URLSearchParams({ series, flagrange });
+  if (flagrange === 'D' && dtFrom && dtTo) {
+    qMain.set('dt_from', dtFrom);
+    qMain.set('dt_to', dtTo);
+  }
+
   // โหลด Limit + Data พร้อมกัน (parallel)
   const [data, limitParam] = await Promise.all([
-    fetchJson(`/PowerConsumption/GetPowerConsumption?${new URLSearchParams({ series, flagrange })}`),
+    fetchJson(`/PowerConsumption/GetPowerConsumption?${qMain}`),
     fetchJson(`/PowerConsumption/GetPassFailParam?${new URLSearchParams({ series })}`)
   ]);
 
@@ -437,9 +478,14 @@ async function loadTimeProfile(serial, series, dateLabel) {
   $('#panelTimeProfile').show();
   $('html, body').animate({ scrollTop: $('#panelTimeProfile').offset().top - 80 }, 400);
 
-  const data = await fetchJson(
-    `/PowerConsumption/GetPowerConsumptionTime?${new URLSearchParams({ serial, series, flagrange })}`
-  );
+  const qTime = new URLSearchParams({ serial, series, flagrange });
+  const dtFrom = $('#hdnDateFrom').val();
+  const dtTo   = $('#hdnDateTo').val();
+  if (flagrange === 'D' && dtFrom && dtTo) {
+    qTime.set('dt_from', dtFrom);
+    qTime.set('dt_to', dtTo);
+  }
+  const data = await fetchJson(`/PowerConsumption/GetPowerConsumptionTime?${qTime}`);
   _timeData = data || [];
 
   if (apexProfile) { apexProfile.destroy(); apexProfile = null; }
@@ -587,8 +633,15 @@ async function fetchJson(url) {
   }
 }
 
-function rangeLabel(flag) {
+function rangeLabel(flag, dtFrom, dtTo) {
+  if (flag === 'D' && dtFrom && dtTo) return dtFrom + ' → ' + dtTo;
   return flag === 'W' ? 'Last 7 days' : flag === 'M' ? 'Last 30 days' : 'Last 365 days';
+}
+
+function fmtDateInput(date) {
+  return date.getFullYear() + '-'
+    + String(date.getMonth() + 1).padStart(2, '0') + '-'
+    + String(date.getDate()).padStart(2, '0');
 }
 
 function dateStamp() {

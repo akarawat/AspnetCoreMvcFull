@@ -55,7 +55,7 @@
 }
 
 @section PageStyles {
-    <link href="~/css/bgpassfail.css?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")" rel="stylesheet" />
+    <link href="~/css/bgpassfail.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/kpi.css" rel="stylesheet" />
 }
 
@@ -73,8 +73,7 @@
               <button id="btnB4" class="btn btn-light h-50" type="button" onclick="callFuncButton('4');">B4</button>
               <button id="btnB5" class="btn btn-light h-50" type="button" onclick="callFuncButton('5');">B5</button>
               <button id="btnB7" class="btn btn-light h-50" type="button" onclick="callFuncButton('7');">B7</button>
-              <button id="btnB9P" class="btn btn-light h-50" type="button" onclick="callFuncButton('9');">B9</button>
-              <button id="btnB9S" class="btn btn-light h-50" type="button" onclick="callFuncButton('9 Socle');">B9 Socle</button>
+              <button id="btnB9" class="btn btn-light h-50" type="button" onclick="callFuncButton('9');">B9</button>
             </div>
           </div> 
         </div>
@@ -704,13 +703,12 @@
 
 
 @section PageScripts {
-    
-    <script src="~/js/chart.umd.min.js"></script>
+
     <script src="~/js/chartjs-plugin-datalabels@2.js"></script>
 
     <script src="~/js/xlsx.full.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
 
-    <script src="~/js/top10-failed.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
-    <script src="~/js/kpis.js?v=@DateTime.Now.ToString("ddmmmyyyyHHmmss")"></script>
+    <script src="~/js/top10-failed.js" asp-append-version="true"></script>
+    <script src="~/js/kpis.js" asp-append-version="true"></script>
 }

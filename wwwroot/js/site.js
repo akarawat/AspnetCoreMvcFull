@@ -12,6 +12,14 @@ function ConfirmLogout() {
   if (!confirm("Confirm to logout?")) return;
   window.open('', '_self').close();
 }
+function setBgButton(serial) {
+  const map = { '3': 'btnB3', '4': 'btnB4', '5': 'btnB5', '7': 'btnB7', '9': 'btnB9' };
+  ['btnB3','btnB4','btnB5','btnB7','btnB9'].forEach(id => {
+    $('#' + id).removeClass('btn-light-secondary').addClass('btn-light');
+  });
+  const active = map[serial];
+  if (active) $('#' + active).removeClass('btn-light').addClass('btn-light-secondary');
+}
 function formatNumber(value, fix) {
   if (isNaN(value)) return '';
 
@@ -37,94 +45,3 @@ function formatDate(dateStr) {
 
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
-function setBgButton(serial) {
-  if (serial == "4") {
-    $("#btnB3").removeClass();
-    $("#btnB4").removeClass();
-    $("#btnB5").removeClass();
-    $("#btnB7").removeClass();
-    $("#btnB9P").removeClass();
-    $("#btnB9S").removeClass();
-
-    $("#btnB3").addClass("btn btn-light h-20");
-    $("#btnB4").addClass("btn btn-light-secondary h-20");
-    $("#btnB5").addClass("btn btn-light h-20");
-    $("#btnB7").addClass("btn btn-light h-20");
-    $("#btnB9P").addClass("btn btn-light h-20");
-    $("#btnB9S").addClass("btn btn-light h-20");
-  } else if (serial == "5") {
-    $("#btnB3").removeClass();
-    $("#btnB4").removeClass();
-    $("#btnB5").removeClass();
-    $("#btnB7").removeClass();
-    $("#btnB9P").removeClass();
-    $("#btnB9S").removeClass();
-    $("#btnB3").addClass("btn btn-light h-20");
-    $("#btnB4").addClass("btn btn-light h-20");
-    $("#btnB5").addClass("btn btn-light-secondary h-20");
-    $("#btnB7").addClass("btn btn-light h-20");
-    $("#btnB9P").addClass("btn btn-light h-20");
-    $("#btnB9S").addClass("btn btn-light h-20");
-  } else if (serial == "7") {
-    $("#btnB3").removeClass();
-    $("#btnB4").removeClass();
-    $("#btnB5").removeClass();
-    $("#btnB7").removeClass();
-    $("#btnB9P").removeClass();
-    $("#btnB9S").removeClass();
-    $("#btnB3").addClass("btn btn-light h-20");
-    $("#btnB4").addClass("btn btn-light h-20");
-    $("#btnB5").addClass("btn btn-light h-20");
-    $("#btnB7").addClass("btn btn-light-secondary h-20");
-    $("#btnB9P").addClass("btn btn-light h-20");
-    $("#btnB9S").addClass("btn btn-light h-20");
-  } else if (serial == "9") {
-    $("#btnB3").removeClass();
-    $("#btnB4").removeClass();
-    $("#btnB5").removeClass();
-    $("#btnB7").removeClass();
-    $("#btnB9P").removeClass();
-    $("#btnB9S").removeClass();
-    $("#btnB3").addClass("btn btn-light h-20");
-    $("#btnB4").addClass("btn btn-light h-20");
-    $("#btnB5").addClass("btn btn-light h-20");
-    $("#btnB7").addClass("btn btn-light h-20");
-    $("#btnB9P").addClass("btn btn-light-secondary h-20");
-    $("#btnB9S").addClass("btn btn-light h-20");
-
-
-  } else if (serial == "9 Socle") {
-    $("#btnB3").removeClass();
-    $("#btnB4").removeClass();
-    $("#btnB5").removeClass();
-    $("#btnB7").removeClass();
-    $("#btnB9P").removeClass();
-    $("#btnB9S").removeClass();
-    $("#btnB3").addClass("btn btn-light h-20");
-    $("#btnB4").addClass("btn btn-light h-20");
-    $("#btnB5").addClass("btn btn-light h-20");
-    $("#btnB7").addClass("btn btn-light h-20");
-    $("#btnB9P").addClass("btn btn-light h-20");
-    $("#btnB9S").addClass("btn btn-light-secondary h-20");
-  } else if (serial == "3") {
-    $("#btnB3").removeClass();
-    $("#btnB4").removeClass();
-    $("#btnB5").removeClass();
-    $("#btnB7").removeClass();
-    $("#btnB9P").removeClass();
-    $("#btnB9S").removeClass();
-
-    $("#btnB3").addClass("btn btn-light-secondary h-20");
-    $("#btnB4").addClass("btn btn-light h-20");
-    $("#btnB5").addClass("btn btn-light h-20");
-    $("#btnB7").addClass("btn btn-light h-20");
-    $("#btnB9P").addClass("btn btn-light h-20");
-    $("#btnB9S").addClass("btn btn-light h-20");
-  }
-
-  $("#btnB9P").text("B9");
-  $("#btnB9S").removeClass();
-  document.getElementById("btnB9S").style.display = "none";
-}
-
-

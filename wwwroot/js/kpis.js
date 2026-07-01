@@ -1,157 +1,35 @@
 const SetMaxFail = 5;
 const SetMinFail = 2;
 
+
+function loadAllCards(serial) {
+  loadKPIB4B5(serial);
+  loadAutoThreader(serial);
+  loadButtonHold(serial);
+  loadBobbinCase(serial);
+  loadSewingFoot(serial);
+  loadDifferanceWeight(serial);
+  loadThreadTension(serial);
+  loadTTAAdjustment(serial);
+  loadBalanceRough(serial);
+  loadBalanceFine(serial);
+  loadBDFBalance(serial);
+  loadBasePlate(serial);
+  SetRemarkSerial(serial);
+}
+
 $(document).ready(function () {
+  const curModel = $('#curModel').val() || '5';
 
-  const kpiFunctions = [
-    function () {
-      loadKPIB4B5("3");
-      loadAutoThreader("3");
-      loadButtonHold("3");
-      loadBobbinCase("3");
-      loadSewingFoot("3");
-      loadDifferanceWeight("3");
-      loadThreadTension("3");
-      loadTTAAdjustment("3");
-      loadBalanceRough("3");
-      loadBalanceFine("3");
-      loadBDFBalance("3");
-      loadBasePlate("3");
-      SetRemarkSerial("3");
-    },
-    function () {
-      loadKPIB4B5("4");
-      loadAutoThreader("4");
-      loadButtonHold("4");
-      loadBobbinCase("4");
-      loadSewingFoot("4");
-      loadDifferanceWeight("4");
-      loadThreadTension("4");
-      loadTTAAdjustment("4");
-      loadBalanceRough("4");
-      loadBalanceFine("4");
-      loadBDFBalance("4");
-      loadBasePlate("4");
-      SetRemarkSerial("4");
-    },
-    function () {
-      loadKPIB4B5("5");
-      loadAutoThreader("5");
-      loadButtonHold("5");
-      loadBobbinCase("5");
-      loadSewingFoot("5");
-      loadDifferanceWeight("5");
-      loadThreadTension("5");
-      loadTTAAdjustment("5");
-      loadBalanceRough("5");
-      loadBalanceFine("5");
-      loadBDFBalance("5");
-      loadBasePlate("5");
-      SetRemarkSerial("5");
-    },
-    function () {
-      loadKPIB4B5("7");
-      loadAutoThreader("7");
-      loadButtonHold("7");
-      loadBobbinCase("7");
-      loadSewingFoot("7");
-      loadDifferanceWeight("7");
-      loadThreadTension("7");
-      loadTTAAdjustment("7");
-      loadBalanceRough("7");
-      loadBalanceFine("7");
-      loadBDFBalance("7");
-      loadBasePlate("7");
-      SetRemarkSerial("7");
-    },
-    function () {
-      
-      loadKPIB4B5("9");
-      loadAutoThreader("9");
-      loadButtonHold("9");
-      loadBobbinCase("9");
-      loadSewingFoot("9");
-      loadDifferanceWeight("9");
-      loadThreadTension("9");
-      loadTTAAdjustment("9");
-      loadBalanceRough("9");
-      loadBalanceFine("9");
-      loadBDFBalance("9");
-      loadBasePlate("9");
-      SetRemarkSerial("9");
-    },
-    function () {
-      loadKPIB4B5("9 Socle");
-      loadAutoThreader("9 Socle");
-      loadButtonHold("9 Socle");
-      loadBobbinCase("9 Socle");
-      loadSewingFoot("9 Socle");
-      loadDifferanceWeight("9 Socle");
-      loadThreadTension("9 Socle");
-      loadTTAAdjustment("9 Socle");
-      loadBalanceRough("9 Socle");
-      loadBalanceFine("9 Socle");
-      loadBDFBalance("9 Socle");
-      loadBasePlate("9 Socle");
-      SetRemarkSerial("9 Socle");
-    },
-    function () {
-      loadKPIB4B5("3");
-      loadAutoThreader("3");
-      loadButtonHold("3");
-      loadBobbinCase("3");
-      loadSewingFoot("3");
-      loadDifferanceWeight("3");
-      loadThreadTension("3");
-      loadTTAAdjustment("3");
-      loadBalanceRough("3");
-      loadBalanceFine("3");
-      loadBDFBalance("3");
-      loadBasePlate("3");
-      SetRemarkSerial("3");
-    }
-
-  ];
-
-  let currentIndex = 0;
-  let curModel = $("#curModel").val();
-  console.log(curModel);
-  if (curModel == '9 Socle') {
-    currentIndex = 5;
-    GetPassFailScore("9");
-  } else if (curModel == '9') {
-    currentIndex = 4;
-    GetPassFailScore("9");
-  } else if (curModel == '7') {
-    currentIndex = 3;
-    GetPassFailScore("7");
-  } else if (curModel == '5') {
-    currentIndex = 2;
-    GetPassFailScore("5");
-  } else if (curModel == '4') {
-    currentIndex = 1;
-    GetPassFailScore("4");
-  } else if (curModel == '3') {
-    currentIndex = 0;
-    GetPassFailScore("3");
-  }
-
-  kpiFunctions[currentIndex]();
+  loadAllCards(curModel);
   setBgButton(curModel);
-
   setVisibleDisplay(curModel);
   disableRemarkBtn();
   BindDataTableTop10Failed(curModel);
   BindDataTableDailyProd(curModel);
-  //drawDailyProductionSimple(curModel);
-
-  // Daniel Req.
-  $("#pduTitle").html(`Production Data Utilization Dashboard - B${curModel}`);
-  $("#btnB9P").text("B9");
-  $("#btnB9S").removeClass();
-  document.getElementById("btnB9S").style.display = "none";
-
   GetPassFailScore(curModel);
+
+  $('#pduTitle').html(`Production Data Utilization Dashboard - B${curModel}`);
 });
 function disableRemarkBtn() {
   document.getElementById("btn_rmk_mnu1").style.display = "none";
@@ -168,40 +46,16 @@ function disableRemarkBtn() {
   document.getElementById("btn_rmk_mnu10").style.display = "none";
 }
 function callFuncButton(serial) {
-  let ifB9Only = serial;
-  if (serial == '9') {
-    $("#curModel").val('9');
-    ifB9Only = "9";
-  } else {
-    $("#curModel").val(serial);
-  }
-  let serial_model = $("#curModel").val();
-  setVisibleDisplay(serial_model);
+  $('#curModel').val(serial);
 
-  loadKPIB4B5(serial);
-  loadAutoThreader(serial);
-  loadButtonHold(serial);
-  loadBobbinCase(serial);
-  loadSewingFoot(serial);
-  loadDifferanceWeight(serial);
-  loadThreadTension(serial);
-  loadTTAAdjustment(serial);
-  loadBalanceRough(serial);
-  loadBalanceFine(serial);
-  loadBDFBalance(serial);
-  loadBasePlate(serial);
+  loadAllCards(serial);
+  setBgButton(serial);
+  setVisibleDisplay(serial);
+  BindDataTableTop10Failed(serial);
+  BindDataTableDailyProd(serial);
+  GetPassFailScore(serial);
 
-  SetRemarkSerial(serial_model);
-
-  BindDataTableTop10Failed(ifB9Only);
-  BindDataTableDailyProd(ifB9Only);
-
-  //drawDailyProductionSimple(ifB9Only);
-  $("#btnB9S").removeClass();
-  document.getElementById("btnB9S").style.display = "none";
-  $("#pduTitle").html(`Production Data Utilization Dashboard - B${ifB9Only}`);
-
-  GetPassFailScore(ifB9Only);
+  $('#pduTitle').html(`Production Data Utilization Dashboard - B${serial}`);
 }
 // Release Bachground color for all button
 function GetPassFailScore(serial) {
@@ -845,25 +699,48 @@ function loadBasePlate(serial) {
   const imgPath = 'img/avatars/baseplate.png';
   const container = $('#kpiBasePlate');
   container.empty();
-  let dtFrom = '';
-  let dtTo = '';
-  var html = '';
-  html = `
-              <div class="kpi-card">
-                <div class="row">
-                  <div class="col-6 text-start">
-                    <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
-                    <div class="text-bold">${dtFrom} - ${dtTo}</div>
-                    <p class="text-center"><button class="btn" onclick="GotoBasePlat('${serial}');"><img src="${imgPath}" alt="Click for detail" /></button></p>
-                  </div>
-                  <div class="col-6 mb-0 text-start">
-                    <div class="value">Summary Data <br/>
-                      <label id="accum_mnu1">-</label>
-                    </div>
-                  </div>
-                </div>
-              </div>`;
-  container.append(html);
+  $.ajax({
+    type: 'GET',
+    url: '/BaseplateWeight/GetBaseplateWeightKPI',
+    data: { series: serial },
+    success: function (res) {
+      const colorMap = { green: 'text-success', yellow: 'text-warning', red: 'text-danger' };
+      const badgeMap = { green: 'bg-label-success', yellow: 'bg-label-warning', red: 'bg-label-danger' };
+      const cls = colorMap[res.status] || 'text-secondary';
+      const badge = badgeMap[res.status] || 'bg-label-secondary';
+      const html = `
+        <div class="kpi-card">
+          <div class="row">
+            <div class="col-6 text-start">
+              <div><strong><h5 class="text-secondary">Model B${serial}</h5></strong></div>
+              <p class="text-center mt-1">
+                <button class="btn" onclick="GotoBasePlat('${serial}');">
+                  <img src="${imgPath}" alt="Click for detail" />
+                </button>
+              </p>
+            </div>
+            <div class="col-6 mb-0 text-start">
+              <div class="value">
+                <small class="text-muted d-block">Summary Data (7 days)</small>
+                <span class="fs-5 fw-bold ${cls}">${res.outOfSpec} / ${res.total}</span>
+                <br/>
+                <span class="badge ${badge} mt-1">${res.ratio}%</span>
+                <br/>
+                <small class="text-muted">USL=${res.usl} <br/> LSL=${res.lsl}</small>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      container.append(html);
+      // อัปเดต bg color ของ card ตาม status (เหมือน card อื่นใน bgpassfail.css)
+      const bgMap = { green: 'machine-status-green', yellow: 'machine-status-yellow', red: 'machine-status-orange' };
+      $('#bg_param91').removeClass('machine-status-green machine-status-yellow machine-status-orange')
+        .addClass('card h-100 ' + (bgMap[res.status] || ''));
+    },
+    error: function () {
+      container.html('<div class="text-muted small p-2">ไม่สามารถโหลดข้อมูล Baseplate</div>');
+    }
+  });
 }
 function GotoPowerConSumption(series) {
   var url = '/PowerConsumption/?fullscreen=true&series=' + series;

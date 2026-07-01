@@ -136,6 +136,60 @@ public class BaseplateWeightController : Controller
   }
 
   // -----------------------------------------------------------------------
+  // GET /BaseplateWeight/GetBaseplateWeightKPI?series=7
+  // ใช้สำหรับ KPI card 10 บนหน้า KPIs/Index
+  // คำนวณ total / outOfSpec / failRatio จาก flagrange='W' (7 วันล่าสุด)
+  // -----------------------------------------------------------------------
+  [HttpGet]
+  public JsonResult GetBaseplateWeightKPI(string? series)
+  {
+    string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
+
+    // 1. โหลด USL / LSL จาก passfail_param
+    decimal usl = 25, lsl = -25;
+    using (SqlConnection conn = new SqlConnection(connStr))
+    {
+      conn.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetPassFailParam", conn);
+      cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.AddWithValue("@series", SqlDbType.VarChar).Value = series ?? (object)DBNull.Value;
+      cmd.Parameters.AddWithValue("@mnufunc", SqlDbType.VarChar).Value = MNUFUNC_BASEPLATE;
+      SqlDataReader rdr = cmd.ExecuteReader();
+      if (rdr.Read())
+      {
+        usl = rdr["max_fail"] == DBNull.Value ? usl : Convert.ToDecimal(rdr["max_fail"]);
+        lsl = rdr["min_fail"] == DBNull.Value ? lsl : Convert.ToDecimal(rdr["min_fail"]);
+      }
+    }
+
+    // 2. โหลดข้อมูล 7 วันล่าสุด
+    int total = 0, outOfSpec = 0;
+    using (SqlConnection conn = new SqlConnection(connStr))
+    {
+      conn.Open();
+      SqlCommand cmd = new SqlCommand("SP_GetBaseplateWeight", conn);
+      cmd.CommandType = CommandType.StoredProcedure;
+      cmd.Parameters.AddWithValue("@series", SqlDbType.VarChar).Value = series ?? (object)DBNull.Value;
+      cmd.Parameters.AddWithValue("@flagrange", SqlDbType.VarChar).Value = "W";
+      SqlDataReader rdr = cmd.ExecuteReader();
+      while (rdr.Read())
+      {
+        decimal diff = rdr["DiffMP1to4"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["DiffMP1to4"]);
+        total++;
+        if (diff > usl || diff < lsl) outOfSpec++;
+      }
+    }
+
+    // 3. คำนวณ fail ratio
+    double ratio = total > 0 ? Math.Round((double)outOfSpec / total * 100, 1) : 0;
+
+    // 4. status: green < 2%, yellow 2-5%, red > 5%
+    string status = ratio < 2 ? "green" : ratio <= 5 ? "yellow" : "red";
+
+    return Json(new { total, outOfSpec, ratio, status, usl, lsl });
+  }
+
+  // -----------------------------------------------------------------------
   // POST /BaseplateWeight/UpdatePassFailParam
   // SP: SP_UpdatePassFailParam  (@series, @mnufunc='10', @max_fail (USL), @min_fail (LSL))
   // -----------------------------------------------------------------------
