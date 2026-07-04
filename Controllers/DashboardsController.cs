@@ -261,9 +261,12 @@ public class DashboardsController : Controller
       {
         result.Add(new Top10Model
         {
+          monitor_dt = Convert.ToDateTime(rdr["monitor_dt"]).ToString("dd-MMM-yyyy"),
           Test = rdr["Test"].ToString(),
           fails = Convert.ToInt32(rdr["fails"]),
-          ratio = rdr["ratio"].ToString()
+          ratio = rdr["ratio"].ToString(),
+          fails_test = rdr["fails_test"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["fails_test"]),
+          testratio = rdr["testratio"]?.ToString() ?? ""
         });
       }
 

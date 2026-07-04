@@ -57,9 +57,12 @@ namespace AspnetCoreMvcFull.Models
   }
   public class Top10Model
   {
+    public string monitor_dt { get; set; }
     public string Test { get; set; }
     public int fails { get; set; }
     public string ratio { get; set; }
+    public int fails_test { get; set; }
+    public string testratio { get; set; }
 
   }
   public class DailyProdModel

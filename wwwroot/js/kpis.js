@@ -721,10 +721,10 @@ function loadBasePlate(serial) {
             </div>
             <div class="col-6 mb-0 text-start">
               <div class="value">
-                <small class="text-muted d-block">Summary Data (7 days)</small>
+                <small class="text-muted d-block">Summary Data</small>
                 <span class="fs-5 fw-bold ${cls}">${res.outOfSpec} / ${res.total}</span>
                 <br/>
-                <span class="badge ${badge} mt-1">${res.ratio}%</span>
+                <span class="badge ${badge} mt-1" style="display: none;">${res.ratio}%</span>
                 <br/>
                 <small class="text-muted">USL=${res.usl} <br/> LSL=${res.lsl}</small>
               </div>
@@ -1125,6 +1125,11 @@ async function BindDataTableTop10Failed(series) {
 
   const result = await response.json();
   const data = result;
+
+  if (data.length > 0) console.log('Top10 row[0]:', data[0]);
+  const lastUpdate = (data.length > 0 && data[0].monitor_dt) ? data[0].monitor_dt : '-';
+  $('#lblTop10Failed').text(`Top 10 failing ratio (Last update: ${lastUpdate})`);
+
   $('#bindDataTableTop10').DataTable({
     data: data,
     order: [[0, 'desc']],
@@ -1140,8 +1145,10 @@ async function BindDataTableTop10Failed(series) {
     pageLength: 10,
     columns: [
       { data: 'Test', title: 'Test' },
-      { data: 'fails', title: 'fails' },
-      { data: 'ratio', title: 'ratio' },
+      { data: 'fails', title: 'Machines Failed' },
+      { data: 'ratio', title: 'Machine %' },
+      { data: 'fails_test', title: 'Tests Failed' },
+      { data: 'testratio', title: 'Test %' },
     ]
   });
   //-- End Tables
