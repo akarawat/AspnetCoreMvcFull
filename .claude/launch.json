@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--launch-profile", "http", "--project", "AspnetCoreMvcFull.csproj"],
+      "port": 5055
+    }
+  ]
+}

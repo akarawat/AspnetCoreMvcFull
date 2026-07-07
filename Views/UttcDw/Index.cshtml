@@ -1,0 +1,309 @@
+@{
+    //Layout = "_BlankLayout";
+    var isFullscreen = ViewData["isFullscreen"]?.ToString() == "false";
+    if (isFullscreen)
+    {
+        Layout = "_BlankLayout";
+    }
+    var navbarType = isFullscreen ? "layout-navbar-hidden" : "layout-navbar-fixed";
+    var menuFixed = isFullscreen ? "" : "menu-fixed";
+    var isNavbar = isFullscreen ? false : true;
+    var isMenu = isFullscreen ? false : true;
+    var strCaption = isFullscreen ? "Exit full screen" : "Full screen";
+    //ViewData["navbarHideToggle"] = true;
+    // *** No Menus ***
+    ViewData["isMenu"] = isMenu;
+    ViewData["menuFixed"] = menuFixed;
+    // *** No Navbar ***
+    ViewData["isNavbar"] = isNavbar;
+    ViewData["navbarType"] = navbarType;
+
+}
+@{
+    ViewData["Title"] = "UTTC / DW Test Log — Fail Ratio";
+
+    // Series default จาก Controller (URL param ?series=4|5|7|9, "" = All)
+    var activeSeries = ViewData["ActiveSeries"]?.ToString() ?? "";
+}
+
+@section VendorStyles {
+    <link href="~/css/site.css" rel="stylesheet" />
+}
+
+@section VendorScripts {
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+}
+
+@section PageScripts {
+    <script src="~/js/uttcdw.js" asp-append-version="true"></script>
+}
+
+@* ═══════════════════════ Content ═══════════════════════ *@
+<div class="row g-4 mb-4">
+
+    @* ── Page Header ─────────────────────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap align-items-center gap-3">
+
+                    <a href="/" class="text-muted me-2">
+                        <i class="ri-arrow-left-circle-line me-1"></i>Home
+                    </a>
+
+                    @* Series buttons *@
+                    <div class="btn-group" role="group" aria-label="Series">
+                        <button id="udBtnSeriesAll" class="btn @(activeSeries == "" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUdSeries('')">
+                            All
+                        </button>
+                        <button id="udBtnSeries4" class="btn @(activeSeries == "4" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUdSeries('4')">
+                            B4
+                        </button>
+                        <button id="udBtnSeries5" class="btn @(activeSeries == "5" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUdSeries('5')">
+                            B5
+                        </button>
+                        <button id="udBtnSeries7" class="btn @(activeSeries == "7" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUdSeries('7')">
+                            B7
+                        </button>
+                        <button id="udBtnSeries9" class="btn @(activeSeries == "9" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUdSeries('9')">
+                            B9
+                        </button>
+                    </div>
+
+                    @* TestType buttons *@
+                    <div class="btn-group" role="group" aria-label="TestType">
+                        <button id="udBtnTypeAll" class="btn btn-sm btn-secondary" type="button" onclick="changeUdTestType('')">
+                            All Types
+                        </button>
+                        <button id="udBtnTypeDW" class="btn btn-sm btn-outline-secondary" type="button" onclick="changeUdTestType('DW')">
+                            DW
+                        </button>
+                        <button id="udBtnTypeUTTC" class="btn btn-sm btn-outline-secondary" type="button" onclick="changeUdTestType('UTTC')">
+                            UTTC
+                        </button>
+                    </div>
+
+                    <h5 class="card-title mb-0 ms-2">
+                        @ViewData["Title"]
+                    </h5>
+
+                    <div class="flex-grow-1"></div>
+
+                    @* Date-range radio buttons (W / M / H) *@
+                    <div class="d-flex align-items-center gap-1 me-2">
+                        <small class="text-muted fw-medium me-2">Data range :</small>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="udRangeRadio" id="udRadioWeek" value="W" checked />
+                            <label class="form-check-label" for="udRadioWeek">7 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="udRangeRadio" id="udRadioMonth" value="M" />
+                            <label class="form-check-label" for="udRadioMonth">30 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="udRangeRadio" id="udRadioHalf" value="H" />
+                            <label class="form-check-label" for="udRadioHalf">6 Months</label>
+                        </div>
+                    </div>
+
+                    <button id="udBtnReload" class="btn btn-outline-secondary btn-sm" onclick="loadUdDailySummary()">
+                        <i class="ri-refresh-line"></i> Reload
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Summary Cards ───────────────────────────────────── *@
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Tested Serials</p>
+                        <h4 class="mb-0 fw-bold" id="udStatTested">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="ri-barcode-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Failed Serials</p>
+                        <h4 class="mb-0 fw-bold" id="udStatFailed">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-danger">
+                            <i class="ri-close-circle-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Overall Fail Ratio</p>
+                        <h4 class="mb-0 fw-bold" id="udStatRatio">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-warning">
+                            <i class="ri-percent-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Total Test Files</p>
+                        <h4 class="mb-0 fw-bold" id="udStatFiles">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-info">
+                            <i class="ri-file-list-3-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── DataTable : Daily summary ───────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-table-line me-1"></i>
+                    Daily Fail Ratio Summary
+                </h6>
+                <small class="text-muted">
+                    <i class="ri-information-line me-1"></i>
+                    Click <i class="ri-eye-line"></i> to drill down into serial numbers
+                </small>
+            </div>
+            <div class="card-datatable table-responsive">
+                <table id="tblUdDailySummary" class="table table-hover table-sm datatables-basic w-100">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Series</th>
+                            <th>Test Type</th>
+                            <th>Tested Serials</th>
+                            <th>Failed Serials</th>
+                            <th>Fail Ratio</th>
+                            <th>Fail Files</th>
+                            <th>Total Files</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* ── Modal : Serial Drill-down ───────────────────────────── *@
+<div class="modal fade" id="modalUdSerialList" tabindex="-1" aria-labelledby="modalUdSerialListLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUdSerialListLabel">
+                    <i class="ri-list-check-2 me-2 text-primary"></i>
+                    Serial Detail — <span id="modalUdContext" class="text-primary fw-bold"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="udChkFailOnly" checked onchange="reloadUdSerialModal()">
+                    <label class="form-check-label" for="udChkFailOnly">Show failed serials only</label>
+                </div>
+                <div class="table-responsive">
+                    <table id="tblUdSerialList" class="table table-sm table-hover w-100">
+                        <thead>
+                            <tr>
+                                <th>Serial</th>
+                                <th>Model</th>
+                                <th>Status</th>
+                                <th>Files</th>
+                                <th>First Test</th>
+                                <th>Last Test</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ── Modal : File Detail (deepest drill-down) ────────────── *@
+<div class="modal fade" id="modalUdFileList" tabindex="-1" aria-labelledby="modalUdFileListLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUdFileListLabel">
+                    <i class="ri-file-list-3-line me-2 text-primary"></i>
+                    File Detail — <span id="modalUdFileContext" class="text-primary fw-bold"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="tblUdFileList" class="table table-sm table-hover w-100">
+                        <thead>
+                            <tr>
+                                <th>Test Time</th>
+                                <th>Status</th>
+                                <th>Full Path</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Hidden state *@
+<input type="hidden" id="udHdnSeries" value="@activeSeries" />
+<input type="hidden" id="udHdnTestType" value="" />
+<input type="hidden" id="udHdnRange" value="W" />
+<input type="hidden" id="udHdnModalDate" value="" />
+<input type="hidden" id="udHdnModalSeries" value="" />
+<input type="hidden" id="udHdnModalType" value="" />

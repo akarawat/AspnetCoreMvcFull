@@ -16,6 +16,47 @@ function loadAllCards(serial) {
   loadBDFBalance(serial);
   loadBasePlate(serial);
   SetRemarkSerial(serial);
+  loadUttcDwKpiSummary(serial);
+}
+
+/* ─── #PDU-UttcDw summary panel (7-day snapshot, current series) ─── */
+function loadUttcDwKpiSummary(serial) {
+  $('#udkpiLinkBtn').attr('href', `/UttcDw?series=${serial}`);
+
+  const to = new Date();
+  const from = new Date();
+  from.setDate(to.getDate() - 7);
+  const dt_from = udkpiToIso(from);
+  const dt_to = udkpiToIso(to);
+
+  $.ajax({
+    type: 'GET',
+    url: '/UttcDw/GetDailySummary',
+    data: { series: serial, testtype: '', dt_from, dt_to },
+    success: function (data) {
+      const tested = data.reduce((s, d) => s + d.testedSerials, 0);
+      const failed = data.reduce((s, d) => s + d.failedSerials, 0);
+      const files = data.reduce((s, d) => s + d.totalFiles, 0);
+
+      if (tested === 0) {
+        $('#udkpiTested, #udkpiFailed, #udkpiRatio, #udkpiFiles').text('No data');
+        return;
+      }
+
+      const ratio = (100 * failed / tested).toFixed(1);
+      $('#udkpiTested').text(tested.toLocaleString());
+      $('#udkpiFailed').text(failed.toLocaleString());
+      $('#udkpiRatio').text(ratio + ' %');
+      $('#udkpiFiles').text(files.toLocaleString());
+    },
+    error: function () {
+      $('#udkpiTested, #udkpiFailed, #udkpiRatio, #udkpiFiles').text('–');
+    }
+  });
+}
+
+function udkpiToIso(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
 $(document).ready(function () {
