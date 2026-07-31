@@ -8,11 +8,16 @@ async function loadmeasureChartLower(flagrange) {
     //alert("No data");
     return;
   }
-  if (flagrange == 'W' || flagrange == 'M' || flagrange == 'HY') {
+  // Preset range buttons (Daily/Week/Month/Halfyear) resolve to a relative
+  // date range — clear the inputs first so GetDataTTAAll computes it server-side.
+  const isPresetRange = (flagrange == 'D' || flagrange == 'W' || flagrange == 'M' || flagrange == 'HY');
+  if (isPresetRange) {
     $('#fromDate').val(null);
     $('#toDate').val(null);
   }
   else if (flagrange == undefined) {
+    // "Search" button — flagrange is undefined, meaning the user typed a
+    // custom From/To range. Keep it as-is; do NOT clear or overwrite it.
     $("#criteria1").prop('checked', false);
     $("#criteria2").prop('checked', false);
     $("#criteria3").prop('checked', false);
@@ -28,7 +33,11 @@ async function loadmeasureChartLower(flagrange) {
     const jsonData = await response.json();
     console.log(jsonData);
   //if (jsonData[0].startDate != null) {
-    if (jsonData.length != 0) {
+    // Only backfill the date inputs for preset ranges, so the UI shows the
+    // resolved absolute dates. Never do this after an explicit Search —
+    // it would silently overwrite the From/To the user just typed, and any
+    // later Export would then use a different range than what was searched.
+    if (jsonData.length != 0 && isPresetRange) {
       var formDt = jsonData[0].productionDate.split('T')[0];
       var toDate = jsonData[jsonData.length - 1].productionDate.split('T')[0];
       //console.log(response[response.length - 1]);
@@ -514,6 +523,7 @@ async function exportToExcel(flagrange) {
   const result = await response.json();
   const data = result;           // ✅ ดึงข้อมูล
   if (data.length == 0) {
+    alert(`No data to export for ${$("#fromDate").val()} to ${$("#toDate").val()}.`);
     return;
   }
   console.log(data);
@@ -635,6 +645,7 @@ async function exportToExcelOffset(flagrange) {
   const result = await response.json();
   const data = result;           // ✅ ดึงข้อมูล
   if (data.length == 0) {
+    alert(`No data to export for ${$("#fromDate").val()} to ${$("#toDate").val()}.`);
     return;
   }
   const customHeaderRows = [

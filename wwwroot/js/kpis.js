@@ -366,7 +366,7 @@ function loadKPIB4B5(serial) {
       $('#kpiContainer').html('<div class="text-danger">Failed to load data.</div>');
     }
   });
-  setBgButton(serial);
+  //setBgButton(serial);
 }
 function formatNumber(value, fix) {
   if (isNaN(value)) return '';
