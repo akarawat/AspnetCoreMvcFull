@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Identity.Client;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics.Contracts;
 using System.Diagnostics.Metrics;
 
 namespace AspnetCoreMvcFull.Models
@@ -176,6 +177,9 @@ namespace AspnetCoreMvcFull.Models
     public int totalf7 { get; set; }
     public int totalf8 { get; set; }
     public int totalf9 { get; set; }
+    public int totalf10 { get; set; } = 0;
+    public int totalf11 { get; set; } = 0;
+    public int totalf12 { get; set; } = 0;
 
     public double param_maxf1 { get; set; }
     public double param_minf1 { get; set; }
@@ -228,6 +232,8 @@ namespace AspnetCoreMvcFull.Models
     public int view91 { get; set; }
     public int view92 { get; set; }
     public int view10 { get; set; }
+    public int view11 { get; set; }
+    public int view12 { get; set; }
   }
   public class TopViewModel
   {

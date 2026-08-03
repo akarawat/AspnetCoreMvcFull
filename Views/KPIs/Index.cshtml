@@ -105,33 +105,7 @@
                     <div class="card mt-2">
                         <div class="card-body py-2 px-3">
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-                                <div class="d-flex gap-3 flex-wrap" id="udkpiStats">
-                                    <div class="text-center">
-                                        <div class="small text-muted">Tested Serials</div>
-                                        <div class="fw-bold" id="udkpiTested">–</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="small text-muted">Failed Serials</div>
-                                        <div class="fw-bold text-danger" id="udkpiFailed">–</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="small text-muted">Fail Ratio</div>
-                                        <div class="fw-bold" id="udkpiRatio">–</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="small text-muted">Total Files</div>
-                                        <div class="fw-bold" id="udkpiFiles">–</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <a id="udkpiLinkBtn" href="/UttcDw" class="btn btn-sm btn-outline-primary text-nowrap">
-                                            <i class="ri-external-link-line me-1"></i>UTTC-DW Monitor
-                                        </a>
-                                    </div>
-                                    <div class="text-center">
-                                        <i class="text-warning">* UTTC/DW Demo (Last 7 Days)</i><br />
-                                    </div>
-                                </div>
+                                <!--Move to Card section-->
                             </div>
                         </div>
                     </div>
@@ -643,14 +617,45 @@
       </div>
   </div>
   <!-- /BDF Balance Fine Adjustment -->
-  <!-- Base plate -->
+  <!-- UTTC / DW Test Log -->
+  <div class="col-md-4" id="display_param11">
+      <div class="card h-100" id="bg_param11">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-11">
+                      <div class="card-title"><strong id="lblMnu11">11. UTTC / DW Test Log</strong></div>
+                      <div class="row" id="kpiMenu11">
+                          <!-- AJAX will load here -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row" style="display:none">
+                  <div class="col-md-11">
+                      <div class="kpi-footer">
+                          <div class="col-11 text-start">
+                              <p class="card-text">
+                                  <small class="text-muted">
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu11" onclick="mnuRemark(11)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial11"></span>
+                                      <span class="text-info" id="rmk_mnu11"></span>
+                                  </small>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /UTTC / DW Test Log -->
+  <!-- History Card -->
   <div class="col-md-4" id="display_param12">
       <div class="card h-100" id="bg_param12">
           <div class="card-body">
               <div class="row">
                   <div class="col-md-12">
-                      <div class="card-title"><strong id="lblMnu12">12. Base plate</strong></div>
-                      <div class="row" id="kpiBalanceFine">
+                      <div class="card-title"><strong id="lblMnu12">12. History Card</strong></div>
+                      <div class="row" id="kpiMenu12">
                           <!-- AJAX will load here -->
                       </div>
                   </div>
@@ -661,9 +666,9 @@
                           <div class="col-12 text-start">
                               <p class="card-text">
                                   <small class="text-muted">
-                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu10" onclick="mnuRemark(10)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
-                                      <span class="text-info" id="rmk_serial10"></span> 
-                                      <span class="text-info" id="rmk_mnu10"></span> 
+                                      <a class="menu-link cursor-pointer" id="btn_rmk_mnu12" onclick="mnuRemark(12)" title="Open remark list"><i class="ri-edit-2-line"></i> Remark</a>
+                                      <span class="text-info" id="rmk_serial12"></span> 
+                                      <span class="text-info" id="rmk_mnu12"></span> 
                                   </small>
                               </p>
                           </div>
@@ -748,5 +753,5 @@
     <script src="~/js/jszip.min.js"></script>
 
     <script src="~/js/top10-failed.js" asp-append-version="true"></script>
-    <script src="~/js/kpis.js" asp-append-version="true"></script>
+    <script src="~/js/kpis.js?version=2.1" asp-append-version="true"></script>
 }

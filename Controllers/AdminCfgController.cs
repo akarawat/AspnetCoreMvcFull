@@ -102,7 +102,9 @@ public class AdminCfgController : Controller
           view9  = Convert.ToInt32(rdr["view9"]),
           view91 = Convert.ToInt32(rdr["view91"]),
           view92 = Convert.ToInt32(rdr["view92"]),
-          view10 = Convert.ToInt32(rdr["view10"])
+          view10 = Convert.ToInt32(rdr["view10"]),
+          view11 = Convert.ToInt32(rdr["view11"]),
+          view12 = Convert.ToInt32(rdr["view12"])
         });
       }
       conn.Close();
@@ -131,8 +133,8 @@ public class AdminCfgController : Controller
           maxf3 = Convert.ToDouble(rdr["maxf3"]),
           maxf4 = Convert.ToDouble(rdr["maxf4"]),
           maxf5 = Convert.ToDouble(rdr["maxf5"]),
-          maxf6 = Convert.ToDouble(rdr["maxf6"]),
           maxf7 = Convert.ToDouble(rdr["maxf7"]),
+          maxf6 = Convert.ToDouble(rdr["maxf6"]),
           maxf8 = Convert.ToDouble(rdr["maxf8"]),
           maxf9 = Convert.ToDouble(rdr["maxf9"]),
           maxf91 = Convert.ToDouble(rdr["maxf91"]),
@@ -161,6 +163,9 @@ public class AdminCfgController : Controller
           totalf7 = Convert.ToInt32(rdr["totalf7"]),
           totalf8 = Convert.ToInt32(rdr["totalf8"]),
           totalf9 = Convert.ToInt32(rdr["totalf9"]),
+          totalf10 = Convert.ToInt32(rdr["totalf10"]),
+          totalf11 = Convert.ToInt32(rdr["totalf11"]),
+          totalf12 = Convert.ToInt32(rdr["totalf12"]),
 
           param_maxf1 = Convert.ToDouble(rdr["param_maxf1"]),
           param_minf1 = Convert.ToDouble(rdr["param_minf1"]),

@@ -16,6 +16,8 @@ function loadAllCards(serial) {
   loadBDFBalance(serial);
   loadBasePlate(serial);
   SetRemarkSerial(serial);
+  loadMenu11(serial);
+  loadMenu12(serial);
   loadUttcDwKpiSummary(serial);
 }
 
@@ -84,7 +86,9 @@ function disableRemarkBtn() {
   document.getElementById("btn_rmk_mnu9").style.display = "none";
   document.getElementById("btn_rmk_mnu91").style.display = "none";
   document.getElementById("btn_rmk_mnu92").style.display = "none";
-  document.getElementById("btn_rmk_mnu10").style.display = "none";
+  //document.getElementById("btn_rmk_mnu10").style.display = "none";
+  document.getElementById("btn_rmk_mnu11").style.display = "none";
+  document.getElementById("btn_rmk_mnu12").style.display = "none";
 }
 function callFuncButton(serial) {
   $('#curModel').val(serial);
@@ -585,7 +589,7 @@ function loadDifferanceWeight(serial) {
 }
 function loadThreadTension(serial) {
   //-->Mnu 7. Thread Tension
-  const imgPath = 'img/avatars/buttonholdbi.b.png';
+  const imgPath = 'img/avatars/ttacal.png';
   const container = $('#kpiThreadTension');
   container.empty();
 
@@ -728,6 +732,69 @@ function loadBDFBalance(serial) {
                     <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
                     <div class="text-bold">${dtFrom} - ${dtTo}</div>
                     <p class="text-center"><button class="btn" onclick="alert('This function is under development.');"><img src="${imgPath}" alt="Click for detail" /></button></p>
+                  </div>
+                  <div class="col-6 mb-0 text-start">
+                    <div class="value">Total ${0}</div>
+                  </div>
+                </div>
+              </div>`;
+  container.append(html);
+}
+function loadMenu11(serial) {
+  const imgPath = 'img/avatars/uttcdw.png';
+  const container = $('#kpiMenu11');
+  container.empty();
+  let dtFrom = '';
+  let dtTo = '';
+  var html = '';
+  html = `
+              <div class="kpi-card">
+                <div class="row">
+                  <div class="col-6 text-start">
+                    <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
+                    <div class="text-bold">${dtFrom} - ${dtTo}</div>
+                    <p class="text-center"><button class="btn" onclick="window.location.href='/UttcDw';"><img src="${imgPath}" alt="Click for detail" /></button></p>
+                  </div>
+                  <div class="col-6 mb-0 text-start">
+                    <div class="value">
+                      <div class="d-flex gap-3 flex-wrap" id="udkpiStats">
+                        <div class="text-center">
+                            <div class="small text-muted">Tested Serials</div>
+                            <div class="fw-bold" id="udkpiTested">–</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="small text-muted">Failed Serials</div>
+                            <div class="fw-bold text-danger" id="udkpiFailed">–</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="small text-muted">Fail Ratio</div>
+                            <div class="fw-bold" id="udkpiRatio">–</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="small text-muted">Total Files</div>
+                            <div class="fw-bold" id="udkpiFiles">–</div>
+                        </div>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+              </div>`;
+  container.append(html);
+}
+function loadMenu12(serial) {
+  const imgPath = 'img/avatars/autothreader.png';
+  const container = $('#kpiMenu12');
+  container.empty();
+  let dtFrom = '';
+  let dtTo = '';
+  var html = '';
+  html = `
+              <div class="kpi-card">
+                <div class="row">
+                  <div class="col-6 text-start">
+                    <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
+                    <div class="text-bold">${dtFrom} - ${dtTo}</div>
+                    <p class="text-center"><button class="btn" onclick="window.location.href='https://historycard.berninathailand.com/';"><img src="${imgPath}" alt="Click for detail" /></button></p>
                   </div>
                   <div class="col-6 mb-0 text-start">
                     <div class="value">Total ${0}</div>

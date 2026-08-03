@@ -50,6 +50,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\Users\sakulchai.p\OneDrive - BERNINA International AG\Pictures\IMG DataUtilization\ttacal.png" Link="wwwroot\img\avatars\ttacal.png" />
+    <Content Include="..\..\Users\sakulchai.p\OneDrive - BERNINA International AG\Pictures\IMG DataUtilization\uttcdw.png" Link="wwwroot\img\avatars\uttcdw.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="SQL\" />
     <Folder Include="wwwroot\UploadedFiles\" />
   </ItemGroup>
