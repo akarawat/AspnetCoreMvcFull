@@ -105,7 +105,12 @@ function renderUdDailyTable(data) {
     order: [[0, 'desc']],
     pageLength: 15,
     columns: [
-      { data: 'monitor_dt_txt', title: 'Date' },
+      {
+        data: 'monitor_dt_txt', title: 'Date',
+        // monitor_dt_txt is "dd-MMM-yyyy" for display — not sortable as text,
+        // so sort by the ISO monitor_dt field instead.
+        render: (data, type, row) => (type === 'sort' || type === 'type') ? row.monitor_dt : data
+      },
       { data: 'series', title: 'Series', render: v => 'B' + v },
       { data: 'testtype', title: 'Test Type' },
       { data: 'testedSerials', title: 'Tested Serials' },
