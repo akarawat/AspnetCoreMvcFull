@@ -1,0 +1,16 @@
+SP_HELPTEXT SP_BATLNK_MigCutting;
+SP_HELPTEXT SP_BATLNK_MigButtonFoot3a;
+SP_HELPTEXT SP_BATLNK_MigButtonFoot3aB4579;
+SP_HELPTEXT SP_BATLNK_MigTTApparatus;
+SP_HELPTEXT SP_BATLNK_MigBalanceDefault;
+SP_HELPTEXT SP_BATLNK_MigTTApparatusOffset;
+SP_HELPTEXT SP_BATLNK_Top10Tailed;
+SP_HELPTEXT SP_BATLNK_DailyProduction;
+SP_HELPTEXT SP_BATLNK_MigDataPowerConsumtion;
+/*
+EXEC SP_BATLNK_DailyProduction '3';
+EXEC SP_BATLNK_DailyProduction '4';
+EXEC SP_BATLNK_DailyProduction '5';
+EXEC SP_BATLNK_DailyProduction '7';
+EXEC SP_BATLNK_DailyProduction '9';
+*/
