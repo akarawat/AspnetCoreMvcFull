@@ -8,6 +8,12 @@
 --       เพื่อรองรับ Windows Scheduler ที่เปลี่ยนจากวันละ 1 ครั้ง เป็นทุกชั่วโมง —
 --       ถ้าค่าใน pamtesterdb ถูกแก้ไขย้อนหลัง ค่าฝั่ง BTBIDataUtilize จะอัพเดทตามด้วย
 --       Key: serial + productionDate
+-- V104  10-08-2026  ป้องกัน Msg 8672 "MERGE attempted to UPDATE ... same row
+--       more than once" ล่วงหน้า (pattern เดียวกับ MigTTApparatus ที่เจอจริง) —
+--       key serial+productionDate ใช้ sewingMachine.productionDate ซึ่งเป็นค่า
+--       ระดับเครื่อง (คงที่) แต่ source ดึงจากระดับ testExecution ถ้าเครื่องถูกทดสอบ
+--       ซ้ำในวันเดียวกัน (retest) จะได้หลายแถวชน key เดียวกัน แก้โดย dedupe เหลือ
+--       ผลทดสอบล่าสุด (testExecution.id สูงสุด) ต่อ serial+productionDate
 -- =============================================
 ALTER   PROCEDURE [dbo].[SP_BATLNK_MigDataPowerConsumtion]
  @series varchar(30) = NULL
@@ -29,12 +35,13 @@ BEGIN
  --DECLARE @fromDate VARCHAR(30) = '2025-01-01';
  --DECLARE @toDate VARCHAR(30) = '2025-01-31 23:59:59';
 
-    ;WITH src AS (
+    ;WITH raw AS (
   SELECT  TOP (10000)
    sewingMachine.serial AS serial,
    sewingMachine.productionDate AS productionDate,
    machineType.series AS series,
    machineType.name AS prdname,
+   testExecution.id AS mig_id,
    ROUND(testDataBurninRun.startPower,2) AS 'start_power',
    ROUND(testDataBurninRun.endPower,2) AS 'end_power',
    ROUND(testDataBurninRun.endPower - testDataBurninRun.startPower,2) AS 'power_reduct'
@@ -48,7 +55,18 @@ BEGIN
 
   WHERE machineType.series = @series
    AND productionDate BETWEEN @fromDate AND @toDate
-  ORDER BY sewingMachine.productionDate DESC
+  ORDER BY sewingMachine.productionDate DESC, testExecution.id DESC
+    ),
+    -- Dedupe: เครื่องเดียวกันอาจถูกทดสอบซ้ำในวันเดียว (retest) ทำให้ productionDate
+    -- (ค่าระดับเครื่อง) ซ้ำกันได้ — เก็บเฉพาะผลทดสอบล่าสุด (mig_id สูงสุด) ต่อ key
+    src AS (
+        SELECT serial, productionDate, series, prdname, start_power, end_power, power_reduct
+        FROM (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (PARTITION BY r.serial, r.productionDate ORDER BY r.mig_id DESC) AS rn
+            FROM raw r
+        ) dedup
+        WHERE rn = 1
     )
     MERGE dbo.mig_DataPowerConsumtion AS tgt
     USING src AS s

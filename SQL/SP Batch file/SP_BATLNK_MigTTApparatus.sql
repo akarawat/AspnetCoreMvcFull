@@ -7,6 +7,11 @@
 -- V103  04-08-2026  แก้ syntax error (CTE ไม่ปิดวงเล็บก่อน INSERT) และแปลง
 --       INSERT-if-not-exists เป็น MERGE (Insert/Update) เพื่อรองรับ Windows
 --       Scheduler ที่เปลี่ยนจากวันละ 1 ครั้ง เป็นทุกชั่วโมง — Key: serial + productionDate
+-- V104  10-08-2026  แก้ Msg 8672 "MERGE attempted to UPDATE ... same row more
+--       than once" — สาเหตุ: key serial+productionDate ใช้ SEW.productionDate
+--       ซึ่งเป็นค่าระดับเครื่อง (คงที่) แต่ source ดึงจากระดับ testExecution — ถ้า
+--       เครื่องถูกทดสอบซ้ำในวันเดียวกัน (retest) จะได้หลายแถวชน key เดียวกัน แก้โดย
+--       dedupe เหลือผลทดสอบล่าสุด (TEXEC.id สูงสุด) ต่อ serial+productionDate
 -- =============================================
 ALTER PROCEDURE [dbo].[SP_BATLNK_MigTTApparatus]
 
@@ -24,7 +29,7 @@ BEGIN
  --DECLARE @fromDate VARCHAR(30) = '2025-09-22';
  --DECLARE @toDateExclusive VARCHAR(30) = '2025-09-22 23:59:59';
 
-    ;WITH src AS (
+    ;WITH raw AS (
 
   SELECT TOP(15000)
    SEW.serial,
@@ -50,6 +55,17 @@ BEGIN
   AND (SEW.productionDate >= @fromDate AND SEW.productionDate < @toDateExclusive)
   ORDER BY SEW.productionDate DESC, TEXEC.id DESC
 
+    ),
+    -- Dedupe: เครื่องเดียวกันอาจถูกทดสอบซ้ำในวันเดียว (retest) ทำให้ productionDate
+    -- (ค่าระดับเครื่อง) ซ้ำกันได้ — เก็บเฉพาะผลทดสอบล่าสุด (mig_id สูงสุด) ต่อ key
+    src AS (
+        SELECT serial, productionDate, series, mc_name, mig_id, CDPdiff, CDPlower, CDPhigher, CDPhighest
+        FROM (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (PARTITION BY r.serial, r.productionDate ORDER BY r.mig_id DESC) AS rn
+            FROM raw r
+        ) dedup
+        WHERE rn = 1
     )
 
     MERGE dbo.mig_ThreadTensionApparatus AS tgt

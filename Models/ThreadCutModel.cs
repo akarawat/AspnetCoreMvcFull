@@ -167,6 +167,14 @@ namespace AspnetCoreMvcFull.Models
     public double minf92 { get; set; }
     public double maxf10 { get; set; }
     public double minf10 { get; set; }
+    public double maxf11 { get; set; }
+    public double minf11 { get; set; }
+    public double maxf12 { get; set; }
+    public double minf12 { get; set; }
+    public double maxf13 { get; set; }
+    public double minf13 { get; set; }
+    public double maxf14 { get; set; }
+    public double minf14 { get; set; }
 
     public int totalf1 { get; set; }
     public int totalf2 { get; set; }
@@ -180,6 +188,8 @@ namespace AspnetCoreMvcFull.Models
     public int totalf10 { get; set; } = 0;
     public int totalf11 { get; set; } = 0;
     public int totalf12 { get; set; } = 0;
+    public int totalf13 { get; set; } = 0;
+    public int totalf14 { get; set; } = 0;
 
     public double param_maxf1 { get; set; }
     public double param_minf1 { get; set; }
@@ -199,6 +209,16 @@ namespace AspnetCoreMvcFull.Models
     public double param_minf8 { get; set; }
     public double param_maxf9 { get; set; }
     public double param_minf9 { get; set; }
+    public double param_maxf10 { get; set; }
+    public double param_minf10 { get; set; }
+    public double param_maxf11 { get; set; }
+    public double param_minf11 { get; set; }
+    public double param_maxf12 { get; set; }
+    public double param_minf12 { get; set; }
+    public double param_maxf13 { get; set; }
+    public double param_minf13 { get; set; }
+    public double param_maxf14 { get; set; }
+    public double param_minf14 { get; set; }
 
   }
   public class TopviewCfgModel
@@ -234,6 +254,8 @@ namespace AspnetCoreMvcFull.Models
     public int view10 { get; set; }
     public int view11 { get; set; }
     public int view12 { get; set; }
+    public int view13 { get; set; }
+    public int view14 { get; set; }
   }
   public class TopViewModel
   {

@@ -18,6 +18,8 @@ function loadAllCards(serial) {
   SetRemarkSerial(serial);
   loadMenu11(serial);
   loadMenu12(serial);
+  loadMenu13(serial);
+  loadMenu14(serial);
   loadUttcDwKpiSummary(serial);
 }
 
@@ -277,6 +279,8 @@ function setVisibleDisplay(serial) {
         if (data[0]["view91"] == 1) document.getElementById("display_param91").style.display = "block"; else document.getElementById("display_param91").style.display = "none";
         if (data[0]["view92"] == 1) document.getElementById("display_param92").style.display = "block"; else document.getElementById("display_param92").style.display = "none";
         if (data[0]["view12"] == 1) document.getElementById("display_param12").style.display = "block"; else document.getElementById("display_param12").style.display = "none";
+        if (data[0]["view13"] == 1) document.getElementById("display_param13").style.display = "block"; else document.getElementById("display_param13").style.display = "none";
+        if (data[0]["view14"] == 1) document.getElementById("display_param14").style.display = "block"; else document.getElementById("display_param14").style.display = "none";
       }
     },
     error: function () {
@@ -782,7 +786,7 @@ function loadMenu11(serial) {
   container.append(html);
 }
 function loadMenu12(serial) {
-  const imgPath = 'img/avatars/autothreader.png';
+  const imgPath = 'img/avatars/histcard_blue.png';
   const container = $('#kpiMenu12');
   container.empty();
   let dtFrom = '';
@@ -802,6 +806,78 @@ function loadMenu12(serial) {
                 </div>
               </div>`;
   container.append(html);
+}
+function loadMenu13(serial) {
+  //---> Upper Feed Test
+  const imgPath = 'img/avatars/balance.b.png';
+  const container = $('#kpiMenu13');
+  container.empty();
+  let dtFrom = '';
+  let dtTo = '';
+  var html = '';
+  html = `
+              <div class="kpi-card">
+                <div class="row">
+                  <div class="col-6 text-start">
+                    <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
+                    <div class="text-bold">${dtFrom} - ${dtTo}</div>
+                    <p class="text-center"><button class="btn" onclick="GotoUpperFeedTest('${serial}')"><img src="${imgPath}" alt="Click for detail" /></button></p>
+                  </div>
+                  <div class="col-6 mb-0 text-start">
+                    <div class="value" id="menu13Total">Total 0</div>
+                  </div>
+                </div>
+              </div>`;
+  container.append(html);
+
+  $.ajax({
+    type: 'GET',
+    url: '/UpperFeedTest/GetUpperFeedTest',
+    data: { series: serial, flagrange: 'W' },
+    success: function (data) {
+      const total = Array.isArray(data) ? data.length : 0;
+      $('#menu13Total').text('Total ' + total);
+    },
+    error: function () {
+      $('#menu13Total').text('Total –');
+    }
+  });
+}
+function loadMenu14(serial) {
+  //---> Camera Test Data
+  const imgPath = 'img/avatars/camera.png';
+  const container = $('#kpiMenu14');
+  container.empty();
+  let dtFrom = '';
+  let dtTo = '';
+  var html = '';
+  html = `
+              <div class="kpi-card">
+                <div class="row">
+                  <div class="col-6 text-start">
+                    <div><strong><h5 class="text-secondary">Model B${serial}  </h5></strong></div>
+                    <div class="text-bold">${dtFrom} - ${dtTo}</div>
+                    <p class="text-center"><button class="btn" onclick="GotoCameraTestData('${serial}')"><img src="${imgPath}" alt="Click for detail" /></button></p>
+                  </div>
+                  <div class="col-6 mb-0 text-start">
+                    <div class="value" id="menu14Total">Total 0</div>
+                  </div>
+                </div>
+              </div>`;
+  container.append(html);
+
+  $.ajax({
+    type: 'GET',
+    url: '/CameraTestData/GetCameraTestData',
+    data: { series: serial, flagrange: 'W' },
+    success: function (data) {
+      const total = Array.isArray(data) ? data.length : 0;
+      $('#menu14Total').text('Total ' + total);
+    },
+    error: function () {
+      $('#menu14Total').text('Total –');
+    }
+  });
 }
 function loadBasePlate(serial) {
   const imgPath = 'img/avatars/baseplate.png';
@@ -877,6 +953,16 @@ function GotoTTA(series) {
 }
 function GotoBalanceAdj(series) {
   var url = '/BalanceAdjust/?fullscreen=true&series=' + series;
+  window.location.href = url;
+
+}
+function GotoUpperFeedTest(series) {
+  var url = '/UpperFeedTest/?fullscreen=true&series=' + series;
+  window.location.href = url;
+
+}
+function GotoCameraTestData(series) {
+  var url = '/CameraTestData/?fullscreen=true&series=' + series;
   window.location.href = url;
 
 }

@@ -104,7 +104,9 @@ public class AdminCfgController : Controller
           view92 = Convert.ToInt32(rdr["view92"]),
           view10 = Convert.ToInt32(rdr["view10"]),
           view11 = Convert.ToInt32(rdr["view11"]),
-          view12 = Convert.ToInt32(rdr["view12"])
+          view12 = Convert.ToInt32(rdr["view12"]),
+          view13 = Convert.ToInt32(rdr["view13"]),
+          view14 = Convert.ToInt32(rdr["view14"])
         });
       }
       conn.Close();
@@ -140,6 +142,10 @@ public class AdminCfgController : Controller
           maxf91 = Convert.ToDouble(rdr["maxf91"]),
           maxf92 = Convert.ToDouble(rdr["maxf92"]),
           maxf10 = Convert.ToDouble(rdr["maxf10"]),
+          maxf11 = Convert.ToDouble(rdr["maxf11"]),
+          maxf12 = Convert.ToDouble(rdr["maxf12"]),
+          maxf13 = Convert.ToDouble(rdr["maxf13"]),
+          maxf14 = Convert.ToDouble(rdr["maxf14"]),
 
           minf1 = Convert.ToDouble(rdr["minf1"]),
           minf2 = Convert.ToDouble(rdr["minf2"]),
@@ -153,6 +159,10 @@ public class AdminCfgController : Controller
           minf91 = Convert.ToDouble(rdr["minf91"]),
           minf92 = Convert.ToDouble(rdr["minf92"]),
           minf10 = Convert.ToDouble(rdr["minf10"]),
+          minf11 = Convert.ToDouble(rdr["minf11"]),
+          minf12 = Convert.ToDouble(rdr["minf12"]),
+          minf13 = Convert.ToDouble(rdr["minf13"]),
+          minf14 = Convert.ToDouble(rdr["minf14"]),
 
           totalf1 = Convert.ToInt32(rdr["totalf1"]),
           totalf2 = Convert.ToInt32(rdr["totalf2"]),
@@ -166,6 +176,8 @@ public class AdminCfgController : Controller
           totalf10 = Convert.ToInt32(rdr["totalf10"]),
           totalf11 = Convert.ToInt32(rdr["totalf11"]),
           totalf12 = Convert.ToInt32(rdr["totalf12"]),
+          totalf13 = Convert.ToInt32(rdr["totalf13"]),
+          totalf14 = Convert.ToInt32(rdr["totalf14"]),
 
           param_maxf1 = Convert.ToDouble(rdr["param_maxf1"]),
           param_minf1 = Convert.ToDouble(rdr["param_minf1"]),
@@ -184,8 +196,17 @@ public class AdminCfgController : Controller
           param_maxf8 = Convert.ToDouble(rdr["param_maxf8"]),
           param_minf8 = Convert.ToDouble(rdr["param_minf8"]),
           param_maxf9 = Convert.ToDouble(rdr["param_maxf9"]),
-          param_minf9 = Convert.ToDouble(rdr["param_minf9"])
-
+          param_minf9 = Convert.ToDouble(rdr["param_minf9"]),
+          param_maxf10 = Convert.ToDouble(rdr["param_maxf10"]),
+          param_minf10 = Convert.ToDouble(rdr["param_minf10"]),
+          param_maxf11 = Convert.ToDouble(rdr["param_maxf11"]),
+          param_minf11 = Convert.ToDouble(rdr["param_minf11"]),
+          param_maxf12 = Convert.ToDouble(rdr["param_maxf12"]),
+          param_minf12 = Convert.ToDouble(rdr["param_minf12"]),
+          param_maxf13 = Convert.ToDouble(rdr["param_maxf13"]),
+          param_minf13 = Convert.ToDouble(rdr["param_minf13"]),
+          param_maxf14 = Convert.ToDouble(rdr["param_maxf14"]),
+          param_minf14 = Convert.ToDouble(rdr["param_minf14"])
 
         });
       }

@@ -1,0 +1,206 @@
+@{
+    ViewData["Title"] = "Upper Feed Test — Balance / Balance Upper Feed";
+
+    var activeSeries = ViewData["ActiveSeries"]?.ToString() ?? "9";
+}
+
+@section VendorStyles {
+    <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
+    <link href="~/css/site.css" rel="stylesheet" />
+}
+
+@section VendorScripts {
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/vendor/libs/apex-charts/apexcharts.js"></script>
+}
+
+@section PageScripts {
+    <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+    <script src="~/js/upperfeedtest.js" asp-append-version="true"></script>
+}
+
+@* ═══════════════════════ Content ═══════════════════════ *@
+<div class="row g-4 mb-4">
+
+    @* ── Page Header ─────────────────────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap align-items-center gap-3">
+
+                    <a href="/" class="text-muted me-2">
+                        <i class="ri-arrow-left-circle-line me-1"></i>Home
+                    </a>
+
+                    @* Series buttons *@
+                    <div class="btn-group" role="group" aria-label="Series">
+                        <button id="uftBtnB3" class="btn @(activeSeries == "3" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUftSeries('3')">B3</button>
+                        <button id="uftBtnB4" class="btn @(activeSeries == "4" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUftSeries('4')">B4</button>
+                        <button id="uftBtnB5" class="btn @(activeSeries == "5" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUftSeries('5')">B5</button>
+                        <button id="uftBtnB7" class="btn @(activeSeries == "7" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUftSeries('7')">B7</button>
+                        <button id="uftBtnB9" class="btn @(activeSeries == "9" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeUftSeries('9')">B9</button>
+                    </div>
+
+                    <h5 class="card-title mb-0 ms-2">
+                        @ViewData["Title"]
+                        <span id="uftLblSeries" class="text-primary fw-bold ms-1"></span>
+                    </h5>
+
+                    <div class="flex-grow-1"></div>
+
+                    @* Date-range radio buttons (W / M / H) *@
+                    <div class="d-flex align-items-center gap-1 me-2">
+                        <small class="text-muted fw-medium me-2">Data range :</small>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="uftRangeRadio" id="uftRadioWeek" value="W" checked />
+                            <label class="form-check-label" for="uftRadioWeek">7 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="uftRangeRadio" id="uftRadioMonth" value="M" />
+                            <label class="form-check-label" for="uftRadioMonth">30 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="uftRangeRadio" id="uftRadioHalf" value="H" />
+                            <label class="form-check-label" for="uftRadioHalf">6 Months</label>
+                        </div>
+                    </div>
+
+                    <button id="uftBtnReload" class="btn btn-outline-secondary btn-sm" onclick="loadUpperFeedTest()">
+                        <i class="ri-refresh-line"></i> Reload
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Summary Cards ───────────────────────────────────── *@
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Total Tested</p>
+                        <h4 class="mb-0 fw-bold" id="uftStatTotal">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="ri-barcode-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Avg Balance</p>
+                        <h4 class="mb-0 fw-bold" id="uftStatAvgBalance">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-info">
+                            <i class="ri-scales-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Avg Balance Upper Feed</p>
+                        <h4 class="mb-0 fw-bold" id="uftStatAvgUpperFeed">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-warning">
+                            <i class="ri-align-top"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Balance Upper Feed Range</p>
+                        <h4 class="mb-0 fw-bold" id="uftStatRange">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-secondary">
+                            <i class="ri-arrow-up-down-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Scatter Chart : Balance vs Balance Upper Feed over time ── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-scatter-chart-line me-1"></i>
+                    Balance / Balance Upper Feed over Time
+                    <span class="badge bg-label-secondary ms-2 small" id="uftBadgeSeries"></span>
+                </h6>
+                <button class="btn btn-sm btn-success" onclick="exportUftExcel()" id="uftBtnExport" disabled>
+                    <i class="ri-file-excel-2-line me-1"></i>Export Excel
+                </button>
+            </div>
+            <div class="card-body pb-1">
+                <div id="uftChartScatter"></div>
+            </div>
+        </div>
+    </div>
+
+    @* ── DataTable : Raw data ────────────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-table-line me-1"></i>
+                    Test Records
+                    <span class="badge bg-label-secondary ms-2 small" id="uftBadgeSeriesTable"></span>
+                </h6>
+            </div>
+            <div class="card-datatable table-responsive">
+                <table id="uftTable" class="table table-hover table-sm datatables-basic w-100">
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Serial</th>
+                            <th>Model</th>
+                            <th>Balance</th>
+                            <th>Balance Upper Feed</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Hidden state *@
+<input type="hidden" id="uftHdnSeries" value="@activeSeries" />
+<input type="hidden" id="uftHdnFlagrange" value="W" />

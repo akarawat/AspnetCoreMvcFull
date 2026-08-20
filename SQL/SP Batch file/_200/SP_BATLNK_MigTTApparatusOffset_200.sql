@@ -6,6 +6,12 @@
 -- V200  04-08-2026  แก้ syntax error (CTE ไม่ปิดวงเล็บก่อน INSERT) และแปลง
 --       INSERT-if-not-exists เป็น MERGE (Insert/Update) เพื่อรองรับ Windows
 --       Scheduler ที่เปลี่ยนจากวันละ 1 ครั้ง เป็นทุกชั่วโมง — Key: serial + productionDate
+-- V201  10-08-2026  ป้องกัน Msg 8672 "MERGE attempted to UPDATE ... same row
+--       more than once" ล่วงหน้า (pattern เดียวกับ MigTTApparatus ที่เจอจริง) —
+--       key serial+productionDate ใช้ sewingMachine.productionDate ซึ่งเป็นค่า
+--       ระดับเครื่อง (คงที่) แต่ source ดึงจากระดับ testExecution ถ้าเครื่องถูกทดสอบ
+--       ซ้ำในวันเดียวกัน (retest) จะได้หลายแถวชน key เดียวกัน แก้โดย dedupe เหลือ
+--       ผลทดสอบล่าสุด (testExecution.id สูงสุด) ต่อ serial+productionDate
 -- =============================================
 ALTER   PROCEDURE [dbo].[SP_BATLNK_MigTTApparatusOffset]
 
@@ -17,21 +23,21 @@ BEGIN
     --DECLARE @fromDate        DATETIME = CONVERT(DATETIME, DATEADD(DAY, -3, CONVERT(DATE, GETDATE()))); -- 3 วันก่อน 00:00
     --DECLARE @toDateExclusive DATETIME = CONVERT(DATETIME, CONVERT(DATE, GETDATE()));                    -- วันนี้ 00:00
  -- #Daily Migrate
- DECLARE @fromDate VARCHAR(15) = FORMAT(DATEADD(DAY, -3, CONVERT(DATE, GETDATE())), 'yyyy-MM-dd'); -- 3 วันก่อน 00:00
+ DECLARE @fromDate VARCHAR(15) = FORMAT(DATEADD(DAY, -7, CONVERT(DATE, GETDATE())), 'yyyy-MM-dd'); -- 3 วันก่อน 00:00
  DECLARE @toDateExclusive VARCHAR(15) = FORMAT(GETDATE(), 'yyyy-MM-dd');
  -- #Manual Migrate
  --DECLARE @fromDate VARCHAR(30) = '2026-01-01';
  --DECLARE @toDateExclusive VARCHAR(30) = '2026-01-25 23:59:59';
 
  -- Query from Daniel
-    ;WITH src AS (
+    ;WITH raw AS (
 
   SELECT TOP(10000)
    sewingMachine.serial,
    sewingMachine.productionDate,
    machineType.series,
    machineType.name,
-   testExecution.id,
+   testExecution.id AS mig_id,
    testRun.startDate,
    CDPlower.longValue AS OFSLow,
    CDPhigher.longValue AS OFShigher,
@@ -48,6 +54,17 @@ BEGIN
   AND (sewingMachine.productionDate >= @fromDate AND sewingMachine.productionDate < @toDateExclusive)
   ORDER BY sewingMachine.productionDate DESC, testExecution.id DESC
 
+    ),
+    -- Dedupe: เครื่องเดียวกันอาจถูกทดสอบซ้ำในวันเดียว (retest) ทำให้ productionDate
+    -- (ค่าระดับเครื่อง) ซ้ำกันได้ — เก็บเฉพาะผลทดสอบล่าสุด (mig_id สูงสุด) ต่อ key
+    src AS (
+        SELECT serial, productionDate, series, [name], mig_id, startDate, OFSLow, OFShigher, OFShighest
+        FROM (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (PARTITION BY r.serial, r.productionDate ORDER BY r.mig_id DESC) AS rn
+            FROM raw r
+        ) dedup
+        WHERE rn = 1
     )
 
     MERGE dbo.mig_ThreadTensionAppOffset AS tgt
@@ -58,13 +75,13 @@ BEGIN
         UPDATE SET
             tgt.series      = s.series,
             tgt.[name]      = s.[name],
-            tgt.idref       = s.id,
+            tgt.idref       = s.mig_id,
             tgt.StartDate   = s.startDate,
             tgt.OFSLow      = s.OFSLow,
             tgt.OFShigher   = s.OFShigher,
             tgt.OFShighest  = s.OFShighest
     WHEN NOT MATCHED BY TARGET THEN
         INSERT ([serial], [productionDate], [series], [name], [idref], [StartDate], [OFSLow], [OFShigher], [OFShighest])
-        VALUES (s.serial, s.productionDate, s.series, s.[name], s.id, s.startDate, s.OFSLow, s.OFShigher, s.OFShighest);
+        VALUES (s.serial, s.productionDate, s.series, s.[name], s.mig_id, s.startDate, s.OFSLow, s.OFShigher, s.OFShighest);
 
 END

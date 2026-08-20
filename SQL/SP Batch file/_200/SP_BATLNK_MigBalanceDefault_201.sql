@@ -1,3 +1,10 @@
+USE [BTBIDataUtilize]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_BATLNK_MigBalanceDefault]    Script Date: 06-08-2026 11:36:00 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 -- =============================================
 -- Author:  <Sakulchai.P>
 -- Create date: <11/03/2024>
@@ -8,7 +15,7 @@
 --       เพื่อรองรับ Windows Scheduler ที่เปลี่ยนจากวันละ 1 ครั้ง เป็นทุกชั่วโมง —
 --       ถ้าค่าใน pamtesterdb ถูกแก้ไขย้อนหลัง ค่าฝั่ง BTBIDataUtilize จะอัพเดทตามด้วย
 --       Key: serial + productionDate
--- V104  06-08-2026  แก้ Msg 8672 "MERGE attempted to UPDATE ... same row more
+-- V201  06-08-2026  แก้ Msg 8672 "MERGE attempted to UPDATE ... same row more
 --       than once" — สาเหตุคือ JOIN ไป testRun TR โดยไม่ได้ใช้คอลัมน์ไหนของ TR เลย
 --       (ไม่ SELECT ไม่ filter) ถ้าเครื่องมี testRun มากกว่า 1 แถว query จะคูณแถว
 --       ซ้ำตามจำนวน testRun ทันที (พบจริง: เครื่อง 66002818 มี testRun 4 รอบ ได้
@@ -80,3 +87,4 @@ BEGIN
         VALUES (s.serial, s.productionDate, s.series, s.[name], s.balance);
 
 END
+

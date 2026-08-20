@@ -1,0 +1,223 @@
+@{
+    ViewData["Title"] = "Camera Test Data — Focus / Needle Position";
+
+    var activeSeries = ViewData["ActiveSeries"]?.ToString() ?? "9";
+}
+
+@section VendorStyles {
+    <link rel="stylesheet" href="~/vendor/libs/apex-charts/apex-charts.css" />
+    <link href="~/css/site.css" rel="stylesheet" />
+}
+
+@section VendorScripts {
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/datatables.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/vendor/libs/apex-charts/apexcharts.js"></script>
+}
+
+@section PageScripts {
+    <script src="~/js/xlsx.full.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+    <script src="~/js/cameratestdata.js" asp-append-version="true"></script>
+}
+
+@* ═══════════════════════ Content ═══════════════════════ *@
+<div class="row g-4 mb-4">
+
+    @* ── Page Header ─────────────────────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body py-3">
+                <div class="d-flex flex-wrap align-items-center gap-3">
+
+                    <a href="/" class="text-muted me-2">
+                        <i class="ri-arrow-left-circle-line me-1"></i>Home
+                    </a>
+
+                    @* Series buttons *@
+                    <div class="btn-group" role="group" aria-label="Series">
+                        <button id="ctdBtnB3" class="btn @(activeSeries == "3" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeCtdSeries('3')">B3</button>
+                        <button id="ctdBtnB4" class="btn @(activeSeries == "4" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeCtdSeries('4')">B4</button>
+                        <button id="ctdBtnB5" class="btn @(activeSeries == "5" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeCtdSeries('5')">B5</button>
+                        <button id="ctdBtnB7" class="btn @(activeSeries == "7" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeCtdSeries('7')">B7</button>
+                        <button id="ctdBtnB9" class="btn @(activeSeries == "9" ? "btn-primary" : "btn-outline-primary")"
+                                type="button" onclick="changeCtdSeries('9')">B9</button>
+                    </div>
+
+                    <h5 class="card-title mb-0 ms-2">
+                        @ViewData["Title"]
+                        <span id="ctdLblSeries" class="text-primary fw-bold ms-1"></span>
+                    </h5>
+
+                    <div class="flex-grow-1"></div>
+
+                    @* Date-range radio buttons (W / M / H) *@
+                    <div class="d-flex align-items-center gap-1 me-2">
+                        <small class="text-muted fw-medium me-2">Data range :</small>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="ctdRangeRadio" id="ctdRadioWeek" value="W" checked />
+                            <label class="form-check-label" for="ctdRadioWeek">7 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="ctdRangeRadio" id="ctdRadioMonth" value="M" />
+                            <label class="form-check-label" for="ctdRadioMonth">30 Days</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input" type="radio" name="ctdRangeRadio" id="ctdRadioHalf" value="H" />
+                            <label class="form-check-label" for="ctdRadioHalf">6 Months</label>
+                        </div>
+                    </div>
+
+                    <button id="ctdBtnReload" class="btn btn-outline-secondary btn-sm" onclick="loadCameraTestData()">
+                        <i class="ri-refresh-line"></i> Reload
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Summary Cards ───────────────────────────────────── *@
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Total Tested</p>
+                        <h4 class="mb-0 fw-bold" id="ctdStatTotal">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="ri-barcode-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Avg Focus</p>
+                        <h4 class="mb-0 fw-bold" id="ctdStatAvgFocus">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-info">
+                            <i class="ri-camera-lens-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Avg Needle X</p>
+                        <h4 class="mb-0 fw-bold" id="ctdStatAvgX">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-warning">
+                            <i class="ri-arrow-left-right-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="mb-1 text-muted small">Avg Needle Y</p>
+                        <h4 class="mb-0 fw-bold" id="ctdStatAvgY">–</h4>
+                    </div>
+                    <div class="avatar flex-shrink-0">
+                        <span class="avatar-initial rounded bg-label-secondary">
+                            <i class="ri-arrow-up-down-line"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Chart 1: Needle Position Map (2D scatter X vs Y) ── *@
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-crosshair-line me-1"></i>
+                    Needle Position Map
+                    <span class="badge bg-label-secondary ms-2 small" id="ctdBadgeSeriesMap"></span>
+                </h6>
+            </div>
+            <div class="card-body pb-1">
+                <div id="ctdChartPosition"></div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Chart 2: Focus over Time ─────────────────────────── *@
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-line-chart-line me-1"></i>
+                    Focus over Time
+                    <span class="badge bg-label-secondary ms-2 small" id="ctdBadgeSeriesFocus"></span>
+                </h6>
+            </div>
+            <div class="card-body pb-1">
+                <div id="ctdChartFocus"></div>
+            </div>
+        </div>
+    </div>
+
+    @* ── DataTable : Raw data ────────────────────────────── *@
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0">
+                    <i class="ri-table-line me-1"></i>
+                    Test Records
+                    <span class="badge bg-label-secondary ms-2 small" id="ctdBadgeSeriesTable"></span>
+                </h6>
+                <button class="btn btn-sm btn-success" onclick="exportCtdExcel()" id="ctdBtnExport" disabled>
+                    <i class="ri-file-excel-2-line me-1"></i>Export Excel
+                </button>
+            </div>
+            <div class="card-datatable table-responsive">
+                <table id="ctdTable" class="table table-hover table-sm datatables-basic w-100">
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Serial</th>
+                            <th>Model</th>
+                            <th>Focus</th>
+                            <th>Needle X</th>
+                            <th>Needle Y</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* Hidden state *@
+<input type="hidden" id="ctdHdnSeries" value="@activeSeries" />
+<input type="hidden" id="ctdHdnFlagrange" value="W" />
