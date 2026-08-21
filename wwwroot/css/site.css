@@ -1,4 +1,15 @@
 /* Custom styles goes here */
+
+/* #PDU-Web — chart-point → table-row highlight (UpperFeedTest / CameraTestData) */
+.row-highlight-flash {
+  animation: rowHighlightFlash 2.2s ease-out;
+}
+@keyframes rowHighlightFlash {
+  0%   { background-color: #fff3cd; }
+  70%  { background-color: #fff3cd; }
+  100% { background-color: transparent; }
+}
+
 .imageLogo {
   box-shadow: 8px 0px 8px 0px rgba(0.5, 0, 0.5, 0.3);
 }

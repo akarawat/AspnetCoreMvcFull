@@ -24,8 +24,8 @@ WHERE machineType.series IN ('9') AND testExecution.testDefinitionId IN ('1')
 ORDER BY sewingMachine.productionDate DESC, testExecution.id DESC
 --<
 --> With Date range
-DECLARE @fromDate VARCHAR(30) = '2025-01-01';
-DECLARE @toDateExclusive VARCHAR(30) = '2025-01-31 23:59:59';
+DECLARE @fromDate VARCHAR(30) = '2026-08-19';
+DECLARE @toDateExclusive VARCHAR(30) = '2026-08-19 23:59:59';
 SELECT TOP(10000)
    testExecution.id,
    sewingMachine.serial,

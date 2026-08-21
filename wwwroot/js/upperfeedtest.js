@@ -108,11 +108,11 @@ function renderUftScatterChart(data) {
 
   const balanceSeries = data
     .filter(d => d.balance !== null && d.balance !== undefined)
-    .map(d => ({ x: d.productionDate_ts, y: d.balance }));
+    .map(d => ({ x: d.productionDate_ts, y: d.balance, serial: d.serial, dt: d.productionDate_txt, rowKey: uftRowKey(d) }));
 
   const upperFeedSeries = data
     .filter(d => d.balanceUpperFeed !== null && d.balanceUpperFeed !== undefined)
-    .map(d => ({ x: d.productionDate_ts, y: d.balanceUpperFeed }));
+    .map(d => ({ x: d.productionDate_ts, y: d.balanceUpperFeed, serial: d.serial, dt: d.productionDate_txt, rowKey: uftRowKey(d) }));
 
   const options = {
     chart: {
@@ -120,7 +120,13 @@ function renderUftScatterChart(data) {
       height: 380,
       zoom: { enabled: true, type: 'xy' },
       toolbar: { show: true },
-      animations: { enabled: false }
+      animations: { enabled: false },
+      events: {
+        markerClick: function (event, chartContext, { seriesIndex, dataPointIndex, w }) {
+          const p = w.globals.initialSeries[seriesIndex]?.data[dataPointIndex];
+          if (p && p.rowKey) highlightUftRow(p.rowKey);
+        }
+      }
     },
 
     series: [
@@ -144,7 +150,15 @@ function renderUftScatterChart(data) {
     },
 
     tooltip: {
-      x: { format: 'dd-MM-yyyy HH:mm' }
+      custom: function ({ seriesIndex, dataPointIndex, w }) {
+        const p = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+        const label = w.globals.seriesNames[seriesIndex];
+        return `<div class="p-2">
+                  <div><b>Serial:</b> ${escUftHtml(p.serial)}</div>
+                  <div><b>${escUftHtml(label)}:</b> ${p.y.toFixed(2)}</div>
+                  <div><b>Date:</b> ${escUftHtml(p.dt)}</div>
+                </div>`;
+      }
     },
 
     legend: { show: true, position: 'top' }
@@ -164,6 +178,9 @@ function renderUftDataTable(data) {
     data: data,
     order: [[0, 'desc']],
     pageLength: 25,
+    rowCallback: function (row, rowData) {
+      $(row).attr('data-row-key', uftRowKey(rowData));
+    },
     columns: [
       { data: 'productionDate_txt', title: 'Date / Time' },
       { data: 'serial', title: 'Serial' },
@@ -172,6 +189,39 @@ function renderUftDataTable(data) {
       { data: 'balanceUpperFeed', title: 'Balance Upper Feed', render: v => v === null ? '–' : v }
     ]
   });
+}
+
+/* ─── Chart point → table row highlight ─────────────────── */
+function uftRowKey(d) {
+  return (d.serial || '') + '|' + (d.productionDate_ts || '') + '|' + (d.testDefinitionId || '');
+}
+
+function highlightUftRow(rowKey) {
+  if (!uftTable) return;
+
+  const rowIdx = uftTable.rows().indexes().toArray()
+    .find(i => uftRowKey(uftTable.row(i).data()) === rowKey);
+  if (rowIdx === undefined) return;
+
+  const pageInfo = uftTable.page.info();
+  const posInOrder = uftTable.rows({ order: 'applied' }).indexes().toArray().indexOf(rowIdx);
+  const targetPage = Math.floor(posInOrder / pageInfo.length);
+
+  const applyHighlight = function () {
+    const node = uftTable.row(rowIdx).node();
+    if (!node) return;
+    $('#uftTable tbody tr').removeClass('row-highlight-flash');
+    void node.offsetWidth; // restart animation if same row clicked twice
+    $(node).addClass('row-highlight-flash');
+    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  if (targetPage !== pageInfo.page) {
+    uftTable.one('draw', applyHighlight);
+    uftTable.page(targetPage).draw(false);
+  } else {
+    applyHighlight();
+  }
 }
 
 /* ─── Export Excel ───────────────────────────────────────── */
@@ -198,4 +248,14 @@ function exportUftExcel() {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'UpperFeedTest');
   XLSX.writeFile(workbook, `UpperFeedTest_B${series}_${flagrange}.xlsx`);
+}
+
+/* ─── Helpers ───────────────────────────────────────────── */
+function escUftHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

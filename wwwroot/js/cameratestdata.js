@@ -101,7 +101,7 @@ function renderCtdPositionMap(data) {
 
   const points = (data || [])
     .filter(d => d.needleXPosition !== null && d.needleYPosition !== null)
-    .map(d => ({ x: d.needleXPosition, y: d.needleYPosition, serial: d.serial, dt: d.productionDate_txt }));
+    .map(d => ({ x: d.needleXPosition, y: d.needleYPosition, serial: d.serial, dt: d.productionDate_txt, rowKey: ctdRowKey(d) }));
 
   if (points.length === 0) {
     $('#ctdChartPosition').html('<p class="text-muted text-center py-5">No data</p>');
@@ -117,7 +117,13 @@ function renderCtdPositionMap(data) {
       height: 380,
       zoom: { enabled: true, type: 'xy' },
       toolbar: { show: true },
-      animations: { enabled: false }
+      animations: { enabled: false },
+      events: {
+        markerClick: function (event, chartContext, { seriesIndex, dataPointIndex, w }) {
+          const p = w.globals.initialSeries[seriesIndex]?.data[dataPointIndex];
+          if (p && p.rowKey) highlightCtdRow(p.rowKey);
+        }
+      }
     },
 
     series: [{ name: 'Needle Position', data: points }],
@@ -172,7 +178,7 @@ function renderCtdFocusChart(data) {
 
   const points = (data || [])
     .filter(d => d.focus !== null && d.focus !== undefined)
-    .map(d => ({ x: d.productionDate_ts, y: d.focus, serial: d.serial }));
+    .map(d => ({ x: d.productionDate_ts, y: d.focus, serial: d.serial, rowKey: ctdRowKey(d) }));
 
   if (points.length === 0) {
     $('#ctdChartFocus').html('<p class="text-muted text-center py-5">No data</p>');
@@ -185,7 +191,13 @@ function renderCtdFocusChart(data) {
       height: 380,
       zoom: { enabled: true, type: 'xy' },
       toolbar: { show: true },
-      animations: { enabled: false }
+      animations: { enabled: false },
+      events: {
+        markerClick: function (event, chartContext, { seriesIndex, dataPointIndex, w }) {
+          const p = w.globals.initialSeries[seriesIndex]?.data[dataPointIndex];
+          if (p && p.rowKey) highlightCtdRow(p.rowKey);
+        }
+      }
     },
 
     series: [{ name: 'Focus', data: points }],
@@ -233,6 +245,9 @@ function renderCtdDataTable(data) {
     data: data,
     order: [[0, 'desc']],
     pageLength: 25,
+    rowCallback: function (row, rowData) {
+      $(row).attr('data-row-key', ctdRowKey(rowData));
+    },
     columns: [
       { data: 'productionDate_txt', title: 'Date / Time' },
       { data: 'serial', title: 'Serial' },
@@ -242,6 +257,39 @@ function renderCtdDataTable(data) {
       { data: 'needleYPosition', title: 'Needle Y', render: v => v === null ? '–' : v }
     ]
   });
+}
+
+/* ─── Chart point → table row highlight ─────────────────── */
+function ctdRowKey(d) {
+  return (d.serial || '') + '|' + (d.productionDate_ts || d.productionDate || '') + '|' + (d.testDefinitionId || '');
+}
+
+function highlightCtdRow(rowKey) {
+  if (!ctdTable) return;
+
+  const rowIdx = ctdTable.rows().indexes().toArray()
+    .find(i => ctdRowKey(ctdTable.row(i).data()) === rowKey);
+  if (rowIdx === undefined) return;
+
+  const pageInfo = ctdTable.page.info();
+  const posInOrder = ctdTable.rows({ order: 'applied' }).indexes().toArray().indexOf(rowIdx);
+  const targetPage = Math.floor(posInOrder / pageInfo.length);
+
+  const applyHighlight = function () {
+    const node = ctdTable.row(rowIdx).node();
+    if (!node) return;
+    $('#ctdTable tbody tr').removeClass('row-highlight-flash');
+    void node.offsetWidth; // restart animation if same row clicked twice
+    $(node).addClass('row-highlight-flash');
+    node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  if (targetPage !== pageInfo.page) {
+    ctdTable.one('draw', applyHighlight);
+    ctdTable.page(targetPage).draw(false);
+  } else {
+    applyHighlight();
+  }
 }
 
 /* ─── Export Excel ───────────────────────────────────────── */

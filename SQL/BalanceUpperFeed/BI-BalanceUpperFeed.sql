@@ -24,8 +24,8 @@ ORDER BY sewingMachine.productionDate DESC, testExecution.id DESC
 --> With date range
 -- #Manual Migrate
 DECLARE @series VARCHAR(15) = '9';
-DECLARE @fromDate VARCHAR(30) = '2026-06-01';
-DECLARE @toDateExclusive VARCHAR(30) = '2026-12-31 23:59:59';
+DECLARE @fromDate VARCHAR(30) = '2026-08-19';
+DECLARE @toDateExclusive VARCHAR(30) = '2026-08-19 23:59:59';
 SELECT TOP(10000)
    testExecution.id,
    sewingMachine.serial,
