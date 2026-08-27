@@ -30,10 +30,11 @@ namespace AspnetCoreMvcFull.Models
   // Pass/Fail Limit parameters
   public class PassFailParamModel
   {
-    public int     id       { get; set; }
-    public string  series   { get; set; }
-    public string  mnufunc  { get; set; }
-    public decimal max_fail { get; set; }
-    public decimal min_fail { get; set; }
+    public int      id        { get; set; }
+    public string   series    { get; set; }
+    public string   mnufunc   { get; set; }
+    public decimal  max_fail  { get; set; }
+    public decimal  min_fail  { get; set; }
+    public decimal? settarget { get; set; }
   }
 }

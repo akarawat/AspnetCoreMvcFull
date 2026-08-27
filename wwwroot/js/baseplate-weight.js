@@ -19,7 +19,7 @@
 const DEFAULT_SPEC = {
   upper: 25,   // USL (max_fail) fallback
   lower: 10,   // LSL (min_fail) fallback
-  target: 0    // Target คงที่เสมอ (ไม่ผ่าน Modal)
+  target: 0    // Target fallback — ใช้เมื่อ settarget เป็น NULL ใน DB
 };
 
 const AUTO_RELOAD_MINUTES = 5;   // รีโหลดทุกกี่นาที
@@ -186,7 +186,7 @@ const AUTO_RELOAD_MINUTES = 5;   // รีโหลดทุกกี่นา�
       SPEC = {
         upper: parseFloat(_limitParam.max_fail),   // USL
         lower: parseFloat(_limitParam.min_fail),   // LSL
-        target: DEFAULT_SPEC.target
+        target: _limitParam.settarget != null ? parseFloat(_limitParam.settarget) : DEFAULT_SPEC.target
       };
     } else {
       // Series ยังไม่มี config → ใช้ default fallback
@@ -196,6 +196,7 @@ const AUTO_RELOAD_MINUTES = 5;   // รีโหลดทุกกี่นา�
     // อัปเดต badge ใน header
     $('#lblSpecUpper').text('USL = ' + SPEC.upper);
     $('#lblSpecLower').text('LSL = ' + SPEC.lower);
+    $('#lblSpecTarget').text('Target = ' + SPEC.target);
     if (!_limitParam) {
       $('#specLegend').addClass('bw-spec-default').attr('title', 'Using default values — not yet configured for this series');
     } else {
@@ -442,6 +443,7 @@ const AUTO_RELOAD_MINUTES = 5;   // รีโหลดทุกกี่นา�
     // ใช้ค่าปัจจุบัน (จาก DB ถ้ามี, ไม่งั้นใช้ default ที่กำลังแสดงผล)
     $('#inputUSL').val(SPEC.upper);
     $('#inputLSL').val(SPEC.lower);
+    $('#inputTARG').val(SPEC.target);
 
     if (!_limitParam) {
       showModalAlert('warning',
@@ -459,6 +461,7 @@ const AUTO_RELOAD_MINUTES = 5;   // รีโหลดทุกกี่นา�
     const series = $('#inputLimitSeries').val();
     const usl = parseFloat($('#inputUSL').val());
     const lsl = parseFloat($('#inputLSL').val());
+    const targ = parseFloat($('#inputTARG').val());
 
     if (isNaN(usl) || isNaN(lsl)) {
       showModalAlert('danger', 'Please enter valid numbers for USL and LSL.');
@@ -474,10 +477,13 @@ const AUTO_RELOAD_MINUTES = 5;   // รีโหลดทุกกี่นา�
     );
 
     try {
+      const params = { series, max_fail: usl, min_fail: lsl };
+      if (!isNaN(targ)) params.settarget = targ;   // ปล่อยว่าง → เป็น NULL ใน DB (ไม่กระทบฟังก์ชั่นอื่นที่ใช้ SP ร่วมกัน)
+
       const resp = await fetch('/BaseplateWeight/UpdatePassFailParam', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ series, max_fail: usl, min_fail: lsl })
+        body: new URLSearchParams(params)
       });
       const result = await resp.json();
 

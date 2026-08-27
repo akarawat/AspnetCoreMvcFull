@@ -24,7 +24,8 @@ BEGIN
     series,
     mnufunc,
     max_fail,
-    min_fail
+    min_fail,
+    settarget
   FROM [BTBIDataUtilize].[dbo].[passfail_param]
   WHERE series  = @series
     AND mnufunc = @mnufunc;

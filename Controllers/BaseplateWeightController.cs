@@ -126,7 +126,8 @@ public class BaseplateWeightController : Controller
           series = rdr["series"]?.ToString(),
           mnufunc = rdr["mnufunc"]?.ToString(),
           max_fail = rdr["max_fail"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["max_fail"]),
-          min_fail = rdr["min_fail"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["min_fail"])
+          min_fail = rdr["min_fail"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["min_fail"]),
+          settarget = rdr["settarget"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(rdr["settarget"])
         };
       }
       conn.Close();
@@ -194,7 +195,7 @@ public class BaseplateWeightController : Controller
   // SP: SP_UpdatePassFailParam  (@series, @mnufunc='10', @max_fail (USL), @min_fail (LSL))
   // -----------------------------------------------------------------------
   [HttpPost]
-  public JsonResult UpdatePassFailParam(string series, decimal max_fail, decimal min_fail)
+  public JsonResult UpdatePassFailParam(string series, decimal max_fail, decimal min_fail, decimal? settarget)
   {
     string connStr = _configuration["ConnectionStrings:connBtBiDataUtilize"];
     int affected = 0;
@@ -210,6 +211,7 @@ public class BaseplateWeightController : Controller
         cmd.Parameters.AddWithValue("@mnufunc", SqlDbType.VarChar).Value = MNUFUNC_BASEPLATE;
         cmd.Parameters.AddWithValue("@max_fail", SqlDbType.Decimal).Value = max_fail;
         cmd.Parameters.AddWithValue("@min_fail", SqlDbType.Decimal).Value = min_fail;
+        cmd.Parameters.AddWithValue("@settarget", SqlDbType.Decimal).Value = settarget ?? (object)DBNull.Value;
 
         SqlDataReader rdr = cmd.ExecuteReader();
         if (rdr.Read()) affected = Convert.ToInt32(rdr["affected_rows"]);
