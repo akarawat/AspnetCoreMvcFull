@@ -7,6 +7,12 @@
 --       เพื่อรองรับ Windows Scheduler ที่เปลี่ยนจากวันละ 1 ครั้ง เป็นทุกชั่วโมง —
 --       ถ้าค่าใน pamtesterdb ถูกแก้ไขย้อนหลัง ค่าฝั่ง BTBIDataUtilize จะอัพเดทตามด้วย
 --       Key: serial + startDate
+-- V201 05-09-2026  Fix Msg 8672 — cdp/cdp2 (checkoutDataParameter) join กับ
+--       sm.id ตรงๆ (ไม่ผูกกับ testExecution เฉพาะตัว) ถ้าเครื่องมี
+--       checkoutDataParameter (parameterId 1517/1518) มากกว่า 1 แถว จะเกิด
+--       fan-out ทำให้ serial+startDate เดียวกันซ้ำหลายแถว (เหมือนบั๊กที่เจอใน
+--       MigUpperFeedTest) จึงใส่ dedupe ด้วย ROW_NUMBER() เลือกแถวล่าสุด
+--       (te_id สูงสุด) ต่อ serial+startDate ก่อนเข้า MERGE
 -- =============================================
 ALTER PROCEDURE [dbo].[SP_BATLNK_MigButtonFoot3a]
 AS
@@ -23,7 +29,7 @@ BEGIN
  --DECLARE @fromDate VARCHAR(30) = '2025-09-22';
  --DECLARE @toDateExclusive VARCHAR(30) = '2025-09-22 23:59:59';
 
-    ;WITH src AS (
+    ;WITH raw AS (
 
   SELECT top(10000)
     sm.serial,
@@ -51,6 +57,18 @@ BEGIN
    AND (te.startDate >= @fromDate
    AND te.startDate <  @toDateExclusive)
 
+    ),
+    -- Dedupe: cdp/cdp2 join กับ sm.id ตรงๆ (ไม่ผูกกับ testExecution เฉพาะตัว)
+    -- ถ้าเครื่องมี checkoutDataParameter (1517/1518) มากกว่า 1 แถว จะเกิด fan-out
+    -- ทำให้ serial+startDate เดียวกันซ้ำหลายแถว — เก็บเฉพาะแถวล่าสุด (te_id สูงสุด) ต่อ key
+    src AS (
+        SELECT *
+        FROM (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (PARTITION BY r.serial, r.startDate ORDER BY r.te_id DESC) AS rn
+            FROM raw r
+        ) dedup
+        WHERE rn = 1
     )
 
     MERGE dbo.mig_ButtonHoldfoot3a AS tgt
@@ -78,3 +96,26 @@ BEGIN
                 s.[operator], s.testerVersion, s.windowsPcName, s.powersupply, s.modulprint, s.baseprint);
 
 END
+------------------------------
+SELECT TOP(1000)
+sewingMachine.serial,
+sewingMachine.productionDate,
+machineType.series,
+Val_A.longValue AS 'Value A',
+Val_B.longValue AS 'Value B'
+
+FROM
+sewingMachine
+
+JOIN
+    machineType on machineType.id = sewingMachine.machineTypeId
+JOIN
+   checkoutDataParameter Val_A on Val_A.machineId = sewingMachine.id AND Val_A.parameterId IN ('1517')
+JOIN
+   checkoutDataParameter Val_B on Val_B.machineId = sewingMachine.id AND Val_B.parameterId IN ('1518')
+
+WHERE machineType.series IN ('3')
+
+ORDER BY sewingMachine.productionDate DESC
+
+

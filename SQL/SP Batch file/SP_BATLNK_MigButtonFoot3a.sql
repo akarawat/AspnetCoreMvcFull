@@ -9,6 +9,12 @@
 --       เพื่อรองรับ Windows Scheduler ที่เปลี่ยนจากวันละ 1 ครั้ง เป็นทุกชั่วโมง —
 --       ถ้าค่าใน pamtesterdb ถูกแก้ไขย้อนหลัง ค่าฝั่ง BTBIDataUtilize จะอัพเดทตามด้วย
 --       Key: serial + startDate
+-- V105 05-09-2026  Fix Msg 8672 — cdp/cdp2 (checkoutDataParameter) join กับ
+--       sm.id ตรงๆ (ไม่ผูกกับ testExecution เฉพาะตัว) ถ้าเครื่องมี
+--       checkoutDataParameter (parameterId 1517/1518) มากกว่า 1 แถว จะเกิด
+--       fan-out ทำให้ serial+startDate เดียวกันซ้ำหลายแถว (เหมือนบั๊กที่เจอใน
+--       MigUpperFeedTest) จึงใส่ dedupe ด้วย ROW_NUMBER() เลือกแถวล่าสุด
+--       (te_id สูงสุด) ต่อ serial+startDate ก่อนเข้า MERGE
 -- =============================================
 ALTER PROCEDURE [dbo].[SP_BATLNK_MigButtonFoot3a]
 AS
@@ -19,13 +25,13 @@ BEGIN
     --DECLARE @fromDate        DATETIME = CONVERT(DATETIME, DATEADD(DAY, -3, CONVERT(DATE, GETDATE()))); -- 3 วันก่อน 00:00
     --DECLARE @toDateExclusive DATETIME = CONVERT(DATETIME, CONVERT(DATE, GETDATE()));                    -- วันนี้ 00:00
  -- #Daily Migrate
- DECLARE @fromDate VARCHAR(15) = FORMAT(DATEADD(DAY, -3, CONVERT(DATE, GETDATE())), 'yyyy-MM-dd'); -- 3 วันก่อน 00:00
+ DECLARE @fromDate VARCHAR(15) = FORMAT(DATEADD(DAY, -10, CONVERT(DATE, GETDATE())), 'yyyy-MM-dd'); -- 3 วันก่อน 00:00
  DECLARE @toDateExclusive VARCHAR(15) = FORMAT(GETDATE(), 'yyyy-MM-dd');
  -- #Manual Migrate
  --DECLARE @fromDate VARCHAR(30) = '2025-09-22';
  --DECLARE @toDateExclusive VARCHAR(30) = '2025-09-22 23:59:59';
 
-    ;WITH src AS (
+    ;WITH raw AS (
 
   SELECT top(10000)
     sm.serial,
@@ -53,7 +59,22 @@ BEGIN
    AND (te.startDate >= @fromDate
    AND te.startDate <  @toDateExclusive)
 
+    ),
+
+    -- Dedupe: cdp/cdp2 join กับ sm.id ตรงๆ (ไม่ผูกกับ testExecution เฉพาะตัว)
+    -- ถ้าเครื่องมี checkoutDataParameter (1517/1518) มากกว่า 1 แถว จะเกิด fan-out
+    -- ทำให้ serial+startDate เดียวกันซ้ำหลายแถว — เก็บเฉพาะแถวล่าสุด (te_id สูงสุด) ต่อ key
+    src AS (
+        SELECT *
+        FROM (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (PARTITION BY r.serial, r.startDate ORDER BY r.te_id DESC) AS rn
+            FROM raw r
+        ) dedup
+        WHERE rn = 1
     )
+    
+    --SELECT * FROM src ORDER BY startDate DESC;
 
     MERGE dbo.mig_ButtonHoldfoot3a AS tgt
     USING src AS s
@@ -80,3 +101,5 @@ BEGIN
                 s.[operator], s.testerVersion, s.windowsPcName, s.powersupply, s.modulprint, s.baseprint);
 
 END
+
+exec [dbo].[SP_BATLNK_MigButtonFoot3a]
