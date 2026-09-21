@@ -20,6 +20,7 @@ function loadAllCards(serial) {
   loadMenu12(serial);
   loadMenu13(serial);
   loadMenu14(serial);
+  loadMenu15(serial);
   loadUttcDwKpiSummary(serial);
 }
 
@@ -879,6 +880,9 @@ function loadMenu14(serial) {
     }
   });
 }
+function loadMenu15(serial) {
+
+}
 function loadBasePlate(serial) {
   const imgPath = 'img/avatars/baseplate.png';
   const container = $('#kpiBasePlate');
@@ -1322,7 +1326,7 @@ async function BindDataTableTop10Failed(series) {
 
   if (data.length > 0) console.log('Top10 row[0]:', data[0]);
   const lastUpdate = (data.length > 0 && data[0].monitor_dt) ? data[0].monitor_dt : '-';
-  $('#lblTop10Failed').text(`Top 10 failing ratio (Last update: ${lastUpdate})`);
+  $('#lblTop10LastUpdate').text(`Last update: ${lastUpdate}`);
 
   $('#bindDataTableTop10').DataTable({
     data: data,
@@ -1348,12 +1352,20 @@ async function BindDataTableTop10Failed(series) {
   //-- End Tables
   return;
 }
+// DataTable ถูกสร้างตอนที่ modal ยัง display:none อยู่ — recalc column width ตอนเปิด modal จริง
+$(document).on('shown.bs.modal', '#modalTop10Failed', function () {
+  if ($.fn.DataTable.isDataTable('#bindDataTableTop10')) {
+    $('#bindDataTableTop10').DataTable().columns.adjust();
+  }
+});
 
 var ResultData;
 async function BindDataTableDailyProd(series) {
-  let flagrange = $('input[name="criteria"]:checked').val();
+  let flagrange = $('input[name="criteria"]:checked').val() || '';
+  const dtstart = $('#dailyProdFromDate').val() || '';
+  const dtend = $('#dailyProdToDate').val() || '';
 
-  const query = new URLSearchParams({ series: series, flagrange: flagrange }).toString();
+  const query = new URLSearchParams({ series: series, flagrange: flagrange, dtstart: dtstart, dtend: dtend }).toString();
   const response = await fetch(`/Dashboards/GetDailyProduction?${query}`);
 
   if (!response.ok) {
@@ -1483,6 +1495,7 @@ function renderChart(data) {
     },
     options: {
       responsive: true,
+      aspectRatio: 5, // การ์ดนี้กว้างเต็มแถวแล้ว (col-md-12) ปรับสัดส่วนให้เตี้ยลงแทนการใช้ maintainAspectRatio:false
       // 1. ลงทะเบียน Plugin และตั้งค่า
       plugins: {
         datalabels: {
@@ -1528,12 +1541,20 @@ function loadCalibrationChart() {
   let curModel = $("#curModel").val();
   BindDataTableDailyProd(curModel);
 }
+// Daily Production — label ของช่วงเวลาที่กำลังแสดง (Criteria เดิมถ้าถูก unhide กลับมาใช้,
+// ไม่งั้น fallback เป็นช่วง Date range From-To ที่เลือกอยู่)
+function getDailyProdRangeLabel() {
+  const checked = $('input[name="criteria"]:checked').val();
+  if (checked == 'W') return "Weekly";
+  if (checked == 'M') return "Monthly";
+  if (checked == 'HY') return "Yearly";
+  const dtstart = $('#dailyProdFromDate').val();
+  const dtend = $('#dailyProdToDate').val();
+  return (dtstart && dtend) ? `${dtstart}_to_${dtend}` : "Custom";
+}
 // Start Ecxel Export
 document.getElementById("btnExport").addEventListener("click", async () => {
-  let flagrange = '';
-  if ($('input[name="criteria"]:checked').val() == 'W') flagrange = "Weekly";
-  else if ($('input[name="criteria"]:checked').val() == 'M') flagrange = "Monthly";
-  else if ($('input[name="criteria"]:checked').val() == 'HY') flagrange = "Yearly";
+  const flagrange = getDailyProdRangeLabel();
 
   if (confirm(`${flagrange} data: Confirm to export`)) {
     await exportToExcel();
@@ -1543,10 +1564,7 @@ async function exportToExcel() {
   //console.log(ResultData); return;
   //const result = await response.json();
   let curModel = $("#curModel").val();
-  let flagrange = '';
-  if ($('input[name="criteria"]:checked').val() == 'W') flagrange = "Weekly";
-  else if ($('input[name="criteria"]:checked').val() == 'M') flagrange = "Monthly";
-  else if ($('input[name="criteria"]:checked').val() == 'HY') flagrange = "Yearly";
+  let flagrange = getDailyProdRangeLabel();
   const data = ResultData;           // ✅ ดึงข้อมูล
   if (data.length == 0) {
     return;

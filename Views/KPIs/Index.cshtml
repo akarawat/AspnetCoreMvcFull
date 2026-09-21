@@ -115,90 +115,49 @@
 </div>
 
 <div class="row g-8 mb-8 mt-2">
-    <!-- Top 10 Failed -->
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card-title"><strong id="lblTop10Failed">Top 10 failing ratio (Currently)</strong></div>
-
-                        <table id="bindDataTableTop10" class="table table-sm table-bordered" width="100%">
-                            <tbody>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="row" style="display:none">
-                    <div class="col-md-12">
-
-                        @* Header row: title + series selector *@
-                        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                            <div class="card-title mb-0">
-                                <strong id="lblTop10Failed">Top 10 Failing Ratio</strong>
-                                <span class="badge bg-label-secondary ms-1 small" id="badgeTop10Series"></span>
-                            </div>
-                            <div class="btn-group btn-group-sm" role="group" aria-label="Top10 Series">
-                                <button id="t10BtnB4" class="btn btn-outline-primary" type="button" onclick="changeTop10Series('4')">B4</button>
-                                <button id="t10BtnB5" class="btn btn-outline-primary" type="button" onclick="changeTop10Series('5')">B5</button>
-                                <button id="t10BtnB7" class="btn btn-primary" type="button" onclick="changeTop10Series('7')">B7</button>
-                                <button id="t10BtnB9" class="btn btn-outline-primary" type="button" onclick="changeTop10Series('9')">B9</button>
-                            </div>
-                        </div>
-
-                        @* Heatmap container *@
-                        <div id="chartTop10Heatmap" style="min-height:320px;">
-                            <div class="d-flex align-items-center justify-content-center" style="height:320px;">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        @* Footer hint *@
-                        <small class="text-muted">
-                            <i class="ri-information-line me-1"></i>
-                            Color intensity = failure ratio % &nbsp;|&nbsp; Hover for details
-                        </small>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /Top 10 Failed -->
-    @* Hidden state สำหรับ Top10 widget *@
-    <input type="hidden" id="hdnTop10Series" value="7" />
-    <input type="hidden" id="hdnTop10Flagrange" value="W" />
     <!-- Daily production -->
-    <div class="col-md-6">
-      <div class="card h-100">
+    <div class="col-md-12">
+      <div class="card">
         <div class="card-body">
           <div class="row">
             <div class="col-md-12">
               <div class="card-title">
                 <strong id="lblDailyProduction">Daily Production (Data range)</strong>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="criteria" id="criteria2" value="W" onclick="loadCalibrationChart()" checked />
-                    <label class="form-check-label" for="criteria2">Week</label>
+
+                @* Criteria เดิม (Week/Month/Halfyear) — ซ่อนไว้ก่อน ยังใช้งานได้ถ้า unhide กลับ *@
+                <div id="dailyProdOldCriteria" style="display:none;">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="criteria" id="criteria2" value="W" onclick="loadCalibrationChart()" />
+                        <label class="form-check-label" for="criteria2">Week</label>
+                    </div>
+                    <div class="form-check form-check-inline mt-4">
+                        <input class="form-check-input" type="radio" name="criteria" id="criteria3" value="M" onclick="loadCalibrationChart()" />
+                        <label class="form-check-label" for="criteria3">Month</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="criteria" id="criteria4" value="HY" onclick="loadCalibrationChart()" />
+                        <label class="form-check-label" for="criteria4">Halfyear</label>
+                    </div>
                 </div>
-                <div class="form-check form-check-inline mt-4">
-                    <input class="form-check-input" type="radio" name="criteria" id="criteria3" value="M" onclick="loadCalibrationChart()" />
-                    <label class="form-check-label" for="criteria3">Month</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="criteria" id="criteria4" value="HY" onclick="loadCalibrationChart()" />
-                    <label class="form-check-label" for="criteria4">Halfyear</label> &nbsp; 
-                    <i class="ri-file-excel-2-line cursor-pointer text-success" id="btnExport" title="Excel Export"></i>
+
+                @* Criteria ใหม่: Date range (From-To) — default ย้อนหลัง 7 วัน *@
+                <div class="d-flex flex-wrap align-items-end gap-2 mt-2">
+                    <div>
+                        <label class="form-label small mb-0" for="dailyProdFromDate">From</label>
+                        <input type="date" id="dailyProdFromDate" class="form-control form-control-sm"
+                               value="@DateTime.Now.AddDays(-6).ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div>
+                        <label class="form-label small mb-0" for="dailyProdToDate">To</label>
+                        <input type="date" id="dailyProdToDate" class="form-control form-control-sm"
+                               value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <button class="btn btn-primary btn-sm" type="button" onclick="loadCalibrationChart()">Search</button>
+                    <i class="ri-file-excel-2-line cursor-pointer text-success fs-4 ms-1" id="btnExport" title="Excel Export"></i>
                 </div>
               </div>
 
-              <canvas id="dailyProdChart" height="150" class="cursor-pointer" onclick="showDailyData();"></canvas>
+              <canvas id="dailyProdChart" class="cursor-pointer" onclick="showDailyData();"></canvas>
 @* 
               <div class="text-end mt-2">
                 <button id="btnVisibleDaily" class="btn btn-light btn-sm" type="button" onclick="showDailyData();">
@@ -737,6 +696,32 @@
   </div>
   <!-- /TestData Camera feed -->
 
+  <!-- About parameters top 10 -->
+  <div class="col-md-4" id="display_param15">
+      <div class="card h-100" id="bindDataTableLMenu15">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card-title"><strong id="lblMnu15">15. About parameters top 10</strong></div>
+                      <div class="row" id="kpiMenu15">
+                          <div class="row">
+                              <div class="col-md-12 text-center">
+                                  <small class="text-muted d-block">Top 10 failing ratio</small>
+                                  <small class="text-muted d-block" id="lblTop10LastUpdate">Last update: -</small>
+                                  <button class="btn btn-outline-primary btn-sm mt-2" type="button"
+                                          data-bs-toggle="modal" data-bs-target="#modalTop10Failed">
+                                      <i class="ri-table-line me-1"></i>View Top 10
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- /About parameters top 10 -->
+
 </div>
 <!-- /End of Top view -->
 
@@ -750,6 +735,34 @@
 </div>
 
 </div>
+
+<!-- Modal Top 10 Failing Ratio -->
+<div class="modal fade" id="modalTop10Failed"
+     tabindex="-1" aria-labelledby="modalTop10FailedLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTop10FailedLabel">
+                    <i class="ri-table-line me-2 text-primary"></i>
+                    Top 10 failing ratio
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table id="bindDataTableTop10" class="table table-sm table-bordered" width="100%">
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Modal Top 10 Failing Ratio -->
 
 <!-- Modal Remark -->
 <div class="modal fade" id="remarkModal"
@@ -810,6 +823,5 @@
     <script src="~/js/xlsx.full.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
 
-    <script src="~/js/top10-failed.js" asp-append-version="true"></script>
     <script src="~/js/kpis.js?version=2.1" asp-append-version="true"></script>
 }

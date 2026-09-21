@@ -275,7 +275,7 @@ public class DashboardsController : Controller
     return Json(result);
   }
   [HttpGet]
-  public JsonResult GetDailyProduction(string series, string? flagrange)
+  public JsonResult GetDailyProduction(string series, string? flagrange, DateTime? dtstart, DateTime? dtend)
   {
     IConfiguration _configuration = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
@@ -290,10 +290,12 @@ public class DashboardsController : Controller
     using (SqlConnection conn = new SqlConnection(connStr))
     {
       conn.Open();
-      SqlCommand cmd = new SqlCommand("SP_LNK_DailyProduction", conn);
+      SqlCommand cmd = new SqlCommand("SP_LNK_DailyProduction200", conn);
       cmd.CommandType = CommandType.StoredProcedure;
       cmd.Parameters.AddWithValue("@series", SqlDbType.VarChar).Value = series;
       cmd.Parameters.AddWithValue("@flagrange", SqlDbType.VarChar).Value = flagrange ?? (object)DBNull.Value;
+      cmd.Parameters.AddWithValue("@dtstart", SqlDbType.DateTime).Value = dtstart.HasValue ? (object)dtstart.Value : DBNull.Value;
+      cmd.Parameters.AddWithValue("@dtend", SqlDbType.DateTime).Value = dtend.HasValue ? (object)dtend.Value : DBNull.Value;
       SqlDataReader rdr = cmd.ExecuteReader();
       while (rdr.Read())
       {
