@@ -526,14 +526,14 @@ async function BindDataTable(flagrange) {
   }
   $('#bindDataTable').DataTable({
     data: data,
-    order: [[0, 'desc']],
+    order: [[4, 'desc']],
     pageLength: 50,
-    sort: false,
     columns: [
       { data: 'startDate_txt' },
       { data: 'serial' },
       { data: 'valueA' },
-      { data: 'valueB' }
+      { data: 'valueB' },
+      { data: 'startDate', visible: false }
     ]
   });
   //-- End Tables

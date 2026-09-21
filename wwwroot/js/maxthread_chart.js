@@ -219,7 +219,6 @@ function loadThreadCutChart(flagrange) {
           data: filteredData,
           order: [[6, 'desc']],
           pageLength: 50,
-          sort: false,
           columns: [
             {
               data: 'productionDate_txt',
