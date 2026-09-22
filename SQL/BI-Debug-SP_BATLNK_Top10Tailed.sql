@@ -1,4 +1,4 @@
-USE [pamtesterdb] GO
+USE [pamtesterdb];
 /****** Object:  StoredProcedure [dbo].[SP_BATLNK_Top10Tailed]    Script Date: 04-08-2026 9:05:06 AM ******/
 DECLARE	@series VARCHAR(25) = '9';
 SELECT TOP(1000) 

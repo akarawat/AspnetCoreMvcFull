@@ -76,6 +76,8 @@ $(document).ready(function () {
   GetPassFailScore(curModel);
 
   $('#pduTitle').html(`Production Data Utilization Dashboard - B${curModel}`);
+  $('#lblCurModelTop10').html(` (B${curModel})`);
+  $('#lblCurModelTop10Modal').html(` (B${curModel})`);
 });
 function disableRemarkBtn() {
   document.getElementById("btn_rmk_mnu1").style.display = "none";
@@ -104,6 +106,8 @@ function callFuncButton(serial) {
   GetPassFailScore(serial);
 
   $('#pduTitle').html(`Production Data Utilization Dashboard - B${serial}`);
+  $('#lblCurModelTop10').html(` (B${serial})`);
+  $('#lblCurModelTop10Modal').html(` (B${serial})`);
 }
 // Release Bachground color for all button
 function GetPassFailScore(serial) {
